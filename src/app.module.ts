@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config"
 import { MongooseModule } from "@nestjs/mongoose"
 import { GraphQLModule } from "@nestjs/graphql"
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo"
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { HttpModule } from "@nestjs/axios"
 import { join } from "path"
 import configuration from "./config/configuration"
@@ -55,8 +56,13 @@ import jwtConfig from "./config/jwt.config"
         autoSchemaFile: join(process.cwd(), "src/schema.gql"),
         sortSchema: true,
         
-        // Enable Apollo Sandbox (better than playground)
+        // Disable CSRF protection for development/testing
+        // In production, clients should send proper headers
+        csrfPrevention: false,
+        
+        // Enable Apollo Sandbox
         playground: false,
+        plugins: [ApolloServerPluginLandingPageLocalDefault()],
         
         // Keep introspection enabled for documentation
         introspection: true,

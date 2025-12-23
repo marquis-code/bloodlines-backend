@@ -15,6 +15,7 @@ const config_1 = require("@nestjs/config");
 const mongoose_1 = require("@nestjs/mongoose");
 const graphql_1 = require("@nestjs/graphql");
 const apollo_1 = require("@nestjs/apollo");
+const default_1 = require("@apollo/server/plugin/landingPage/default");
 const axios_1 = require("@nestjs/axios");
 const path_1 = require("path");
 const configuration_1 = __importDefault(require("./config/configuration"));
@@ -61,7 +62,9 @@ exports.AppModule = AppModule = __decorate([
                 useFactory: (configService) => ({
                     autoSchemaFile: (0, path_1.join)(process.cwd(), "src/schema.gql"),
                     sortSchema: true,
+                    csrfPrevention: false,
                     playground: false,
+                    plugins: [(0, default_1.ApolloServerPluginLandingPageLocalDefault)()],
                     introspection: true,
                     buildSchemaOptions: {
                         numberScalarMode: 'integer',
