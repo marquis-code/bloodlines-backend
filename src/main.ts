@@ -9,9 +9,9 @@ async function bootstrap() {
   // Get ConfigService instance
   const configService = app.get(ConfigService)
 
-  // Enable CORS
+  // Enable CORS - Allow all origins
   app.enableCors({
-    origin: configService.get<string>("cors.origin"),
+    origin: true, // This allows all origins
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
