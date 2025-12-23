@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common"
 import { MongooseModule } from "@nestjs/mongoose"
 import { RoleUpgradeService } from "./role-upgrade.service"
 import { RoleUpgradeResolver } from "./role-upgrade.resolver"
-import { RoleUpgradeRequest, RoleUpgradeRequestSchema } from "./schemas/role-upgrade-request.schema"
+import { RoleUpgradeRequest, RoleUpgradeRequestSchema } from "./schemas/request-role-upgrade.schema"
 import { User, UserSchema } from "../user/schemas/user.schema"
 
 @Module({

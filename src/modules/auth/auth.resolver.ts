@@ -1,9 +1,9 @@
 import { Resolver, Mutation, Query } from "@nestjs/graphql"
-import type { AuthService } from "./auth.service"
-import type { SignupDto } from "./dtos/signup.dto"
-import type { LoginDto } from "./dtos/login.dto"
-import type { ForgotPasswordDto } from "./dtos/forgot-password.dto"
-import type { ResetPasswordDto } from "./dtos/reset-password.dto"
+import { AuthService } from "./auth.service"
+import { SignupDto } from "./dtos/signup.dto"
+import { LoginDto } from "./dtos/login.dto"
+import { ForgotPasswordDto } from "./dtos/forgot-password.dto"
+import { ResetPasswordDto } from "./dtos/reset-password.dto"
 
 @Resolver()
 export class AuthResolver {

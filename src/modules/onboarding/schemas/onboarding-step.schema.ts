@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
-import type { HydratedDocument, Types } from "mongoose"
+import { HydratedDocument, Types } from "mongoose"
 
 export type OnboardingStepDocument = HydratedDocument<OnboardingStep>
 

@@ -1,7 +1,7 @@
 import { Resolver, Mutation, Query } from "@nestjs/graphql"
 import { UseGuards } from "@nestjs/common"
-import type { OnboardingService } from "./onboarding.service"
-import type { OnboardingStep1Dto, OnboardingStep2Dto, CompleteOnboardingDto } from "./dtos/onboarding.dto"
+import { OnboardingService } from "./onboarding.service"
+import { OnboardingStep1Dto, OnboardingStep2Dto, CompleteOnboardingDto } from "./dtos/onboarding.dto"
 import { JwtAuthGuard } from "../auth/guards/jwt.guard"
 
 @Resolver()

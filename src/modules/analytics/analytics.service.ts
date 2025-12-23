@@ -1,17 +1,18 @@
 import { Injectable } from "@nestjs/common"
-import type { Model } from "mongoose"
+import { Model } from "mongoose"
+import { InjectModel } from "@nestjs/mongoose" 
+import { User } from "../user/schemas/user.schema"
 import { BloodType } from "../../common/enums/blood-type.enum"
 import { PriorityLevel } from "../../common/enums/priority-level.enum"
+import { BloodRequest } from "../blood-request/schema/blood-request.schema"
 
 @Injectable()
 export class AnalyticsService {
-  private bloodRequestModel: Model<any>
-  private userModel: Model<any>
 
-  constructor(bloodRequestModel: Model<any>, userModel: Model<any>) {
-    this.bloodRequestModel = bloodRequestModel
-    this.userModel = userModel
-  }
+  constructor(
+        @InjectModel(BloodRequest.name) private bloodRequestModel: Model<BloodRequest>,
+        @InjectModel(User.name) private userModel: Model<User>
+  ) {}
 
   async getTotalRequests() {
     return this.bloodRequestModel.countDocuments()

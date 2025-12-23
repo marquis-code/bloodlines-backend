@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common"
-import type { Model } from "mongoose"
-import type { User } from "./schemas/user.schema"
+import { Model } from "mongoose"
+import { InjectModel } from "@nestjs/mongoose" 
+import { User } from "./schemas/user.schema"
 
 @Injectable()
 export class UserService {
-  constructor(private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async getUserById(id: string) {
     const user = await this.userModel.findById(id)

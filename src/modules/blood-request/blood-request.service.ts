@@ -1,20 +1,19 @@
 import { Injectable, ForbiddenException, NotFoundException } from "@nestjs/common"
-import type { Model } from "mongoose"
-import type { BloodRequest } from "./schemas/blood-request.schema"
-import type { User } from "../user/schemas/user.schema"
+import { Model } from "mongoose"
+import { InjectModel } from "@nestjs/mongoose" 
+import { BloodRequest } from "./schema/blood-request.schema"
+import { User } from "../user/schemas/user.schema"
 import { UserRole } from "../../common/enums/role.enum"
-import type { CreateBloodRequestDto } from "./dtos/create-blood-request.dto"
-import type { UpdateBloodRequestDto } from "./dtos/update-blood-request.dto"
+import { RequestStatus } from "../../common/enums/request-status.enum"
+import { CreateBloodRequestDto } from "./dtos/create-blood-request.dto"
+import { UpdateBloodRequestDto } from "./dtos/update-blood-request.dto"
 
 @Injectable()
 export class BloodRequestService {
-  private bloodRequestModel: Model<BloodRequest>
-  private userModel: Model<User>
-
-  constructor(bloodRequestModel: Model<BloodRequest>, userModel: Model<User>) {
-    this.bloodRequestModel = bloodRequestModel
-    this.userModel = userModel
-  }
+  constructor(
+    @InjectModel(BloodRequest.name) private bloodRequestModel: Model<BloodRequest>,
+    @InjectModel(User.name) private userModel: Model<User>
+  ) {}
 
   async createBloodRequest(userId: string, createDto: CreateBloodRequestDto) {
     const user = await this.userModel.findById(userId)
@@ -32,7 +31,7 @@ export class BloodRequestService {
 
   async getActiveRequests(limit = 10, skip = 0) {
     return this.bloodRequestModel
-      .find({ status: { $ne: "FULFILLED" } })
+      .find({ status: { $ne: RequestStatus.FULFILLED } })
       .populate("createdBy", "fullName email facilityName")
       .sort({ createdAt: -1 })
       .limit(limit)
@@ -51,7 +50,7 @@ export class BloodRequestService {
 
     request.unitsConfirmed += 1
     if (request.unitsConfirmed >= request.unitsNeeded) {
-      request.status = "FULFILLED"
+      request.status = RequestStatus.FULFILLED
       request.fulfillmentDate = new Date()
     }
 

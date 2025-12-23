@@ -1,0 +1,152 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AnalyticsType {
+  averageResponseTime: String!
+  bloodInventory: [BloodInventoryType!]!
+  donorResponse: DonorResponseStatsType!
+  fulfillmentByBloodType: [FulfillmentStatsType!]!
+  fulfillmentByUrgency: [UrgencyStatsType!]!
+  fulfillmentTimeSeries: [TimeSeriesDataType!]!
+  topBridgers: [TopBridgerType!]!
+  totalRequests: Int!
+}
+
+type BloodInventoryType {
+  bloodType: String!
+  count: Int!
+}
+
+type BloodRequestType {
+  additionalNotes: String
+  assignedDonors: [String!]
+  bloodType: String!
+  contactPhone: String!
+  createdAt: String!
+  createdBy: String!
+  donorResponseStatus: String!
+  fulfillmentDate: String
+  id: String!
+  priorityLevel: String!
+  status: String!
+  unitsConfirmed: Int!
+  unitsEscalated: Int!
+  unitsNeeded: Int!
+  unitsNoResponse: Int!
+  updatedAt: String!
+}
+
+input CreateBloodRequestDto {
+  additionalNotes: String
+  bloodType: String!
+  contactPhone: String!
+  priorityLevel: String!
+  unitsNeeded: Float!
+}
+
+type DonorResponseStatsType {
+  accepted: ResponseCountType!
+  escalated: ResponseCountType!
+  noResponse: ResponseCountType!
+  total: Int!
+}
+
+type FulfillmentStatsType {
+  bloodType: String!
+  fulfilled: Int!
+  percentage: Float!
+  total: Int!
+}
+
+type Mutation {
+  approveRoleUpgrade(requestId: String!): String!
+  completeOnboarding: String!
+  confirmDonation(requestId: String!): BloodRequestType!
+  createBloodRequest(input: CreateBloodRequestDto!): BloodRequestType!
+  forgotPassword: String!
+  initializeOnboarding: String!
+  login: String!
+  rejectRoleUpgrade(rejectionReason: String!, requestId: String!): String!
+  requestRoleUpgrade(facilityAddress: String!, facilityName: String!, reason: String!, requestedRole: String!): RoleUpgradeRequestType!
+  resetPassword: String!
+  signup: String!
+  submitStep1: String!
+  submitStep2: String!
+  updateBloodRequest(additionalNotes: String, contactPhone: String, priorityLevel: String, requestId: String!, unitsNeeded: Float): BloodRequestType!
+  updateProfile(bloodGroup: String, fullName: String, genotype: String, location: String, phoneNumber: String): UserType!
+}
+
+type Query {
+  getActiveRequests(limit: Float! = 10, skip: Float! = 0): [BloodRequestType!]!
+  getAllRequests(limit: Float! = 10, skip: Float! = 0): [BloodRequestType!]!
+  getAnalytics: AnalyticsType!
+  getMyRequests(limit: Float! = 10, skip: Float! = 0): [BloodRequestType!]!
+  getMyUpgradeHistory: [RoleUpgradeRequestType!]!
+  getOnboardingStatus: String!
+  getPendingUpgradeRequests(limit: Float! = 10, skip: Float! = 0): [RoleUpgradeRequestType!]!
+  getUser(id: String!): UserType!
+  me: UserType!
+  verifyEmail: String!
+}
+
+type ResponseCountType {
+  count: Int!
+  percentage: Float!
+}
+
+type RoleUpgradeRequestType {
+  createdAt: String!
+  facilityAddress: String!
+  facilityName: String!
+  id: String!
+  reason: String!
+  rejectionReason: String
+  requestedRole: String!
+  reviewDate: String
+  reviewedBy: String
+  status: String!
+  updatedAt: String!
+  userId: String!
+}
+
+type TimeSeriesDataType {
+  count: Int!
+  month: String!
+}
+
+type TopBridgerType {
+  facilityName: String
+  id: String!
+  name: String!
+  requestCount: Int!
+  totalUnitsConfirmed: Int!
+}
+
+type UrgencyStatsType {
+  fulfilled: Int!
+  percentage: Float!
+  total: Int!
+  urgency: String!
+}
+
+type UserType {
+  agreedToDonate: Boolean!
+  bloodGroup: String!
+  createdAt: String!
+  donationCount: Float!
+  email: String!
+  emailVerified: Boolean!
+  facilityAddress: String
+  facilityName: String
+  fullName: String!
+  gender: String!
+  genotype: String
+  id: String!
+  isActive: Boolean!
+  lastDonationDate: String
+  location: String
+  phoneNumber: String!
+  role: String!
+  updatedAt: String!
+}

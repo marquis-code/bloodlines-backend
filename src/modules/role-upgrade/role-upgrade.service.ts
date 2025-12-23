@@ -1,15 +1,16 @@
 import { Injectable, BadRequestException, NotFoundException } from "@nestjs/common"
-import type { Model } from "mongoose"
-import type { RoleUpgradeRequest } from "./schemas/role-upgrade-request.schema"
-import type { User } from "../user/schemas/user.schema"
+import { Model } from "mongoose"
+import { InjectModel } from "@nestjs/mongoose" 
+import { RoleUpgradeRequest } from "./schemas/request-role-upgrade.schema"
+import { User } from "../user/schemas/user.schema"
 import { UserRole } from "../../common/enums/role.enum"
-import type { RequestRoleUpgradeDto } from "./dtos/request-role-upgrade.dto"
+import { RequestRoleUpgradeDto } from "./dtos/request-role-upgrade.dto"
 
 @Injectable()
 export class RoleUpgradeService {
   constructor(
-    private roleUpgradeModel: Model<RoleUpgradeRequest>,
-    private userModel: Model<User>,
+    @InjectModel(RoleUpgradeRequest.name) private roleUpgradeModel: Model<RoleUpgradeRequest>,
+    @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
   async requestRoleUpgrade(userId: string, requestDto: RequestRoleUpgradeDto) {

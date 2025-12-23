@@ -17,10 +17,13 @@ import { EmailModule } from "../email/email.module"
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>("jwt.secret"),
-        signOptions: { expiresIn: configService.get<string>("jwt.expiresIn") },
-      }),
+      // @ts-ignore
+      useFactory: (configService: ConfigService) => ({        
+          secret: configService.get<string>("jwt.secret") || configService.get<string>("JWT_SECRET") || "your-secret-key-change-this",
+          signOptions: { 
+            expiresIn: configService.get<string>("jwt.expiresIn") || configService.get<string>("JWT_EXPIRES_IN") || "7d"
+          }
+      })
     }),
     EmailModule,
   ],

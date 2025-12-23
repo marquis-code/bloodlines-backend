@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common"
 import { MongooseModule } from "@nestjs/mongoose"
 import { AnalyticsService } from "./analytics.service"
 import { AnalyticsResolver } from "./analytics.resolver"
-import { BloodRequest, BloodRequestSchema } from "../blood-request/schemas/blood-request.schema"
+import { BloodRequest, BloodRequestSchema } from "../blood-request/schema/blood-request.schema"
 import { User, UserSchema } from "../user/schemas/user.schema"
 
 @Module({

@@ -1,20 +1,21 @@
 import { Injectable, BadRequestException, UnauthorizedException, ConflictException } from "@nestjs/common"
-import type { JwtService } from "@nestjs/jwt"
-import type { ConfigService } from "@nestjs/config"
-import type { Model } from "mongoose"
+import { JwtService } from "@nestjs/jwt"
+import { ConfigService } from "@nestjs/config"
+import { InjectModel } from "@nestjs/mongoose"
+import { Model } from "mongoose"
 import * as bcrypt from "bcrypt"
 import * as crypto from "crypto"
-import type { User } from "../user/schemas/user.schema"
-import type { SignupDto } from "./dtos/signup.dto"
-import type { LoginDto } from "./dtos/login.dto"
-import type { ForgotPasswordDto } from "./dtos/forgot-password.dto"
-import type { ResetPasswordDto } from "./dtos/reset-password.dto"
-import type { EmailService } from "../email/email.service"
+import { User } from "../user/schemas/user.schema"
+import { SignupDto } from "./dtos/signup.dto"
+import { LoginDto } from "./dtos/login.dto"
+import { ForgotPasswordDto } from "./dtos/forgot-password.dto"
+import { ResetPasswordDto } from "./dtos/reset-password.dto"
+import { EmailService } from "../email/email.service"
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userModel: Model<User>,
+     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
     private emailService: EmailService,
     private configService: ConfigService,

@@ -1,10 +1,12 @@
+
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql"
 import { UseGuards } from "@nestjs/common"
-import type { BloodRequestService } from "./blood-request.service"
+import { BloodRequestService } from "./blood-request.service"
 import { BloodRequestType } from "./types/blood-request.type"
 import { JwtAuthGuard } from "../auth/guards/jwt.guard"
-import type { CreateBloodRequestDto } from "./dtos/create-blood-request.dto"
+import { CreateBloodRequestDto } from "./dtos/create-blood-request.dto"
 import { CurrentUser } from "../auth/decorators/current-user.decorator"
+import { PriorityLevel } from "../../common/enums/priority-level.enum"
 
 @Resolver(() => BloodRequestType)
 export class BloodRequestResolver {
@@ -12,7 +14,7 @@ export class BloodRequestResolver {
 
   @UseGuards(JwtAuthGuard)
   @Mutation(() => BloodRequestType)
-  async createBloodRequest(@Args("input") createDto: CreateBloodRequestDto, @CurrentUser() user: any) {
+  async createBloodRequest(@CurrentUser() user: any, @Args("input") createDto: CreateBloodRequestDto) {
     return this.bloodRequestService.createBloodRequest(user.sub, createDto)
   }
 
@@ -35,28 +37,28 @@ export class BloodRequestResolver {
   @UseGuards(JwtAuthGuard)
   @Query(() => [BloodRequestType])
   async getMyRequests(
+    @CurrentUser() user: any,
     @Args("limit", { defaultValue: 10 }) limit: number,
     @Args("skip", { defaultValue: 0 }) skip: number,
-    @CurrentUser() user: any,
   ) {
     return this.bloodRequestService.getRequestsByUser(user.sub, limit, skip)
   }
 
   @UseGuards(JwtAuthGuard)
   @Mutation(() => BloodRequestType)
-  async confirmDonation(@Args("requestId") requestId: string, @CurrentUser() user: any) {
+  async confirmDonation(@CurrentUser() user: any, @Args("requestId") requestId: string) {
     return this.bloodRequestService.confirmDonation(requestId, user.sub)
   }
 
   @UseGuards(JwtAuthGuard)
   @Mutation(() => BloodRequestType)
   async updateBloodRequest(
+    @CurrentUser() user: any,
     @Args("requestId") requestId: string,
-    @Args("priorityLevel", { nullable: true }) priorityLevel?: string,
+    @Args("priorityLevel", { nullable: true }) priorityLevel?: PriorityLevel,
     @Args("unitsNeeded", { nullable: true }) unitsNeeded?: number,
     @Args("contactPhone", { nullable: true }) contactPhone?: string,
     @Args("additionalNotes", { nullable: true }) additionalNotes?: string,
-    @CurrentUser() user: any,
   ) {
     return this.bloodRequestService.updateRequest(requestId, user.sub, {
       priorityLevel,

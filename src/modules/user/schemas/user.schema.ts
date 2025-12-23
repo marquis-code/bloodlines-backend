@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
-import type { HydratedDocument } from "mongoose"
+import { HydratedDocument } from "mongoose"
 import { BloodGroup } from "../../../common/enums/blood-group.enum"
 import { Genotype } from "../../../common/enums/genotype.enum"
 import { Gender } from "../../../common/enums/gender.enum"

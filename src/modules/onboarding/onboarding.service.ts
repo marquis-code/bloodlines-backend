@@ -1,21 +1,19 @@
 import { Injectable, BadRequestException, NotFoundException } from "@nestjs/common"
-import type { Model, Types } from "mongoose"
+import { InjectModel } from "@nestjs/mongoose"
+import { Model, Types } from "mongoose"
 import * as bcrypt from "bcrypt"
-import { type OnboardingStep, OnboardingStepEnum } from "./schemas/onboarding-step.schema"
-import type { User } from "../user/schemas/user.schema"
-import type { OnboardingStep1Dto } from "./dtos/onboarding.dto"
-import type { OnboardingStep2Dto } from "./dtos/onboarding.dto"
-import type { CompleteOnboardingDto } from "./dtos/onboarding.dto"
+import { OnboardingStep, OnboardingStepEnum } from "./schemas/onboarding-step.schema"
+import { User } from "../user/schemas/user.schema"
+import { OnboardingStep1Dto } from "./dtos/onboarding.dto"
+import { OnboardingStep2Dto } from "./dtos/onboarding.dto"
+import { CompleteOnboardingDto } from "./dtos/onboarding.dto"
 
 @Injectable()
 export class OnboardingService {
-  private onboardingModel: Model<OnboardingStep>
-  private userModel: Model<User>
-
-  constructor(onboardingModel: Model<OnboardingStep>, userModel: Model<User>) {
-    this.onboardingModel = onboardingModel
-    this.userModel = userModel
-  }
+  constructor(
+    @InjectModel(OnboardingStep.name) private onboardingModel: Model<OnboardingStep>,
+    @InjectModel(User.name) private userModel: Model<User>
+  ) {}
 
   async initializeOnboarding(userId: Types.ObjectId) {
     const existingOnboarding = await this.onboardingModel.findOne({ userId })
@@ -61,7 +59,14 @@ export class OnboardingService {
       throw new NotFoundException("Onboarding not found")
     }
 
-    onboarding.stepData.step2 = step2Data
+    // Convert string date to Date object before assigning
+    onboarding.stepData.step2 = {
+      email: step2Data.email,
+      bloodGroup: step2Data.bloodGroup,
+      genotype: step2Data.genotype,
+      location: step2Data.location,
+      lastDonationDate: step2Data.lastDonationDate ? new Date(step2Data.lastDonationDate) : undefined,
+    }
     onboarding.currentStep = OnboardingStepEnum.STEP_3
 
     // Update user with step 2 data

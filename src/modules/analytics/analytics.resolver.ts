@@ -1,7 +1,7 @@
 import { Resolver, Query } from "@nestjs/graphql"
 import { UseGuards } from "@nestjs/common"
-import type { AnalyticsService } from "./analytics.service"
-import { AnalyticsType } from "./types/analytics.type"
+import { AnalyticsService } from "./analytics.service"
+import { AnalyticsType } from "./types/analytics.types"
 import { JwtAuthGuard } from "../auth/guards/jwt.guard"
 
 @Resolver()

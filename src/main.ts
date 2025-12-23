@@ -1,21 +1,37 @@
 import { NestFactory } from "@nestjs/core"
 import { ValidationPipe } from "@nestjs/common"
+import { ConfigService } from "@nestjs/config"
 import { AppModule } from "./app.module"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  
+  // Get ConfigService instance
+  const configService = app.get(ConfigService)
 
   // Enable CORS
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin: configService.get<string>("cors.origin"),
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 
   // Enable validation pipes globally
-  app.useGlobalPipes(new ValidationPipe({ transform: true }))
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
 
-  await app.listen(process.env.PORT || 3001, () => {
-    console.log(`Server running on port ${process.env.PORT || 3001}`)
+  const port = configService.get<number>("port") || 3001
+  
+  await app.listen(port, "0.0.0.0", () => {
+    console.log(`🚀 Server running on port ${port}`)
+    console.log(`🎮 GraphQL Playground: http://localhost:${port}/graphql`)
+    console.log(`📊 Environment: ${configService.get<string>("nodeEnv")}`)
   })
 }
 
