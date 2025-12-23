@@ -1,0 +1,94 @@
+# User Types
+type User {
+  id: String!
+  email: String!
+  fullName: String!
+  gender: String!
+  phoneNumber: String!
+  bloodGroup: String!
+  genotype: String
+  location: String
+  lastDonationDate: String
+  emailVerified: Boolean!
+  agreedToDonate: Boolean!
+  isActive: Boolean!
+  createdAt: String!
+  updatedAt: String!
+}
+
+# Auth Responses
+type AuthResponse {
+  accessToken: String!
+  message: String!
+}
+
+type MessageResponse {
+  message: String!
+}
+
+# Onboarding Types
+type OnboardingStatus {
+  userId: String!
+  currentStep: String!
+  isCompleted: Boolean!
+  completedAt: String
+}
+
+# Root Queries
+type Query {
+  me: User!
+  getUser(id: String!): User!
+  getOnboardingStatus: OnboardingStatus!
+  verifyEmail(token: String!): MessageResponse!
+}
+
+# Root Mutations
+type Mutation {
+  signup(
+    email: String!
+    password: String!
+    confirmPassword: String!
+    fullName: String!
+    gender: String!
+    phoneNumber: String!
+  ): MessageResponse!
+
+  login(
+    email: String!
+    password: String!
+  ): AuthResponse!
+
+  forgotPassword(email: String!): MessageResponse!
+
+  resetPassword(
+    token: String!
+    newPassword: String!
+    confirmPassword: String!
+  ): MessageResponse!
+
+  initializeOnboarding: MessageResponse!
+
+  submitStep1(
+    fullName: String!
+    gender: String!
+    phoneNumber: String!
+  ): MessageResponse!
+
+  submitStep2(
+    email: String!
+    bloodGroup: String!
+    genotype: String
+    location: String!
+    lastDonationDate: String
+  ): MessageResponse!
+
+  completeOnboarding(
+    password: String!
+    confirmPassword: String!
+  ): MessageResponse!
+
+  updateUser(
+    id: String!
+    updateData: String!
+  ): MessageResponse!
+}
