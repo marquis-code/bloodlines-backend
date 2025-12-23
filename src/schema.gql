@@ -42,7 +42,7 @@ input CreateBloodRequestDto {
   bloodType: String!
   contactPhone: String!
   priorityLevel: String!
-  unitsNeeded: Float!
+  unitsNeeded: Int!
 }
 
 type DonorResponseStatsType {
@@ -73,18 +73,18 @@ type Mutation {
   signup: String!
   submitStep1: String!
   submitStep2: String!
-  updateBloodRequest(additionalNotes: String, contactPhone: String, priorityLevel: String, requestId: String!, unitsNeeded: Float): BloodRequestType!
+  updateBloodRequest(additionalNotes: String, contactPhone: String, priorityLevel: String, requestId: String!, unitsNeeded: Int): BloodRequestType!
   updateProfile(bloodGroup: String, fullName: String, genotype: String, location: String, phoneNumber: String): UserType!
 }
 
 type Query {
-  getActiveRequests(limit: Float! = 10, skip: Float! = 0): [BloodRequestType!]!
-  getAllRequests(limit: Float! = 10, skip: Float! = 0): [BloodRequestType!]!
+  getActiveRequests(limit: Int! = 10, skip: Int! = 0): [BloodRequestType!]!
+  getAllRequests(limit: Int! = 10, skip: Int! = 0): [BloodRequestType!]!
   getAnalytics: AnalyticsType!
-  getMyRequests(limit: Float! = 10, skip: Float! = 0): [BloodRequestType!]!
+  getMyRequests(limit: Int! = 10, skip: Int! = 0): [BloodRequestType!]!
   getMyUpgradeHistory: [RoleUpgradeRequestType!]!
   getOnboardingStatus: String!
-  getPendingUpgradeRequests(limit: Float! = 10, skip: Float! = 0): [RoleUpgradeRequestType!]!
+  getPendingUpgradeRequests(limit: Int! = 10, skip: Int! = 0): [RoleUpgradeRequestType!]!
   getUser(id: String!): UserType!
   me: UserType!
   verifyEmail: String!
@@ -134,7 +134,7 @@ type UserType {
   agreedToDonate: Boolean!
   bloodGroup: String!
   createdAt: String!
-  donationCount: Float!
+  donationCount: Int!
   email: String!
   emailVerified: Boolean!
   facilityAddress: String

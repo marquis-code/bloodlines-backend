@@ -24,45 +24,77 @@ import jwtConfig from "./config/jwt.config"
       load: [configuration, jwtConfig],
       cache: true,
     }),
-    
+
     // Global HttpModule (Axios)
     HttpModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        timeout: configService.get<number>("axios.timeout"),
-        maxRedirects: configService.get<number>("axios.maxRedirects"),
-        baseURL: configService.get<string>("axios.baseURL"),
+        timeout: configService.get("axios.timeout"),
+        maxRedirects: configService.get("axios.maxRedirects"),
+        baseURL: configService.get("axios.baseURL"),
       }),
     }),
-    
+
     // MongoDB Connection
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>("database.uri"),
+        uri: configService.get("database.uri"),
       }),
     }),
-    
+
     // GraphQL Configuration
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
+        // Generate schema file with proper formatting
         autoSchemaFile: join(process.cwd(), "src/schema.gql"),
         sortSchema: true,
-        playground: configService.get<string>("nodeEnv") !== "production",
+        
+        // Enable Apollo Sandbox (better than playground)
+        playground: false,
+        
+        // Keep introspection enabled for documentation
         introspection: true,
-        context: ({ req }) => ({ req }),
-        formatError: (error) => {
-          console.error("GraphQL Error:", error)
-          return error
+        
+        // Add schema building options for better readability
+        buildSchemaOptions: {
+          numberScalarMode: 'integer',
         },
+        
+        // Context for auth
+        context: ({ req }) => ({ req }),
+        
+        // Better error formatting with more details
+        formatError: (formattedError, error) => {
+          console.error("GraphQL Error:", {
+            message: formattedError.message,
+            locations: formattedError.locations,
+            path: formattedError.path,
+            extensions: formattedError.extensions,
+          });
+          
+          // Return clean errors to client
+          return {
+            message: formattedError.message,
+            locations: formattedError.locations,
+            path: formattedError.path,
+            extensions: {
+              code: formattedError.extensions?.code,
+              ...formattedError.extensions,
+            },
+          };
+        },
+
+        // Include stack trace only in development
+        includeStacktraceInErrorResponses: configService.get("nodeEnv") !== "production",
       }),
     }),
-    
+
     // Feature Modules
     AuthModule,
     UserModule,

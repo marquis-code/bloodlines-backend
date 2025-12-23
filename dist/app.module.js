@@ -61,13 +61,28 @@ exports.AppModule = AppModule = __decorate([
                 useFactory: (configService) => ({
                     autoSchemaFile: (0, path_1.join)(process.cwd(), "src/schema.gql"),
                     sortSchema: true,
-                    playground: configService.get("nodeEnv") !== "production",
+                    playground: false,
                     introspection: true,
-                    context: ({ req }) => ({ req }),
-                    formatError: (error) => {
-                        console.error("GraphQL Error:", error);
-                        return error;
+                    buildSchemaOptions: {
+                        numberScalarMode: 'integer',
                     },
+                    context: ({ req }) => ({ req }),
+                    formatError: (formattedError, error) => {
+                        var _a;
+                        console.error("GraphQL Error:", {
+                            message: formattedError.message,
+                            locations: formattedError.locations,
+                            path: formattedError.path,
+                            extensions: formattedError.extensions,
+                        });
+                        return {
+                            message: formattedError.message,
+                            locations: formattedError.locations,
+                            path: formattedError.path,
+                            extensions: Object.assign({ code: (_a = formattedError.extensions) === null || _a === void 0 ? void 0 : _a.code }, formattedError.extensions),
+                        };
+                    },
+                    includeStacktraceInErrorResponses: configService.get("nodeEnv") !== "production",
                 }),
             }),
             auth_module_1.AuthModule,
