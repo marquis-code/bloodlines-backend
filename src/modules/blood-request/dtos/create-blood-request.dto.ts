@@ -1,29 +1,29 @@
-import { IsEnum, IsNumber, IsString, Min, IsOptional } from "class-validator"
-import { InputType, Field } from "@nestjs/graphql"
-import { BloodType } from "../../../common/enums/blood-type.enum"
-import { PriorityLevel } from "../../../common/enums/priority-level.enum"
+import { IsEnum, IsNumber, IsString, Min, IsOptional } from "class-validator";
+import { InputType, Field } from "@nestjs/graphql";
+import { BloodType } from "../../../common/enums/blood-type.enum";
+import { PriorityLevel } from "../../../common/enums/priority-level.enum";
 
 @InputType()
 export class CreateBloodRequestDto {
-  @Field(() => String)
+  @Field(() => BloodType)
   @IsEnum(BloodType)
-  bloodType: BloodType
+  bloodType: BloodType;
 
-  @Field(() => String)
+  @Field(() => PriorityLevel)
   @IsEnum(PriorityLevel)
-  priorityLevel: PriorityLevel
+  priorityLevel: PriorityLevel;
 
   @Field(() => Number)
   @IsNumber()
   @Min(1)
-  unitsNeeded: number
+  unitsNeeded: number;
 
   @Field()
   @IsString()
-  contactPhone: string
+  contactPhone: string;
 
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
-  additionalNotes?: string
+  additionalNotes?: string;
 }

@@ -37,11 +37,22 @@ type BloodRequestType {
   updatedAt: String!
 }
 
+enum BloodType {
+  AB_NEGATIVE
+  AB_POSITIVE
+  A_NEGATIVE
+  A_POSITIVE
+  B_NEGATIVE
+  B_POSITIVE
+  O_NEGATIVE
+  O_POSITIVE
+}
+
 input CreateBloodRequestDto {
   additionalNotes: String
-  bloodType: String!
+  bloodType: BloodType!
   contactPhone: String!
-  priorityLevel: String!
+  priorityLevel: PriorityLevel!
   unitsNeeded: Int!
 }
 
@@ -52,6 +63,10 @@ type DonorResponseStatsType {
   total: Int!
 }
 
+input ForgotPasswordDto {
+  email: String!
+}
+
 type FulfillmentStatsType {
   bloodType: String!
   fulfilled: Int!
@@ -59,22 +74,39 @@ type FulfillmentStatsType {
   total: Int!
 }
 
+enum Gender {
+  FEMALE
+  MALE
+  OTHER
+}
+
+input LoginDto {
+  email: String!
+  password: String!
+}
+
 type Mutation {
   approveRoleUpgrade(requestId: String!): String!
   completeOnboarding: String!
   confirmDonation(requestId: String!): BloodRequestType!
   createBloodRequest(input: CreateBloodRequestDto!): BloodRequestType!
-  forgotPassword: String!
+  forgotPassword(input: ForgotPasswordDto!): String!
   initializeOnboarding: String!
-  login: String!
+  login(input: LoginDto!): String!
   rejectRoleUpgrade(rejectionReason: String!, requestId: String!): String!
   requestRoleUpgrade(facilityAddress: String!, facilityName: String!, reason: String!, requestedRole: String!): RoleUpgradeRequestType!
-  resetPassword: String!
-  signup: String!
+  resetPassword(input: ResetPasswordDto!): String!
+  signup(input: SignupDto!): String!
   submitStep1: String!
   submitStep2: String!
-  updateBloodRequest(additionalNotes: String, contactPhone: String, priorityLevel: String, requestId: String!, unitsNeeded: Int): BloodRequestType!
+  updateBloodRequest(input: UpdateBloodRequestDto!, requestId: String!): BloodRequestType!
   updateProfile(bloodGroup: String, fullName: String, genotype: String, location: String, phoneNumber: String): UserType!
+}
+
+enum PriorityLevel {
+  CRITICAL
+  SCHEDULED
+  URGENT
 }
 
 type Query {
@@ -87,7 +119,20 @@ type Query {
   getPendingUpgradeRequests(limit: Int! = 10, skip: Int! = 0): [RoleUpgradeRequestType!]!
   getUser(id: String!): UserType!
   me: UserType!
-  verifyEmail: String!
+  verifyEmail(token: String!): String!
+}
+
+enum RequestStatus {
+  CANCELLED
+  CONFIRMED
+  FULFILLED
+  PENDING
+}
+
+input ResetPasswordDto {
+  confirmPassword: String!
+  newPassword: String!
+  token: String!
 }
 
 type ResponseCountType {
@@ -110,6 +155,15 @@ type RoleUpgradeRequestType {
   userId: String!
 }
 
+input SignupDto {
+  confirmPassword: String!
+  email: String!
+  fullName: String!
+  gender: Gender!
+  password: String!
+  phoneNumber: String!
+}
+
 type TimeSeriesDataType {
   count: Int!
   month: String!
@@ -121,6 +175,14 @@ type TopBridgerType {
   name: String!
   requestCount: Int!
   totalUnitsConfirmed: Int!
+}
+
+input UpdateBloodRequestDto {
+  additionalNotes: String
+  contactPhone: String
+  priorityLevel: PriorityLevel
+  status: RequestStatus
+  unitsNeeded: Int
 }
 
 type UrgencyStatsType {

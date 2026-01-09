@@ -1,82 +1,82 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
-import { HydratedDocument } from "mongoose"
-import { BloodGroup } from "../../../common/enums/blood-group.enum"
-import { Genotype } from "../../../common/enums/genotype.enum"
-import { Gender } from "../../../common/enums/gender.enum"
-import { UserRole } from "../../../common/enums/role.enum"
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { HydratedDocument } from "mongoose";
+import { BloodGroup } from "../../../common/enums/blood-group.enum";
+import { Genotype } from "../../../common/enums/genotype.enum";
+import { Gender } from "../../../common/enums/gender.enum";
+import { UserRole } from "../../../common/enums/role.enum";
 
-export type UserDocument = HydratedDocument<User>
+export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
   @Prop({ required: true, unique: true })
-  email: string
+  email: string;
 
   @Prop({ required: true })
-  password: string
+  password: string;
 
   @Prop({ required: true })
-  fullName: string
+  fullName: string;
 
   @Prop({ type: String, enum: Gender, required: true })
-  gender: Gender
+  gender: Gender;
 
   @Prop({ required: true, unique: true })
-  phoneNumber: string
+  phoneNumber: string;
 
-  @Prop({ type: String, enum: BloodGroup, required: true })
-  bloodGroup: BloodGroup
+  @Prop({ type: String, enum: BloodGroup })
+  bloodGroup: BloodGroup;
 
   @Prop({ type: String, enum: Genotype, sparse: true })
-  genotype?: Genotype
+  genotype?: Genotype;
 
   @Prop()
-  location?: string
+  location?: string;
 
   @Prop()
-  lastDonationDate?: Date
+  lastDonationDate?: Date;
 
   @Prop({ default: false })
-  emailVerified: boolean
+  emailVerified: boolean;
 
   @Prop()
-  emailVerificationToken?: string
+  emailVerificationToken?: string;
 
   @Prop()
-  emailVerificationExpiry?: Date
+  emailVerificationExpiry?: Date;
 
   @Prop()
-  passwordResetToken?: string
+  passwordResetToken?: string;
 
   @Prop()
-  passwordResetExpiry?: Date
+  passwordResetExpiry?: Date;
 
   @Prop({ type: String, enum: UserRole, default: UserRole.DONOR })
-  role: UserRole
+  role: UserRole;
 
   @Prop()
-  facilityName?: string
+  facilityName?: string;
 
   @Prop()
-  facilityAddress?: string
+  facilityAddress?: string;
 
   @Prop({ default: 0 })
-  donationCount: number
+  donationCount: number;
 
   @Prop()
-  lastUpgradeRequestDate?: Date
+  lastUpgradeRequestDate?: Date;
 
   @Prop({ default: true })
-  agreedToDonate: boolean
+  agreedToDonate: boolean;
 
   @Prop({ default: false })
-  isActive: boolean
+  isActive: boolean;
 
   @Prop()
-  createdAt?: Date
+  createdAt?: Date;
 
   @Prop()
-  updatedAt?: Date
+  updatedAt?: Date;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User)
+export const UserSchema = SchemaFactory.createForClass(User);

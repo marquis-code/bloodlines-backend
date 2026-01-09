@@ -1,41 +1,61 @@
-import { IsEmail, IsString, IsEnum, IsDateString, IsOptional } from "class-validator"
-import { BloodGroup } from "../../../common/enums/blood-group.enum"
-import { Genotype } from "../../../common/enums/genotype.enum"
+import {
+  IsEmail,
+  IsString,
+  IsEnum,
+  IsDateString,
+  IsOptional,
+} from "class-validator";
+import { InputType, Field } from "@nestjs/graphql";
+import { BloodGroup } from "../../../common/enums/blood-group.enum";
+import { Genotype } from "../../../common/enums/genotype.enum";
 
+@InputType()
 export class OnboardingStep1Dto {
+  @Field()
   @IsString()
-  fullName: string
+  fullName: string;
 
+  @Field()
   @IsString()
-  gender: string
+  gender: string;
 
+  @Field()
   @IsString()
-  phoneNumber: string
+  phoneNumber: string;
 }
 
+@InputType()
 export class OnboardingStep2Dto {
+  @Field()
   @IsEmail()
-  email: string
+  email: string;
 
+  @Field(() => BloodGroup)
   @IsEnum(BloodGroup)
-  bloodGroup: BloodGroup
+  bloodGroup: BloodGroup;
 
+  @Field(() => Genotype, { nullable: true })
   @IsOptional()
   @IsEnum(Genotype)
-  genotype?: Genotype
+  genotype?: Genotype;
 
+  @Field()
   @IsString()
-  location: string
+  location: string;
 
+  @Field({ nullable: true })
   @IsOptional()
   @IsDateString()
-  lastDonationDate?: string
+  lastDonationDate?: string;
 }
 
+@InputType()
 export class CompleteOnboardingDto {
+  @Field()
   @IsString()
-  password: string
+  password: string;
 
+  @Field()
   @IsString()
-  confirmPassword: string
+  confirmPassword: string;
 }

@@ -1,20 +1,39 @@
-import { Module } from "@nestjs/common"
-import { ConfigModule, ConfigService } from "@nestjs/config"
-import { MongooseModule } from "@nestjs/mongoose"
-import { GraphQLModule } from "@nestjs/graphql"
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo"
-import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
-import { HttpModule } from "@nestjs/axios"
-import { join } from "path"
-import configuration from "./config/configuration"
-import { AuthModule } from "./modules/auth/auth.module"
-import { UserModule } from "./modules/user/user.module"
-import { OnboardingModule } from "./modules/onboarding/onboarding.module"
-import { EmailModule } from "./modules/email/email.module"
-import { BloodRequestModule } from "./modules/blood-request/blood-request.module"
-import { AnalyticsModule } from "./modules/analytics/analytics.module"
-import { RoleUpgradeModule } from "./modules/role-upgrade/role-upgrade.module"
-import jwtConfig from "./config/jwt.config"
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { MongooseModule } from "@nestjs/mongoose";
+import { GraphQLModule } from "@nestjs/graphql";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
+import { HttpModule } from "@nestjs/axios";
+import { join } from "path";
+import configuration from "./config/configuration";
+import { AuthModule } from "./modules/auth/auth.module";
+import { UserModule } from "./modules/user/user.module";
+import { OnboardingModule } from "./modules/onboarding/onboarding.module";
+import { EmailModule } from "./modules/email/email.module";
+import { BloodRequestModule } from "./modules/blood-request/blood-request.module";
+import { AnalyticsModule } from "./modules/analytics/analytics.module";
+import { RoleUpgradeModule } from "./modules/role-upgrade/role-upgrade.module";
+import jwtConfig from "./config/jwt.config";
+
+// Register GraphQL enums
+import { registerEnumType } from "@nestjs/graphql";
+import { Gender } from "./common/enums/gender.enum";
+import { BloodGroup } from "./common/enums/blood-group.enum";
+import { Genotype } from "./common/enums/genotype.enum";
+import { BloodType } from "./common/enums/blood-type.enum";
+import { PriorityLevel } from "./common/enums/priority-level.enum";
+import { RequestStatus } from "./common/enums/request-status.enum";
+import { UserRole } from "./common/enums/role.enum";
+
+// Register enums for GraphQL
+registerEnumType(Gender, { name: "Gender" });
+registerEnumType(BloodGroup, { name: "BloodGroup" });
+registerEnumType(Genotype, { name: "Genotype" });
+registerEnumType(BloodType, { name: "BloodType" });
+registerEnumType(PriorityLevel, { name: "PriorityLevel" });
+registerEnumType(RequestStatus, { name: "RequestStatus" });
+registerEnumType(UserRole, { name: "UserRole" });
 
 @Module({
   imports: [
@@ -55,26 +74,26 @@ import jwtConfig from "./config/jwt.config"
         // Generate schema file with proper formatting
         autoSchemaFile: join(process.cwd(), "src/schema.gql"),
         sortSchema: true,
-        
+
         // Disable CSRF protection for development/testing
         // In production, clients should send proper headers
         csrfPrevention: false,
-        
+
         // Enable Apollo Sandbox
         playground: false,
         plugins: [ApolloServerPluginLandingPageLocalDefault()],
-        
+
         // Keep introspection enabled for documentation
         introspection: true,
-        
+
         // Add schema building options for better readability
         buildSchemaOptions: {
-          numberScalarMode: 'integer',
+          numberScalarMode: "integer",
         },
-        
+
         // Context for auth
         context: ({ req }) => ({ req }),
-        
+
         // Better error formatting with more details
         formatError: (formattedError, error) => {
           console.error("GraphQL Error:", {
@@ -83,7 +102,7 @@ import jwtConfig from "./config/jwt.config"
             path: formattedError.path,
             extensions: formattedError.extensions,
           });
-          
+
           // Return clean errors to client
           return {
             message: formattedError.message,
@@ -97,7 +116,8 @@ import jwtConfig from "./config/jwt.config"
         },
 
         // Include stack trace only in development
-        includeStacktraceInErrorResponses: configService.get("nodeEnv") !== "production",
+        includeStacktraceInErrorResponses:
+          configService.get("nodeEnv") !== "production",
       }),
     }),
 

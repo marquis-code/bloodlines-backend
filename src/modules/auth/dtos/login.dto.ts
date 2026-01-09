@@ -1,9 +1,13 @@
-import { IsEmail, IsString } from "class-validator"
+import { IsEmail, IsString } from "class-validator";
+import { InputType, Field } from "@nestjs/graphql";
 
+@InputType()
 export class LoginDto {
+  @Field()
   @IsEmail()
-  email: string
+  email: string;
 
+  @Field()
   @IsString()
-  password: string
+  password: string;
 }

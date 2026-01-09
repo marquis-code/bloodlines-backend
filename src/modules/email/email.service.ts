@@ -1,27 +1,33 @@
-import { Injectable } from "@nestjs/common"
-import { ConfigService } from "@nestjs/config"
-import * as nodemailer from "nodemailer"
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import * as nodemailer from "nodemailer";
 
 @Injectable()
 export class EmailService {
-  private transporter: nodemailer.Transporter
+  private transporter: nodemailer.Transporter;
 
   constructor(private configService: ConfigService) {
-    const emailConfig = this.configService.get("email")
+    const emailConfig = this.configService.get("email");
+    console.log("Email Config:", emailConfig);
     this.transporter = nodemailer.createTransport({
-      host: emailConfig.host,
-      port: emailConfig.port,
-      secure: emailConfig.port === 465,
+      service: "gmail",
       auth: {
-        user: emailConfig.user,
-        pass: emailConfig.password,
+        type: "OAuth2",
+        user: emailConfig.user!,
+        clientId: emailConfig.clientId,
+        clientSecret: emailConfig.clientSecret,
+        refreshToken: emailConfig.refreshToken,
       },
-    })
+    });
+  }
+
+  async verifyTransporter() {
+    return await this.transporter.verify();
   }
 
   async sendEmailVerification(email: string, token: string) {
-    const appUrl = this.configService.get<string>("app.url")
-    const verificationLink = `${appUrl}/verify-email?token=${token}`
+    const appUrl = this.configService.get<string>("app.url");
+    const verificationLink = `${appUrl}/verify-email?token=${token}`;
 
     const mailOptions = {
       from: this.configService.get<string>("email.from"),
@@ -34,14 +40,14 @@ export class EmailService {
         <p>This link will expire in 24 hours.</p>
         <p>If you did not create this account, please ignore this email.</p>
       `,
-    }
+    };
 
-    return this.transporter.sendMail(mailOptions)
+    return this.transporter.sendMail(mailOptions);
   }
 
   async sendPasswordReset(email: string, token: string) {
-    const appUrl = this.configService.get<string>("app.url")
-    const resetLink = `${appUrl}/reset-password?token=${token}`
+    const appUrl = this.configService.get<string>("app.url");
+    const resetLink = `${appUrl}/reset-password?token=${token}`;
 
     const mailOptions = {
       from: this.configService.get<string>("email.from"),
@@ -54,12 +60,16 @@ export class EmailService {
         <p>This link will expire in 1 hour.</p>
         <p>If you did not request this, please ignore this email.</p>
       `,
-    }
+    };
 
-    return this.transporter.sendMail(mailOptions)
+    return this.transporter.sendMail(mailOptions);
   }
 
-  async sendRoleUpgradeNotification(email: string, userName: string, requestedRole: string) {
+  async sendRoleUpgradeNotification(
+    email: string,
+    userName: string,
+    requestedRole: string
+  ) {
     const mailOptions = {
       from: this.configService.get<string>("email.from"),
       to: email,
@@ -71,8 +81,8 @@ export class EmailService {
         <p>Our administrators will review your request and notify you once it has been processed.</p>
         <p>Thank you for your contribution to BloodLines!</p>
       `,
-    }
+    };
 
-    return this.transporter.sendMail(mailOptions)
+    return this.transporter.sendMail(mailOptions);
   }
 }

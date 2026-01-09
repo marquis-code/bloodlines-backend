@@ -1,16 +1,22 @@
-import { IsEnum, IsString } from "class-validator"
-import { UserRole } from "../../../common/enums/role.enum"
+import { IsEnum, IsString } from "class-validator";
+import { InputType, Field } from "@nestjs/graphql";
+import { UserRole } from "../../../common/enums/role.enum";
 
+@InputType()
 export class RequestRoleUpgradeDto {
+  @Field(() => UserRole)
   @IsEnum(UserRole)
-  requestedRole: UserRole
+  requestedRole: UserRole;
 
+  @Field()
   @IsString()
-  facilityName: string
+  facilityName: string;
 
+  @Field()
   @IsString()
-  facilityAddress: string
+  facilityAddress: string;
 
+  @Field()
   @IsString()
-  reason: string
+  reason: string;
 }

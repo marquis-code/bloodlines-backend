@@ -14,7 +14,9 @@ export default () => ({
     host: process.env.SMTP_HOST || "smtp.gmail.com",
     port: Number.parseInt(process.env.SMTP_PORT || "587"),
     user: process.env.SMTP_USER || "",
-    password: process.env.SMTP_PASSWORD || "",
+    clientId: process.env.OAUTH_CLIENTID || "",
+    clientSecret: process.env.OAUTH_SECRET || "",
+    refreshToken: process.env.OAUTH_REFRESH || "",
     from: process.env.SMTP_FROM || "noreply@bloodlines.com",
   },
   axios: {
@@ -32,4 +34,4 @@ export default () => ({
     version: process.env.APP_VERSION || "1.0.0",
     apiPrefix: process.env.API_PREFIX || "api",
   },
-})
+});
