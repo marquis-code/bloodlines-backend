@@ -1,0 +1,1 @@
+{"version":3,"file":"update-availability.dto.js","sourceRoot":"","sources":["../../../../src/modules/donor/dto/update-availability.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,6CAAkD;AAG3C,IAAM,uBAAuB,GAA7B,MAAM,uBAAuB;CAGnC,CAAA;AAHY,0DAAuB;AAElC;IADC,IAAA,eAAK,GAAE;;uDACM;kCAFH,uBAAuB;IADnC,IAAA,mBAAS,GAAE;GACC,uBAAuB,CAGnC"}
