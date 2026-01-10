@@ -6,5 +6,7 @@ var DonorResponse;
     DonorResponse["ACCEPTED"] = "ACCEPTED";
     DonorResponse["ESCALATED"] = "ESCALATED";
     DonorResponse["NO_RESPONSE"] = "NO_RESPONSE";
+    DonorResponse["DECLINED"] = "DECLINED";
+    DonorResponse["CONFIRMED"] = "CONFIRMED";
 })(DonorResponse || (exports.DonorResponse = DonorResponse = {}));
 //# sourceMappingURL=donor-response.enum.js.map

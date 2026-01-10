@@ -7,5 +7,7 @@ var RequestStatus;
     RequestStatus["CONFIRMED"] = "CONFIRMED";
     RequestStatus["FULFILLED"] = "FULFILLED";
     RequestStatus["CANCELLED"] = "CANCELLED";
+    RequestStatus["IN_PROGRESS"] = "IN_PROGRESS";
+    RequestStatus["EXPIRED"] = "EXPIRED";
 })(RequestStatus || (exports.RequestStatus = RequestStatus = {}));
 //# sourceMappingURL=request-status.enum.js.map

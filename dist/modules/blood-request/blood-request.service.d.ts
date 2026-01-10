@@ -3,10 +3,12 @@ import { BloodRequest } from "./schema/blood-request.schema";
 import { User } from "../user/schemas/user.schema";
 import { CreateBloodRequestDto } from "./dtos/create-blood-request.dto";
 import { UpdateBloodRequestDto } from "./dtos/update-blood-request.dto";
+import { BloodRequestGateway } from "./blood-request.gateway";
 export declare class BloodRequestService {
     private bloodRequestModel;
     private userModel;
-    constructor(bloodRequestModel: Model<BloodRequest>, userModel: Model<User>);
+    private bloodRequestGateway;
+    constructor(bloodRequestModel: Model<BloodRequest>, userModel: Model<User>, bloodRequestGateway: BloodRequestGateway);
     createBloodRequest(userId: string, createDto: CreateBloodRequestDto): Promise<import("mongoose").Document<unknown, {}, BloodRequest, {}, import("mongoose").DefaultSchemaOptions> & BloodRequest & {
         _id: import("mongoose").Types.ObjectId;
     } & {
@@ -22,7 +24,25 @@ export declare class BloodRequestService {
     } & {
         __v: number;
     })[]>;
-    confirmDonation(requestId: string, userId: string): Promise<import("mongoose").Document<unknown, {}, BloodRequest, {}, import("mongoose").DefaultSchemaOptions> & BloodRequest & {
+    getRequestsForDonor(donorId: string, limit?: number, skip?: number): Promise<(import("mongoose").Document<unknown, {}, BloodRequest, {}, import("mongoose").DefaultSchemaOptions> & BloodRequest & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    })[]>;
+    acceptBloodRequest(requestId: string, donorId: string): Promise<import("mongoose").Document<unknown, {}, BloodRequest, {}, import("mongoose").DefaultSchemaOptions> & BloodRequest & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }>;
+    confirmDonation(requestId: string, donorId: string): Promise<import("mongoose").Document<unknown, {}, BloodRequest, {}, import("mongoose").DefaultSchemaOptions> & BloodRequest & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }>;
+    notifyDonorArrival(requestId: string, donorId: string): Promise<{
+        message: string;
+    }>;
+    escalateRequest(requestId: string, userId: string): Promise<import("mongoose").Document<unknown, {}, BloodRequest, {}, import("mongoose").DefaultSchemaOptions> & BloodRequest & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
@@ -32,9 +52,19 @@ export declare class BloodRequestService {
     } & {
         __v: number;
     }>;
+    cancelRequest(requestId: string, userId: string): Promise<import("mongoose").Document<unknown, {}, BloodRequest, {}, import("mongoose").DefaultSchemaOptions> & BloodRequest & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }>;
     getAllRequests(limit?: number, skip?: number): Promise<(import("mongoose").Document<unknown, {}, BloodRequest, {}, import("mongoose").DefaultSchemaOptions> & BloodRequest & {
         _id: import("mongoose").Types.ObjectId;
     } & {
         __v: number;
     })[]>;
+    getRequestById(requestId: string): Promise<import("mongoose").Document<unknown, {}, BloodRequest, {}, import("mongoose").DefaultSchemaOptions> & BloodRequest & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }>;
 }

@@ -1,12 +1,12 @@
 import { HydratedDocument } from "mongoose";
 import { Types } from "mongoose";
-import { BloodType } from "../../../common/enums/blood-type.enum";
+import { BloodGroup } from "../../../common/enums/blood-group.enum";
 import { PriorityLevel } from "../../../common/enums/priority-level.enum";
 import { RequestStatus } from "../../../common/enums/request-status.enum";
 import { DonorResponse } from "../../../common/enums/donor-response.enum";
 export type BloodRequestDocument = HydratedDocument<BloodRequest>;
 export declare class BloodRequest {
-    bloodType: BloodType;
+    bloodType: BloodGroup;
     priorityLevel: PriorityLevel;
     unitsNeeded: number;
     contactPhone: string;
@@ -35,7 +35,7 @@ export declare const BloodRequestSchema: import("mongoose").Schema<BloodRequest,
 }, "id"> & {
     id: string;
 }, {
-    bloodType?: import("mongoose").SchemaDefinitionProperty<BloodType, BloodRequest, import("mongoose").Document<unknown, {}, BloodRequest, {
+    bloodType?: import("mongoose").SchemaDefinitionProperty<BloodGroup, BloodRequest, import("mongoose").Document<unknown, {}, BloodRequest, {
         id: string;
     }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<BloodRequest & {
         _id: Types.ObjectId;

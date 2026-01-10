@@ -9,8 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BloodRequestModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
+const jwt_1 = require("@nestjs/jwt");
 const blood_request_service_1 = require("./blood-request.service");
 const blood_request_resolver_1 = require("./blood-request.resolver");
+const blood_request_gateway_1 = require("./blood-request.gateway");
 const blood_request_schema_1 = require("./schema/blood-request.schema");
 const user_schema_1 = require("../user/schemas/user.schema");
 let BloodRequestModule = class BloodRequestModule {
@@ -23,9 +25,10 @@ exports.BloodRequestModule = BloodRequestModule = __decorate([
                 { name: blood_request_schema_1.BloodRequest.name, schema: blood_request_schema_1.BloodRequestSchema },
                 { name: user_schema_1.User.name, schema: user_schema_1.UserSchema },
             ]),
+            jwt_1.JwtModule,
         ],
-        providers: [blood_request_service_1.BloodRequestService, blood_request_resolver_1.BloodRequestResolver],
-        exports: [blood_request_service_1.BloodRequestService],
+        providers: [blood_request_service_1.BloodRequestService, blood_request_resolver_1.BloodRequestResolver, blood_request_gateway_1.BloodRequestGateway],
+        exports: [blood_request_service_1.BloodRequestService, blood_request_gateway_1.BloodRequestGateway],
     })
 ], BloodRequestModule);
 //# sourceMappingURL=blood-request.module.js.map

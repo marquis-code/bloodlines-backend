@@ -1,18 +1,22 @@
-import { Injectable, ForbiddenException, NotFoundException } from "@nestjs/common"
-import { Model } from "mongoose"
-import { InjectModel } from "@nestjs/mongoose" 
+import { Injectable, ForbiddenException, NotFoundException, BadRequestException } from "@nestjs/common"
+import { Model, HydratedDocument } from "mongoose"
+import { InjectModel } from "@nestjs/mongoose"
 import { BloodRequest } from "./schema/blood-request.schema"
 import { User } from "../user/schemas/user.schema"
 import { UserRole } from "../../common/enums/role.enum"
 import { RequestStatus } from "../../common/enums/request-status.enum"
+import { DonorResponse } from "../../common/enums/donor-response.enum"
 import { CreateBloodRequestDto } from "./dtos/create-blood-request.dto"
 import { UpdateBloodRequestDto } from "./dtos/update-blood-request.dto"
+import { BloodRequestGateway } from "./blood-request.gateway"
+import { BloodRequestWithCreatedBy } from "./interfaces/blood-request-populated.interface"
 
 @Injectable()
 export class BloodRequestService {
   constructor(
     @InjectModel(BloodRequest.name) private bloodRequestModel: Model<BloodRequest>,
-    @InjectModel(User.name) private userModel: Model<User>
+    @InjectModel(User.name) private userModel: Model<User>,
+    private bloodRequestGateway: BloodRequestGateway,
   ) {}
 
   async createBloodRequest(userId: string, createDto: CreateBloodRequestDto) {
@@ -21,40 +25,214 @@ export class BloodRequestService {
       throw new ForbiddenException("Only Bridgers can create blood requests")
     }
 
+    if (!user.geoLocation || !user.geoLocation.coordinates) {
+      throw new BadRequestException("Please update your location before creating a blood request")
+    }
+
     const bloodRequest = new this.bloodRequestModel({
       ...createDto,
       createdBy: userId,
+      status: RequestStatus.PENDING,
     })
 
-    return bloodRequest.save()
+    const savedRequest = await bloodRequest.save()
+    
+    // Populate the createdBy field for notification - properly typed
+    const populatedRequest = await this.bloodRequestModel
+      .findById(savedRequest._id)
+      .populate<{ createdBy: HydratedDocument<User> }>("createdBy", "fullName email facilityName") as BloodRequestWithCreatedBy
+
+    if (!populatedRequest) {
+      throw new NotFoundException("Failed to retrieve created request")
+    }
+
+    // Notify nearby donors via WebSocket
+    const bridgerLocation = {
+      lat: user.geoLocation.coordinates[1],
+      lng: user.geoLocation.coordinates[0],
+    }
+    
+    await this.bloodRequestGateway.notifyNearbyDonors(populatedRequest, bridgerLocation)
+
+    return savedRequest
   }
 
   async getActiveRequests(limit = 10, skip = 0) {
     return this.bloodRequestModel
       .find({ status: { $ne: RequestStatus.FULFILLED } })
       .populate("createdBy", "fullName email facilityName")
+      .populate("assignedDonors", "fullName bloodGroup phoneNumber")
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip)
   }
 
   async getRequestsByUser(userId: string, limit = 10, skip = 0) {
-    return this.bloodRequestModel.find({ createdBy: userId }).sort({ createdAt: -1 }).limit(limit).skip(skip)
+    return this.bloodRequestModel
+      .find({ createdBy: userId })
+      .populate("assignedDonors", "fullName bloodGroup phoneNumber")
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
   }
 
-  async confirmDonation(requestId: string, userId: string) {
+  async getRequestsForDonor(donorId: string, limit = 10, skip = 0) {
+    const donor = await this.userModel.findById(donorId)
+    if (!donor || donor.role !== UserRole.DONOR) {
+      throw new ForbiddenException("Only donors can view donor-specific requests")
+    }
+
+    // Get requests that match donor's blood group and are still active
+    return this.bloodRequestModel
+      .find({
+        bloodType: donor.bloodGroup,
+        status: { $nin: [RequestStatus.FULFILLED, RequestStatus.CANCELLED] },
+      })
+      .populate("createdBy", "fullName facilityName contactPhone")
+      .sort({ priorityLevel: 1, createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
+  }
+
+  async acceptBloodRequest(requestId: string, donorId: string) {
+    const donor = await this.userModel.findById(donorId)
+    if (!donor || donor.role !== UserRole.DONOR) {
+      throw new ForbiddenException("Only donors can accept blood requests")
+    }
+
     const request = await this.bloodRequestModel.findById(requestId)
     if (!request) {
       throw new NotFoundException("Blood request not found")
     }
 
+    if (request.status === RequestStatus.FULFILLED) {
+      throw new BadRequestException("This request has already been fulfilled")
+    }
+
+    if (request.bloodType !== donor.bloodGroup) {
+      throw new BadRequestException("Blood group mismatch")
+    }
+
+    // Check if donor already accepted this request
+    if (request.assignedDonors?.some(id => id.toString() === donorId)) {
+      throw new BadRequestException("You have already accepted this request")
+    }
+
+    // Add donor to assigned donors
+    if (!request.assignedDonors) {
+      request.assignedDonors = []
+    }
+    request.assignedDonors.push(donor._id as any)
+
+    // Update donor response status
+    request.donorResponseStatus = DonorResponse.ACCEPTED
+
+    await request.save()
+
+    // Notify bridger via WebSocket
+    await this.bloodRequestGateway.notifyDonorAcceptance(requestId, donorId)
+    
+    // Broadcast update
+    await this.bloodRequestGateway.broadcastRequestUpdate(requestId)
+
+    return request
+  }
+
+  async confirmDonation(requestId: string, donorId: string) {
+    const request = await this.bloodRequestModel.findById(requestId)
+    if (!request) {
+      throw new NotFoundException("Blood request not found")
+    }
+
+    const donor = await this.userModel.findById(donorId)
+    if (!donor) {
+      throw new NotFoundException("Donor not found")
+    }
+
+    // Verify donor is assigned to this request
+    if (!request.assignedDonors?.some(id => id.toString() === donorId)) {
+      throw new ForbiddenException("You are not assigned to this request")
+    }
+
     request.unitsConfirmed += 1
+
+    // Update donor's donation count and last donation date
+    donor.donationCount += 1
+    donor.lastDonationDate = new Date()
+    
+    // Calculate next eligible date (56 days/8 weeks after donation)
+    const nextEligible = new Date()
+    nextEligible.setDate(nextEligible.getDate() + 56)
+    donor.nextEligibleDate = nextEligible
+    
+    await donor.save()
+
+    // Check if request is fulfilled
     if (request.unitsConfirmed >= request.unitsNeeded) {
       request.status = RequestStatus.FULFILLED
       request.fulfillmentDate = new Date()
+      await request.save()
+
+      // Notify all parties that request is fulfilled
+      await this.bloodRequestGateway.notifyRequestFulfilled(requestId)
+    } else {
+      await request.save()
+      // Broadcast update
+      await this.bloodRequestGateway.broadcastRequestUpdate(requestId)
     }
 
-    return request.save()
+    return request
+  }
+
+  async notifyDonorArrival(requestId: string, donorId: string) {
+    const request = await this.bloodRequestModel.findById(requestId)
+    if (!request) {
+      throw new NotFoundException("Blood request not found")
+    }
+
+    // Verify donor is assigned to this request
+    if (!request.assignedDonors?.some(id => id.toString() === donorId)) {
+      throw new ForbiddenException("You are not assigned to this request")
+    }
+
+    // Notify bridger via WebSocket
+    await this.bloodRequestGateway.notifyDonorArrival(requestId, donorId)
+
+    return { message: "Arrival notification sent" }
+  }
+
+  async escalateRequest(requestId: string, userId: string) {
+    const request = await this.bloodRequestModel.findById(requestId)
+    if (!request) {
+      throw new NotFoundException("Blood request not found")
+    }
+
+    if (request.createdBy.toString() !== userId) {
+      throw new ForbiddenException("You can only escalate your own requests")
+    }
+
+    request.unitsEscalated += 1
+    request.donorResponseStatus = DonorResponse.ESCALATED
+    await request.save()
+
+    // Re-notify donors with escalated priority
+    const bridger = await this.userModel.findById(userId)
+    if (bridger && bridger.geoLocation?.coordinates) {
+      const bridgerLocation = {
+        lat: bridger.geoLocation.coordinates[1],
+        lng: bridger.geoLocation.coordinates[0],
+      }
+      
+      const populatedRequest = await this.bloodRequestModel
+        .findById(requestId)
+        .populate<{ createdBy: HydratedDocument<User> }>("createdBy", "fullName email facilityName") as BloodRequestWithCreatedBy
+      
+      if (populatedRequest) {
+        await this.bloodRequestGateway.notifyNearbyDonors(populatedRequest, bridgerLocation)
+      }
+    }
+
+    return request
   }
 
   async updateRequest(requestId: string, userId: string, updateDto: UpdateBloodRequestDto) {
@@ -67,16 +245,58 @@ export class BloodRequestService {
       throw new ForbiddenException("You can only update your own requests")
     }
 
+    if (request.status === RequestStatus.FULFILLED) {
+      throw new BadRequestException("Cannot update fulfilled requests")
+    }
+
     Object.assign(request, updateDto)
-    return request.save()
+    await request.save()
+
+    // Broadcast update to all connected parties
+    await this.bloodRequestGateway.broadcastRequestUpdate(requestId)
+
+    return request
+  }
+
+  async cancelRequest(requestId: string, userId: string) {
+    const request = await this.bloodRequestModel.findById(requestId)
+    if (!request) {
+      throw new NotFoundException("Blood request not found")
+    }
+
+    if (request.createdBy.toString() !== userId) {
+      throw new ForbiddenException("You can only cancel your own requests")
+    }
+
+    request.status = RequestStatus.CANCELLED
+    await request.save()
+
+    // Notify all assigned donors
+    await this.bloodRequestGateway.broadcastRequestUpdate(requestId)
+
+    return request
   }
 
   async getAllRequests(limit = 10, skip = 0) {
     return this.bloodRequestModel
       .find()
       .populate("createdBy", "fullName email facilityName")
+      .populate("assignedDonors", "fullName bloodGroup phoneNumber")
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip)
+  }
+
+  async getRequestById(requestId: string) {
+    const request = await this.bloodRequestModel
+      .findById(requestId)
+      .populate("createdBy", "fullName email facilityName contactPhone")
+      .populate("assignedDonors", "fullName bloodGroup phoneNumber email")
+
+    if (!request) {
+      throw new NotFoundException("Blood request not found")
+    }
+
+    return request
   }
 }

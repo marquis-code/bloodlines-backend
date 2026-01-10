@@ -19,8 +19,8 @@ const blood_request_service_1 = require("./blood-request.service");
 const blood_request_type_1 = require("./types/blood-request.type");
 const jwt_guard_1 = require("../auth/guards/jwt.guard");
 const create_blood_request_dto_1 = require("./dtos/create-blood-request.dto");
+const update_blood_request_dto_1 = require("./dtos/update-blood-request.dto");
 const current_user_decorator_1 = require("../auth/decorators/current-user.decorator");
-const priority_level_enum_1 = require("../../common/enums/priority-level.enum");
 let BloodRequestResolver = class BloodRequestResolver {
     constructor(bloodRequestService) {
         this.bloodRequestService = bloodRequestService;
@@ -37,16 +37,30 @@ let BloodRequestResolver = class BloodRequestResolver {
     async getMyRequests(user, limit, skip) {
         return this.bloodRequestService.getRequestsByUser(user.sub, limit, skip);
     }
+    async getRequestsForDonor(user, limit, skip) {
+        return this.bloodRequestService.getRequestsForDonor(user.sub, limit, skip);
+    }
+    async getRequestById(user, requestId) {
+        return this.bloodRequestService.getRequestById(requestId);
+    }
+    async acceptBloodRequest(user, requestId) {
+        return this.bloodRequestService.acceptBloodRequest(requestId, user.sub);
+    }
     async confirmDonation(user, requestId) {
         return this.bloodRequestService.confirmDonation(requestId, user.sub);
     }
-    async updateBloodRequest(user, requestId, priorityLevel, unitsNeeded, contactPhone, additionalNotes) {
-        return this.bloodRequestService.updateRequest(requestId, user.sub, {
-            priorityLevel,
-            unitsNeeded,
-            contactPhone,
-            additionalNotes,
-        });
+    async notifyDonorArrival(user, requestId) {
+        const result = await this.bloodRequestService.notifyDonorArrival(requestId, user.sub);
+        return JSON.stringify(result);
+    }
+    async escalateRequest(user, requestId) {
+        return this.bloodRequestService.escalateRequest(requestId, user.sub);
+    }
+    async updateBloodRequest(user, requestId, updateDto) {
+        return this.bloodRequestService.updateRequest(requestId, user.sub, updateDto);
+    }
+    async cancelBloodRequest(user, requestId) {
+        return this.bloodRequestService.cancelRequest(requestId, user.sub);
     }
 };
 exports.BloodRequestResolver = BloodRequestResolver;
@@ -87,6 +101,34 @@ __decorate([
 ], BloodRequestResolver.prototype, "getMyRequests", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, graphql_1.Query)(() => [blood_request_type_1.BloodRequestType]),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)("limit", { defaultValue: 10 })),
+    __param(2, (0, graphql_1.Args)("skip", { defaultValue: 0 })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number, Number]),
+    __metadata("design:returntype", Promise)
+], BloodRequestResolver.prototype, "getRequestsForDonor", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, graphql_1.Query)(() => blood_request_type_1.BloodRequestType),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)("requestId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], BloodRequestResolver.prototype, "getRequestById", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, graphql_1.Mutation)(() => blood_request_type_1.BloodRequestType),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)("requestId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], BloodRequestResolver.prototype, "acceptBloodRequest", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     (0, graphql_1.Mutation)(() => blood_request_type_1.BloodRequestType),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, graphql_1.Args)("requestId")),
@@ -96,17 +138,41 @@ __decorate([
 ], BloodRequestResolver.prototype, "confirmDonation", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, graphql_1.Mutation)(() => String),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)("requestId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], BloodRequestResolver.prototype, "notifyDonorArrival", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     (0, graphql_1.Mutation)(() => blood_request_type_1.BloodRequestType),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, graphql_1.Args)("requestId")),
-    __param(2, (0, graphql_1.Args)("priorityLevel", { nullable: true })),
-    __param(3, (0, graphql_1.Args)("unitsNeeded", { nullable: true })),
-    __param(4, (0, graphql_1.Args)("contactPhone", { nullable: true })),
-    __param(5, (0, graphql_1.Args)("additionalNotes", { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, Number, String, String]),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], BloodRequestResolver.prototype, "escalateRequest", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, graphql_1.Mutation)(() => blood_request_type_1.BloodRequestType),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)("requestId")),
+    __param(2, (0, graphql_1.Args)("input")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, update_blood_request_dto_1.UpdateBloodRequestDto]),
     __metadata("design:returntype", Promise)
 ], BloodRequestResolver.prototype, "updateBloodRequest", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, graphql_1.Mutation)(() => blood_request_type_1.BloodRequestType),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)("requestId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], BloodRequestResolver.prototype, "cancelBloodRequest", null);
 exports.BloodRequestResolver = BloodRequestResolver = __decorate([
     (0, graphql_1.Resolver)(() => blood_request_type_1.BloodRequestType),
     __metadata("design:paramtypes", [blood_request_service_1.BloodRequestService])

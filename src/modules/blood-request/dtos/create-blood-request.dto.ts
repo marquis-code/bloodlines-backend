@@ -1,13 +1,13 @@
 import { IsEnum, IsNumber, IsString, Min, IsOptional } from "class-validator"
 import { InputType, Field } from "@nestjs/graphql"
-import { BloodType } from "../../../common/enums/blood-type.enum"
+import { BloodGroup } from "../../../common/enums/blood-group.enum" 
 import { PriorityLevel } from "../../../common/enums/priority-level.enum"
 
 @InputType()
 export class CreateBloodRequestDto {
   @Field(() => String)
-  @IsEnum(BloodType)
-  bloodType: BloodType
+  @IsEnum(BloodGroup)
+  bloodType: BloodGroup
 
   @Field(() => String)
   @IsEnum(PriorityLevel)

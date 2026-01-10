@@ -12,14 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateBloodRequestDto = void 0;
 const class_validator_1 = require("class-validator");
 const graphql_1 = require("@nestjs/graphql");
-const blood_type_enum_1 = require("../../../common/enums/blood-type.enum");
+const blood_group_enum_1 = require("../../../common/enums/blood-group.enum");
 const priority_level_enum_1 = require("../../../common/enums/priority-level.enum");
 let CreateBloodRequestDto = class CreateBloodRequestDto {
 };
 exports.CreateBloodRequestDto = CreateBloodRequestDto;
 __decorate([
     (0, graphql_1.Field)(() => String),
-    (0, class_validator_1.IsEnum)(blood_type_enum_1.BloodType),
+    (0, class_validator_1.IsEnum)(blood_group_enum_1.BloodGroup),
     __metadata("design:type", String)
 ], CreateBloodRequestDto.prototype, "bloodType", void 0);
 __decorate([

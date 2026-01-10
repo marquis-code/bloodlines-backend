@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BloodRequestSchema = exports.BloodRequest = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
-const blood_type_enum_1 = require("../../../common/enums/blood-type.enum");
+const blood_group_enum_1 = require("../../../common/enums/blood-group.enum");
 const priority_level_enum_1 = require("../../../common/enums/priority-level.enum");
 const request_status_enum_1 = require("../../../common/enums/request-status.enum");
 const donor_response_enum_1 = require("../../../common/enums/donor-response.enum");
@@ -20,7 +20,7 @@ let BloodRequest = class BloodRequest {
 };
 exports.BloodRequest = BloodRequest;
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, enum: blood_type_enum_1.BloodType, required: true }),
+    (0, mongoose_1.Prop)({ type: String, enum: blood_group_enum_1.BloodGroup, required: true }),
     __metadata("design:type", String)
 ], BloodRequest.prototype, "bloodType", void 0);
 __decorate([

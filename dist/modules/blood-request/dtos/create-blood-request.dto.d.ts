@@ -1,7 +1,7 @@
-import { BloodType } from "../../../common/enums/blood-type.enum";
+import { BloodGroup } from "../../../common/enums/blood-group.enum";
 import { PriorityLevel } from "../../../common/enums/priority-level.enum";
 export declare class CreateBloodRequestDto {
-    bloodType: BloodType;
+    bloodType: BloodGroup;
     priorityLevel: PriorityLevel;
     unitsNeeded: number;
     contactPhone: string;

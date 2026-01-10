@@ -60,20 +60,24 @@ type FulfillmentStatsType {
 }
 
 type Mutation {
+  acceptBloodRequest(requestId: String!): BloodRequestType!
   approveRoleUpgrade(requestId: String!): String!
+  cancelBloodRequest(requestId: String!): BloodRequestType!
   completeOnboarding: String!
   confirmDonation(requestId: String!): BloodRequestType!
   createBloodRequest(input: CreateBloodRequestDto!): BloodRequestType!
+  escalateRequest(requestId: String!): BloodRequestType!
   forgotPassword: String!
   initializeOnboarding: String!
   login: String!
+  notifyDonorArrival(requestId: String!): String!
   rejectRoleUpgrade(rejectionReason: String!, requestId: String!): String!
   requestRoleUpgrade(facilityAddress: String!, facilityName: String!, reason: String!, requestedRole: String!): RoleUpgradeRequestType!
   resetPassword: String!
   signup: String!
   submitStep1: String!
   submitStep2: String!
-  updateBloodRequest(additionalNotes: String, contactPhone: String, priorityLevel: String, requestId: String!, unitsNeeded: Int): BloodRequestType!
+  updateBloodRequest(input: UpdateBloodRequestDto!, requestId: String!): BloodRequestType!
   updateProfile(bloodGroup: String, fullName: String, genotype: String, location: String, phoneNumber: String): UserType!
 }
 
@@ -85,6 +89,8 @@ type Query {
   getMyUpgradeHistory: [RoleUpgradeRequestType!]!
   getOnboardingStatus: String!
   getPendingUpgradeRequests(limit: Int! = 10, skip: Int! = 0): [RoleUpgradeRequestType!]!
+  getRequestById(requestId: String!): BloodRequestType!
+  getRequestsForDonor(limit: Int! = 10, skip: Int! = 0): [BloodRequestType!]!
   getUser(id: String!): UserType!
   me: UserType!
   verifyEmail: String!
@@ -121,6 +127,14 @@ type TopBridgerType {
   name: String!
   requestCount: Int!
   totalUnitsConfirmed: Int!
+}
+
+input UpdateBloodRequestDto {
+  additionalNotes: String
+  contactPhone: String
+  priorityLevel: String
+  status: String
+  unitsNeeded: Int
 }
 
 type UrgencyStatsType {
