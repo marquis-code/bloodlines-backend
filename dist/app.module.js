@@ -26,6 +26,9 @@ const email_module_1 = require("./modules/email/email.module");
 const blood_request_module_1 = require("./modules/blood-request/blood-request.module");
 const analytics_module_1 = require("./modules/analytics/analytics.module");
 const role_upgrade_module_1 = require("./modules/role-upgrade/role-upgrade.module");
+const donor_module_1 = require("./modules/donor/donor.module");
+const pulse_leader_module_1 = require("./modules/pulse-leader/pulse-leader.module");
+const notification_module_1 = require("./modules/notification/notification.module");
 const jwt_config_1 = __importDefault(require("./config/jwt.config"));
 let AppModule = class AppModule {
 };
@@ -95,6 +98,9 @@ exports.AppModule = AppModule = __decorate([
             blood_request_module_1.BloodRequestModule,
             analytics_module_1.AnalyticsModule,
             role_upgrade_module_1.RoleUpgradeModule,
+            donor_module_1.DonorModule,
+            pulse_leader_module_1.PulseLeaderModule,
+            notification_module_1.NotificationModule,
         ],
     })
 ], AppModule);

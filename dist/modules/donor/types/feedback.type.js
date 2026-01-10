@@ -19,6 +19,10 @@ var FeedbackRatingEnum;
     FeedbackRatingEnum["GOOD"] = "GOOD";
     FeedbackRatingEnum["AMAZING"] = "AMAZING";
 })(FeedbackRatingEnum || (exports.FeedbackRatingEnum = FeedbackRatingEnum = {}));
+(0, graphql_1.registerEnumType)(FeedbackRatingEnum, {
+    name: "FeedbackRatingEnum",
+    description: "Rating options for donation feedback",
+});
 let DonationFeedback = class DonationFeedback {
 };
 exports.DonationFeedback = DonationFeedback;

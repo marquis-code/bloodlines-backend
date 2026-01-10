@@ -20,6 +20,10 @@ var ResourceCategoryEnum;
     ResourceCategoryEnum["EXPLAINER_VIDEOS"] = "EXPLAINER_VIDEOS";
     ResourceCategoryEnum["RESEARCH"] = "RESEARCH";
 })(ResourceCategoryEnum || (exports.ResourceCategoryEnum = ResourceCategoryEnum = {}));
+(0, graphql_1.registerEnumType)(ResourceCategoryEnum, {
+    name: "ResourceCategoryEnum",
+    description: "Categories for educational resources",
+});
 let Resource = class Resource {
 };
 exports.Resource = Resource;
@@ -36,7 +40,7 @@ __decorate([
     __metadata("design:type", String)
 ], Resource.prototype, "description", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, graphql_1.Field)(() => ResourceCategoryEnum),
     __metadata("design:type", String)
 ], Resource.prototype, "category", void 0);
 __decorate([
@@ -44,7 +48,7 @@ __decorate([
     __metadata("design:type", String)
 ], Resource.prototype, "imageUrl", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Resource.prototype, "duration", void 0);
 __decorate([
