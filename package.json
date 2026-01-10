@@ -22,7 +22,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "setup-templates": "node ensure-templates.js && node copy-templates.js",
-    "script:installment": "ts-node -r tsconfig-paths/register src/scripts/setup-installment-config.ts"
+    "script:installment": "ts-node -r tsconfig-paths/register src/scripts/setup-installment-config.ts",
+    "docker:build": "docker build -t bloodlines-backend .",
+    "docker:run": "docker run -p 3000:3000 bloodlines-backend"
   },
   "dependencies": {
     "@apollo/server": "^5.2.0",
