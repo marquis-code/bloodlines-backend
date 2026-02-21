@@ -1,52 +1,52 @@
-import { ObjectType, Field, Int } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 
-@ObjectType()
 export class BloodRequestType {
-  @Field()
+  @ApiProperty({ example: "req_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "A+" })
   bloodType: string
 
-  @Field()
+  @ApiProperty({ example: "URGENT" })
   priorityLevel: string
 
-  @Field(() => Int)
+  @ApiProperty({ example: 2 })
   unitsNeeded: number
 
-  @Field()
+  @ApiProperty({ example: "+2348012345678" })
   contactPhone: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Urgent need for O- blood" })
   additionalNotes?: string
 
-  @Field()
+  @ApiProperty({ example: "PENDING" })
   status: string
 
-  @Field()
+  @ApiProperty({ example: "user_123" })
   createdBy: string
 
-  @Field(() => [String], { nullable: true })
+  @ApiPropertyOptional({ type: [String], example: ["donor_1", "donor_2"] })
   assignedDonors?: string[]
 
-  @Field()
+  @ApiProperty({ example: "WAITING" })
   donorResponseStatus: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "2024-02-21T10:00:00Z" })
   fulfillmentDate?: string
 
-  @Field(() => Int)
+  @ApiProperty({ example: 0 })
   unitsConfirmed: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 0 })
   unitsEscalated: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 0 })
   unitsNoResponse: number
 
-  @Field()
+  @ApiProperty({ example: "2024-02-21T08:00:00Z" })
   createdAt: string
 
-  @Field()
+  @ApiProperty({ example: "2024-02-21T08:00:00Z" })
   updatedAt: string
 }
+

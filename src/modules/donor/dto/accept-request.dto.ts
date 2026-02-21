@@ -1,13 +1,13 @@
-import { InputType, Field } from "@nestjs/graphql"
+import { ApiProperty } from "@nestjs/swagger"
 
-@InputType()
 export class AcceptRequestInput {
-  @Field()
+  @ApiProperty({ example: "req_123" })
   requestId: string
 
-  @Field({ nullable: true })
+  @ApiProperty({ example: 6.5244, required: false })
   latitude?: number
 
-  @Field({ nullable: true })
+  @ApiProperty({ example: 3.3792, required: false })
   longitude?: number
 }
+

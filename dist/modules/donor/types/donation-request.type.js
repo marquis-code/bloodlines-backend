@@ -10,15 +10,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DonationHistory = exports.DonationRequest = exports.DonationProgressUpdate = exports.DonationProgressStatusEnum = void 0;
-const graphql_1 = require("@nestjs/graphql");
+const swagger_1 = require("@nestjs/swagger");
 const blood_group_enum_1 = require("../../../common/enums/blood-group.enum");
 const priority_level_enum_1 = require("../../../common/enums/priority-level.enum");
-(0, graphql_1.registerEnumType)(blood_group_enum_1.BloodGroup, {
-    name: "BloodGroup",
-});
-(0, graphql_1.registerEnumType)(priority_level_enum_1.PriorityLevel, {
-    name: "PriorityLevel",
-});
 var DonationProgressStatusEnum;
 (function (DonationProgressStatusEnum) {
     DonationProgressStatusEnum["ACCEPTED"] = "ACCEPTED";
@@ -27,121 +21,109 @@ var DonationProgressStatusEnum;
     DonationProgressStatusEnum["DONATION_COMPLETE"] = "DONATION_COMPLETE";
     DonationProgressStatusEnum["CANCELLED"] = "CANCELLED";
 })(DonationProgressStatusEnum || (exports.DonationProgressStatusEnum = DonationProgressStatusEnum = {}));
-(0, graphql_1.registerEnumType)(DonationProgressStatusEnum, {
-    name: "DonationProgressStatusEnum",
-});
-let DonationProgressUpdate = class DonationProgressUpdate {
-};
+class DonationProgressUpdate {
+}
 exports.DonationProgressUpdate = DonationProgressUpdate;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "req_123" }),
     __metadata("design:type", String)
 ], DonationProgressUpdate.prototype, "requestId", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => DonationProgressStatusEnum),
+    (0, swagger_1.ApiProperty)({ enum: DonationProgressStatusEnum, example: DonationProgressStatusEnum.ACCEPTED }),
     __metadata("design:type", String)
 ], DonationProgressUpdate.prototype, "status", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "2024-02-21T10:00:00Z" }),
     __metadata("design:type", Date)
 ], DonationProgressUpdate.prototype, "timestamp", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Hospital Main Entrance" }),
     __metadata("design:type", String)
 ], DonationProgressUpdate.prototype, "location", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "30 minutes" }),
     __metadata("design:type", String)
 ], DonationProgressUpdate.prototype, "estimatedArrivalTime", void 0);
-exports.DonationProgressUpdate = DonationProgressUpdate = __decorate([
-    (0, graphql_1.ObjectType)()
-], DonationProgressUpdate);
-let DonationRequest = class DonationRequest {
-};
+class DonationRequest {
+}
 exports.DonationRequest = DonationRequest;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "req_123" }),
     __metadata("design:type", String)
 ], DonationRequest.prototype, "id", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => blood_group_enum_1.BloodGroup),
+    (0, swagger_1.ApiProperty)({ enum: blood_group_enum_1.BloodGroup, example: blood_group_enum_1.BloodGroup.A_POSITIVE }),
     __metadata("design:type", String)
 ], DonationRequest.prototype, "bloodType", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => priority_level_enum_1.PriorityLevel),
+    (0, swagger_1.ApiProperty)({ enum: priority_level_enum_1.PriorityLevel, example: priority_level_enum_1.PriorityLevel.URGENT }),
     __metadata("design:type", String)
 ], DonationRequest.prototype, "priority", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int),
+    (0, swagger_1.ApiProperty)({ example: 2 }),
     __metadata("design:type", Number)
 ], DonationRequest.prototype, "unitsNeeded", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "Mercy Hospital" }),
     __metadata("design:type", String)
 ], DonationRequest.prototype, "hospitalName", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "123 Health St, Lagos" }),
     __metadata("design:type", String)
 ], DonationRequest.prototype, "address", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "+2348012345678" }),
     __metadata("design:type", String)
 ], DonationRequest.prototype, "contactPhone", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "Go to emergency ward" }),
     __metadata("design:type", String)
 ], DonationRequest.prototype, "instructions", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "2024-02-21T08:00:00Z" }),
     __metadata("design:type", Date)
 ], DonationRequest.prototype, "createdAt", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "2024-02-21T09:00:00Z" }),
     __metadata("design:type", Date)
 ], DonationRequest.prototype, "acceptedAt", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "2024-02-21T09:30:00Z" }),
     __metadata("design:type", Date)
 ], DonationRequest.prototype, "rejectedAt", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => DonationProgressStatusEnum),
+    (0, swagger_1.ApiProperty)({ enum: DonationProgressStatusEnum, example: DonationProgressStatusEnum.ACCEPTED }),
     __metadata("design:type", String)
 ], DonationRequest.prototype, "status", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: 5.2 }),
     __metadata("design:type", Number)
 ], DonationRequest.prototype, "distance", void 0);
-exports.DonationRequest = DonationRequest = __decorate([
-    (0, graphql_1.ObjectType)()
-], DonationRequest);
-let DonationHistory = class DonationHistory {
-};
+class DonationHistory {
+}
 exports.DonationHistory = DonationHistory;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "hist_123" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "id", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "City Hospital" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "hospitalName", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "2024-01-15T10:00:00Z" }),
     __metadata("design:type", Date)
 ], DonationHistory.prototype, "donatedAt", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => blood_group_enum_1.BloodGroup),
+    (0, swagger_1.ApiProperty)({ enum: blood_group_enum_1.BloodGroup, example: blood_group_enum_1.BloodGroup.A_POSITIVE }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "bloodType", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int),
+    (0, swagger_1.ApiProperty)({ example: 1 }),
     __metadata("design:type", Number)
 ], DonationHistory.prototype, "unitsGiven", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "COMPLETED" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "status", void 0);
-exports.DonationHistory = DonationHistory = __decorate([
-    (0, graphql_1.ObjectType)()
-], DonationHistory);
 //# sourceMappingURL=donation-request.type.js.map

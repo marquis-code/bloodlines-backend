@@ -10,51 +10,48 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateProfileInput = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let UpdateProfileInput = class UpdateProfileInput {
-};
+const swagger_1 = require("@nestjs/swagger");
+class UpdateProfileInput {
+}
 exports.UpdateProfileInput = UpdateProfileInput;
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "John Doe" }),
     __metadata("design:type", String)
 ], UpdateProfileInput.prototype, "fullName", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "+2348012345678" }),
     __metadata("design:type", String)
 ], UpdateProfileInput.prototype, "phone", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "A+" }),
     __metadata("design:type", String)
 ], UpdateProfileInput.prototype, "bloodType", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "AA" }),
     __metadata("design:type", String)
 ], UpdateProfileInput.prototype, "genotype", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Male" }),
     __metadata("design:type", String)
 ], UpdateProfileInput.prototype, "gender", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: 6.5244 }),
     __metadata("design:type", Number)
 ], UpdateProfileInput.prototype, "latitude", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: 3.3792 }),
     __metadata("design:type", Number)
 ], UpdateProfileInput.prototype, "longitude", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Available" }),
     __metadata("design:type", String)
 ], UpdateProfileInput.prototype, "availability", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Jane Doe" }),
     __metadata("design:type", String)
 ], UpdateProfileInput.prototype, "emergencyContact", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "+2348098765432" }),
     __metadata("design:type", String)
 ], UpdateProfileInput.prototype, "emergencyContactPhone", void 0);
-exports.UpdateProfileInput = UpdateProfileInput = __decorate([
-    (0, graphql_1.InputType)()
-], UpdateProfileInput);
 //# sourceMappingURL=update-profile.dto.js.map

@@ -10,29 +10,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageResponse = exports.AuthResponse = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let AuthResponse = class AuthResponse {
-};
+const swagger_1 = require("@nestjs/swagger");
+class AuthResponse {
+}
 exports.AuthResponse = AuthResponse;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "ey..." }),
     __metadata("design:type", String)
 ], AuthResponse.prototype, "accessToken", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "Login successful" }),
     __metadata("design:type", String)
 ], AuthResponse.prototype, "message", void 0);
-exports.AuthResponse = AuthResponse = __decorate([
-    (0, graphql_1.ObjectType)()
-], AuthResponse);
-let MessageResponse = class MessageResponse {
-};
+class MessageResponse {
+}
 exports.MessageResponse = MessageResponse;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "Operation successful" }),
     __metadata("design:type", String)
 ], MessageResponse.prototype, "message", void 0);
-exports.MessageResponse = MessageResponse = __decorate([
-    (0, graphql_1.ObjectType)()
-], MessageResponse);
 //# sourceMappingURL=auth-response.type.js.map

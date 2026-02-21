@@ -10,7 +10,7 @@ exports.RoleUpgradeModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const role_upgrade_service_1 = require("./role-upgrade.service");
-const role_upgrade_resolver_1 = require("./role-upgrade.resolver");
+const role_upgrade_controller_1 = require("./role-upgrade.controller");
 const request_role_upgrade_schema_1 = require("./schemas/request-role-upgrade.schema");
 const user_schema_1 = require("../user/schemas/user.schema");
 let RoleUpgradeModule = class RoleUpgradeModule {
@@ -24,7 +24,8 @@ exports.RoleUpgradeModule = RoleUpgradeModule = __decorate([
                 { name: user_schema_1.User.name, schema: user_schema_1.UserSchema },
             ]),
         ],
-        providers: [role_upgrade_service_1.RoleUpgradeService, role_upgrade_resolver_1.RoleUpgradeResolver],
+        providers: [role_upgrade_service_1.RoleUpgradeService],
+        controllers: [role_upgrade_controller_1.RoleUpgradeController],
         exports: [role_upgrade_service_1.RoleUpgradeService],
     })
 ], RoleUpgradeModule);

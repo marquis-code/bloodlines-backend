@@ -1,10 +1,10 @@
-import { InputType, Field } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 
-@InputType()
 export class RejectRequestInput {
-  @Field()
+  @ApiProperty({ example: "req_123" })
   requestId: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Too far away" })
   reason?: string
 }
+

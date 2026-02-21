@@ -1,7 +1,7 @@
-import { InputType, Field } from "@nestjs/graphql"
+import { ApiProperty } from "@nestjs/swagger"
 
-@InputType()
 export class UpdateAvailabilityInput {
-  @Field()
-  status: string // 'Available', 'Busy', 'Unavailable'
+  @ApiProperty({ example: "Available", description: "'Available', 'Busy', 'Unavailable'" })
+  status: string
 }
+

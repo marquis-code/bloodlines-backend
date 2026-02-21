@@ -1,14 +1,14 @@
-import { InputType, Field } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { FeedbackRatingEnum } from "../types/feedback.type"
 
-@InputType()
 export class SubmitFeedbackInput {
-  @Field()
+  @ApiProperty({ example: "req_123" })
   requestId: string
 
-  @Field(() => FeedbackRatingEnum)
+  @ApiProperty({ enum: FeedbackRatingEnum, example: FeedbackRatingEnum.AMAZING })
   rating: FeedbackRatingEnum
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Great experience!" })
   comments?: string
 }
+

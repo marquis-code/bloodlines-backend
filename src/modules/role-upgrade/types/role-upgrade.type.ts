@@ -1,40 +1,40 @@
-import { ObjectType, Field } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 
-@ObjectType()
 export class RoleUpgradeRequestType {
-  @Field()
+  @ApiProperty({ example: "role_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "user_123" })
   userId: string
 
-  @Field()
+  @ApiProperty({ example: "PULSE_LEADER" })
   requestedRole: string
 
-  @Field()
+  @ApiProperty({ example: "Mercy Hospital" })
   facilityName: string
 
-  @Field()
+  @ApiProperty({ example: "123 Health St" })
   facilityAddress: string
 
-  @Field()
+  @ApiProperty({ example: "Want to coordinate more donations" })
   reason: string
 
-  @Field()
+  @ApiProperty({ example: "PENDING" })
   status: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "admin_123" })
   reviewedBy?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "2024-02-21T10:00:00Z" })
   reviewDate?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Insufficient information" })
   rejectionReason?: string
 
-  @Field()
+  @ApiProperty({ example: "2024-02-21T08:00:00Z" })
   createdAt: string
 
-  @Field()
+  @ApiProperty({ example: "2024-02-21T08:00:00Z" })
   updatedAt: string
 }
+

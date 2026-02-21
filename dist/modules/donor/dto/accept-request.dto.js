@@ -10,23 +10,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AcceptRequestInput = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let AcceptRequestInput = class AcceptRequestInput {
-};
+const swagger_1 = require("@nestjs/swagger");
+class AcceptRequestInput {
+}
 exports.AcceptRequestInput = AcceptRequestInput;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "req_123" }),
     __metadata("design:type", String)
 ], AcceptRequestInput.prototype, "requestId", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiProperty)({ example: 6.5244, required: false }),
     __metadata("design:type", Number)
 ], AcceptRequestInput.prototype, "latitude", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiProperty)({ example: 3.3792, required: false }),
     __metadata("design:type", Number)
 ], AcceptRequestInput.prototype, "longitude", void 0);
-exports.AcceptRequestInput = AcceptRequestInput = __decorate([
-    (0, graphql_1.InputType)()
-], AcceptRequestInput);
 //# sourceMappingURL=accept-request.dto.js.map

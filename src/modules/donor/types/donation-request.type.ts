@@ -1,109 +1,6 @@
-// import { ObjectType, Field, Int } from "@nestjs/graphql"
-// import type { BloodType } from "../../../common/enums/blood-type.enum"
-// import type { PriorityLevel } from "../../../common/enums/priority-level.enum"
-
-// export enum DonationProgressStatusEnum {
-//   ACCEPTED = "ACCEPTED",
-//   ON_YOUR_WAY = "ON_YOUR_WAY",
-//   ARRIVED_AT_HOSPITAL = "ARRIVED_AT_HOSPITAL",
-//   DONATION_COMPLETE = "DONATION_COMPLETE",
-//   CANCELLED = "CANCELLED",
-// }
-
-// @ObjectType()
-// export class DonationProgressUpdate {
-//   @Field()
-//   requestId: string
-
-//   @Field(() => DonationProgressStatusEnum)
-//   status: DonationProgressStatusEnum
-
-//   @Field()
-//   timestamp: Date
-
-//   @Field({ nullable: true })
-//   location?: string
-
-//   @Field({ nullable: true })
-//   estimatedArrivalTime?: string
-// }
-
-// @ObjectType()
-// export class DonationRequest {
-//   @Field()
-//   id: string
-
-//   @Field()
-//   bloodType: BloodType
-
-//   @Field()
-//   priority: PriorityLevel
-
-//   @Field(() => Int)
-//   unitsNeeded: number
-
-//   @Field()
-//   hospitalName: string
-
-//   @Field()
-//   address: string
-
-//   @Field()
-//   contactPhone: string
-
-//   @Field()
-//   instructions: string
-
-//   @Field()
-//   createdAt: Date
-
-//   @Field({ nullable: true })
-//   acceptedAt?: Date
-
-//   @Field({ nullable: true })
-//   rejectedAt?: Date
-
-//   @Field(() => DonationProgressStatusEnum)
-//   status: DonationProgressStatusEnum
-
-//   @Field()
-//   distance: number
-// }
-
-// @ObjectType()
-// export class DonationHistory {
-//   @Field()
-//   id: string
-
-//   @Field()
-//   hospitalName: string
-
-//   @Field()
-//   donatedAt: Date
-
-//   @Field()
-//   bloodType: BloodType
-
-//   @Field(() => Int)
-//   unitsGiven: number
-
-//   @Field()
-//   status: string
-// }
-
-
-import { ObjectType, Field, Int, registerEnumType } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { BloodGroup } from "../../../common/enums/blood-group.enum"
 import { PriorityLevel } from "../../../common/enums/priority-level.enum"
-
-// Register enums for GraphQL
-registerEnumType(BloodGroup, {
-  name: "BloodGroup",
-})
-
-registerEnumType(PriorityLevel, {
-  name: "PriorityLevel",
-})
 
 export enum DonationProgressStatusEnum {
   ACCEPTED = "ACCEPTED",
@@ -113,87 +10,80 @@ export enum DonationProgressStatusEnum {
   CANCELLED = "CANCELLED",
 }
 
-registerEnumType(DonationProgressStatusEnum, {
-  name: "DonationProgressStatusEnum",
-})
-
-@ObjectType()
 export class DonationProgressUpdate {
-  @Field()
+  @ApiProperty({ example: "req_123" })
   requestId: string
 
-  @Field(() => DonationProgressStatusEnum)
+  @ApiProperty({ enum: DonationProgressStatusEnum, example: DonationProgressStatusEnum.ACCEPTED })
   status: DonationProgressStatusEnum
 
-  @Field()
+  @ApiProperty({ example: "2024-02-21T10:00:00Z" })
   timestamp: Date
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Hospital Main Entrance" })
   location?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "30 minutes" })
   estimatedArrivalTime?: string
 }
 
-@ObjectType()
 export class DonationRequest {
-  @Field()
+  @ApiProperty({ example: "req_123" })
   id: string
 
-  @Field(() => BloodGroup)
+  @ApiProperty({ enum: BloodGroup, example: BloodGroup.A_POSITIVE })
   bloodType: BloodGroup
 
-  @Field(() => PriorityLevel)
+  @ApiProperty({ enum: PriorityLevel, example: PriorityLevel.URGENT })
   priority: PriorityLevel
 
-  @Field(() => Int)
+  @ApiProperty({ example: 2 })
   unitsNeeded: number
 
-  @Field()
+  @ApiProperty({ example: "Mercy Hospital" })
   hospitalName: string
 
-  @Field()
+  @ApiProperty({ example: "123 Health St, Lagos" })
   address: string
 
-  @Field()
+  @ApiProperty({ example: "+2348012345678" })
   contactPhone: string
 
-  @Field()
+  @ApiProperty({ example: "Go to emergency ward" })
   instructions: string
 
-  @Field()
+  @ApiProperty({ example: "2024-02-21T08:00:00Z" })
   createdAt: Date
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "2024-02-21T09:00:00Z" })
   acceptedAt?: Date
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "2024-02-21T09:30:00Z" })
   rejectedAt?: Date
 
-  @Field(() => DonationProgressStatusEnum)
+  @ApiProperty({ enum: DonationProgressStatusEnum, example: DonationProgressStatusEnum.ACCEPTED })
   status: DonationProgressStatusEnum
 
-  @Field()
+  @ApiProperty({ example: 5.2 })
   distance: number
 }
 
-@ObjectType()
 export class DonationHistory {
-  @Field()
+  @ApiProperty({ example: "hist_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "City Hospital" })
   hospitalName: string
 
-  @Field()
+  @ApiProperty({ example: "2024-01-15T10:00:00Z" })
   donatedAt: Date
 
-  @Field(() => BloodGroup)
+  @ApiProperty({ enum: BloodGroup, example: BloodGroup.A_POSITIVE })
   bloodType: BloodGroup
 
-  @Field(() => Int)
+  @ApiProperty({ example: 1 })
   unitsGiven: number
 
-  @Field()
+  @ApiProperty({ example: "COMPLETED" })
   status: string
 }

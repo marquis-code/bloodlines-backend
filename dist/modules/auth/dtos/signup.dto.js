@@ -11,27 +11,33 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SignupDto = void 0;
 const class_validator_1 = require("class-validator");
+const swagger_1 = require("@nestjs/swagger");
 const gender_enum_1 = require("../../../common/enums/gender.enum");
 class SignupDto {
 }
 exports.SignupDto = SignupDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: "John Doe" }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], SignupDto.prototype, "fullName", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ enum: gender_enum_1.Gender, example: gender_enum_1.Gender.MALE }),
     (0, class_validator_1.IsEnum)(gender_enum_1.Gender),
     __metadata("design:type", String)
 ], SignupDto.prototype, "gender", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: "+2348012345678" }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], SignupDto.prototype, "phoneNumber", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: "john@example.com" }),
     (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
 ], SignupDto.prototype, "email", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: "Pass123!@#" }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(8, { message: "Password must be at least 8 characters" }),
     (0, class_validator_1.Matches)(/[A-Z]/, { message: "Password must contain at least one uppercase letter" }),
@@ -40,6 +46,7 @@ __decorate([
     __metadata("design:type", String)
 ], SignupDto.prototype, "password", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: "Pass123!@#" }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], SignupDto.prototype, "confirmPassword", void 0);

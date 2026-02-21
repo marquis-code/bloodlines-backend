@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common"
 import { MongooseModule } from "@nestjs/mongoose"
 import { DonorService } from "./donor.service"
-import { DonorResolver } from "./donor.resolver"
+import { DonorController } from "./donor.controller"
 import { User, UserSchema } from "../user/schemas/user.schema"
 import { BloodRequest, BloodRequestSchema } from "../blood-request/schema/blood-request.schema"
 import { NotificationModule } from "../notification/notification.module"
@@ -14,7 +14,9 @@ import { NotificationModule } from "../notification/notification.module"
     ]),
     NotificationModule,
   ],
-  providers: [DonorService, DonorResolver],
+  providers: [DonorService],
+  controllers: [DonorController],
   exports: [DonorService],
 })
-export class DonorModule {}
+export class DonorModule { }
+

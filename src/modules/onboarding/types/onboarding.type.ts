@@ -1,16 +1,16 @@
-import { ObjectType, Field } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 
-@ObjectType()
 export class OnboardingType {
-  @Field()
+  @ApiProperty({ example: "user_123" })
   userId: string
 
-  @Field()
+  @ApiProperty({ example: "STEP_1" })
   currentStep: string
 
-  @Field()
+  @ApiProperty({ example: false })
   isCompleted: boolean
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "2024-02-21T10:00:00Z" })
   completedAt?: string
 }
+

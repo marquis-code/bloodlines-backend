@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common"
 import { MongooseModule } from "@nestjs/mongoose"
 import { AnalyticsService } from "./analytics.service"
-import { AnalyticsResolver } from "./analytics.resolver"
+import { AnalyticsController } from "./analytics.controller"
 import { BloodRequest, BloodRequestSchema } from "../blood-request/schema/blood-request.schema"
 import { User, UserSchema } from "../user/schemas/user.schema"
 
@@ -12,7 +12,9 @@ import { User, UserSchema } from "../user/schemas/user.schema"
       { name: User.name, schema: UserSchema },
     ]),
   ],
-  providers: [AnalyticsService, AnalyticsResolver],
+  providers: [AnalyticsService],
+  controllers: [AnalyticsController],
   exports: [AnalyticsService],
 })
-export class AnalyticsModule {}
+export class AnalyticsModule { }
+

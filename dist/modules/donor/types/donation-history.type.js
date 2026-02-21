@@ -10,51 +10,48 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DonationHistory = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let DonationHistory = class DonationHistory {
-};
+const swagger_1 = require("@nestjs/swagger");
+class DonationHistory {
+}
 exports.DonationHistory = DonationHistory;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "hist_123" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "id", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "City Hospital" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "hospitalName", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "A+" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "bloodType", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int),
+    (0, swagger_1.ApiProperty)({ example: 1 }),
     __metadata("design:type", Number)
 ], DonationHistory.prototype, "unitsGiven", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "2024-01-15T10:00:00Z" }),
     __metadata("design:type", Date)
 ], DonationHistory.prototype, "donatedAt", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "DONATED" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "status", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "Mercy Clinic" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "facilityName", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "123 Clinic Rd" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "facilityAddress", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "+2348000000000" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "facilityPhone", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Smooth experience" }),
     __metadata("design:type", String)
 ], DonationHistory.prototype, "donorFeedback", void 0);
-exports.DonationHistory = DonationHistory = __decorate([
-    (0, graphql_1.ObjectType)()
-], DonationHistory);
 //# sourceMappingURL=donation-history.type.js.map

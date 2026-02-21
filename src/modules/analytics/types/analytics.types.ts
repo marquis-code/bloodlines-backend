@@ -1,118 +1,111 @@
-import { ObjectType, Field, Float, Int } from "@nestjs/graphql"
+import { ApiProperty } from "@nestjs/swagger"
 
-@ObjectType()
 export class BloodInventoryType {
-  @Field()
+  @ApiProperty({ example: "A+" })
   bloodType: string
 
-  @Field(() => Int)
+  @ApiProperty({ example: 10 })
   count: number
 }
 
-@ObjectType()
 export class FulfillmentStatsType {
-  @Field()
+  @ApiProperty({ example: "A+" })
   bloodType: string
 
-  @Field(() => Float)
+  @ApiProperty({ example: 85.5 })
   percentage: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 20 })
   total: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 17 })
   fulfilled: number
 }
 
-@ObjectType()
 export class UrgencyStatsType {
-  @Field()
+  @ApiProperty({ example: "URGENT" })
   urgency: string
 
-  @Field(() => Float)
+  @ApiProperty({ example: 90.0 })
   percentage: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 10 })
   total: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 9 })
   fulfilled: number
 }
 
-@ObjectType()
 export class ResponseCountType {
-  @Field(() => Int)
+  @ApiProperty({ example: 15 })
   count: number
 
-  @Field(() => Float)
+  @ApiProperty({ example: 75.0 })
   percentage: number
 }
 
-@ObjectType()
 export class DonorResponseStatsType {
-  @Field(() => Int)
+  @ApiProperty({ example: 20 })
   total: number
 
-  @Field(() => ResponseCountType)
+  @ApiProperty({ type: ResponseCountType })
   accepted: ResponseCountType
 
-  @Field(() => ResponseCountType)
+  @ApiProperty({ type: ResponseCountType })
   escalated: ResponseCountType
 
-  @Field(() => ResponseCountType)
+  @ApiProperty({ type: ResponseCountType })
   noResponse: ResponseCountType
 }
 
-@ObjectType()
 export class TopBridgerType {
-  @Field()
+  @ApiProperty({ example: "user_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "John Doe" })
   name: string
 
-  @Field({ nullable: true })
+  @ApiProperty({ example: "Mercy Hospital", required: false })
   facilityName?: string
 
-  @Field(() => Int)
+  @ApiProperty({ example: 12 })
   requestCount: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 25 })
   totalUnitsConfirmed: number
 }
 
-@ObjectType()
 export class TimeSeriesDataType {
-  @Field()
+  @ApiProperty({ example: "Jan" })
   month: string
 
-  @Field(() => Int)
+  @ApiProperty({ example: 45 })
   count: number
 }
 
-@ObjectType()
 export class AnalyticsType {
-  @Field(() => Int)
+  @ApiProperty({ example: 150 })
   totalRequests: number
 
-  @Field(() => [BloodInventoryType])
+  @ApiProperty({ type: [BloodInventoryType] })
   bloodInventory: BloodInventoryType[]
 
-  @Field(() => [FulfillmentStatsType])
+  @ApiProperty({ type: [FulfillmentStatsType] })
   fulfillmentByBloodType: FulfillmentStatsType[]
 
-  @Field(() => [UrgencyStatsType])
+  @ApiProperty({ type: [UrgencyStatsType] })
   fulfillmentByUrgency: UrgencyStatsType[]
 
-  @Field()
+  @ApiProperty({ example: "15 mins" })
   averageResponseTime: string
 
-  @Field(() => DonorResponseStatsType)
+  @ApiProperty({ type: DonorResponseStatsType })
   donorResponse: DonorResponseStatsType
 
-  @Field(() => [TopBridgerType])
+  @ApiProperty({ type: [TopBridgerType] })
   topBridgers: TopBridgerType[]
 
-  @Field(() => [TimeSeriesDataType])
+  @ApiProperty({ type: [TimeSeriesDataType] })
   fulfillmentTimeSeries: TimeSeriesDataType[]
 }
+

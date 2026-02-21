@@ -1,58 +1,58 @@
-import { ObjectType, Field } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 
-@ObjectType()
 export class UserType {
-  @Field()
+  @ApiProperty({ example: "user_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "user@example.com" })
   email: string
 
-  @Field()
+  @ApiProperty({ example: "John Doe" })
   fullName: string
 
-  @Field()
+  @ApiProperty({ example: "Male" })
   gender: string
 
-  @Field()
+  @ApiProperty({ example: "+2348012345678" })
   phoneNumber: string
 
-  @Field()
+  @ApiProperty({ example: "A+" })
   bloodGroup: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "AA" })
   genotype?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Lagos, Nigeria" })
   location?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "2024-01-01" })
   lastDonationDate?: string
 
-  @Field()
+  @ApiProperty({ example: true })
   emailVerified: boolean
 
-  @Field()
+  @ApiProperty({ example: "DONOR" })
   role: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Mercy Hospital" })
   facilityName?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "123 Health St" })
   facilityAddress?: string
 
-  @Field()
+  @ApiProperty({ example: 5 })
   donationCount: number
 
-  @Field()
+  @ApiProperty({ example: true })
   agreedToDonate: boolean
 
-  @Field()
+  @ApiProperty({ example: true })
   isActive: boolean
 
-  @Field()
+  @ApiProperty({ example: "2024-01-01T00:00:00Z" })
   createdAt: string
 
-  @Field()
+  @ApiProperty({ example: "2024-01-01T00:00:00Z" })
   updatedAt: string
 }
+

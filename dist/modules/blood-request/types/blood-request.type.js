@@ -10,75 +10,72 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BloodRequestType = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let BloodRequestType = class BloodRequestType {
-};
+const swagger_1 = require("@nestjs/swagger");
+class BloodRequestType {
+}
 exports.BloodRequestType = BloodRequestType;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "req_123" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "id", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "A+" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "bloodType", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "URGENT" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "priorityLevel", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int),
+    (0, swagger_1.ApiProperty)({ example: 2 }),
     __metadata("design:type", Number)
 ], BloodRequestType.prototype, "unitsNeeded", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "+2348012345678" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "contactPhone", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Urgent need for O- blood" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "additionalNotes", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "PENDING" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "status", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "user_123" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "createdBy", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [String], { nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ type: [String], example: ["donor_1", "donor_2"] }),
     __metadata("design:type", Array)
 ], BloodRequestType.prototype, "assignedDonors", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "WAITING" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "donorResponseStatus", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "2024-02-21T10:00:00Z" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "fulfillmentDate", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int),
+    (0, swagger_1.ApiProperty)({ example: 0 }),
     __metadata("design:type", Number)
 ], BloodRequestType.prototype, "unitsConfirmed", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int),
+    (0, swagger_1.ApiProperty)({ example: 0 }),
     __metadata("design:type", Number)
 ], BloodRequestType.prototype, "unitsEscalated", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int),
+    (0, swagger_1.ApiProperty)({ example: 0 }),
     __metadata("design:type", Number)
 ], BloodRequestType.prototype, "unitsNoResponse", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "2024-02-21T08:00:00Z" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "createdAt", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "2024-02-21T08:00:00Z" }),
     __metadata("design:type", String)
 ], BloodRequestType.prototype, "updatedAt", void 0);
-exports.BloodRequestType = BloodRequestType = __decorate([
-    (0, graphql_1.ObjectType)()
-], BloodRequestType);
 //# sourceMappingURL=blood-request.type.js.map

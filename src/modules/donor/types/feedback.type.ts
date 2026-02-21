@@ -1,33 +1,4 @@
-// import { ObjectType, Field } from "@nestjs/graphql"
-
-// export enum FeedbackRatingEnum {
-//   TERRIBLE = "TERRIBLE",
-//   BAD = "BAD",
-//   OKAY = "OKAY",
-//   GOOD = "GOOD",
-//   AMAZING = "AMAZING",
-// }
-
-// @ObjectType()
-// export class DonationFeedback {
-//   @Field()
-//   id: string
-
-//   @Field()
-//   requestId: string
-
-//   @Field(() => FeedbackRatingEnum)
-//   rating: FeedbackRatingEnum
-
-//   @Field({ nullable: true })
-//   comments?: string
-
-//   @Field()
-//   submittedAt: Date
-// }
-
-
-import { ObjectType, Field, registerEnumType } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 
 export enum FeedbackRatingEnum {
   TERRIBLE = "TERRIBLE",
@@ -37,26 +8,19 @@ export enum FeedbackRatingEnum {
   AMAZING = "AMAZING",
 }
 
-// Register enum for GraphQL
-registerEnumType(FeedbackRatingEnum, {
-  name: "FeedbackRatingEnum",
-  description: "Rating options for donation feedback",
-})
-
-@ObjectType()
 export class DonationFeedback {
-  @Field()
+  @ApiProperty({ example: "fb_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "req_123" })
   requestId: string
 
-  @Field(() => FeedbackRatingEnum)
+  @ApiProperty({ enum: FeedbackRatingEnum, example: FeedbackRatingEnum.GOOD })
   rating: FeedbackRatingEnum
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Great donor, very patient." })
   comments?: string
 
-  @Field()
+  @ApiProperty({ example: "2024-02-21T10:00:00Z" })
   submittedAt: Date
 }

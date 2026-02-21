@@ -1,32 +1,31 @@
 import { IsOptional, IsEnum, IsNumber, IsString, Min } from "class-validator"
-import { InputType, Field } from "@nestjs/graphql"
+import { ApiPropertyOptional } from "@nestjs/swagger"
 import { PriorityLevel } from "../../../common/enums/priority-level.enum"
 import { RequestStatus } from "../../../common/enums/request-status.enum"
 
-@InputType()
 export class UpdateBloodRequestDto {
-  @Field(() => String, { nullable: true })
+  @ApiPropertyOptional({ enum: PriorityLevel, example: PriorityLevel.URGENT })
   @IsOptional()
   @IsEnum(PriorityLevel)
   priorityLevel?: PriorityLevel
 
-  @Field(() => Number, { nullable: true })
+  @ApiPropertyOptional({ example: 3 })
   @IsOptional()
   @IsNumber()
   @Min(1)
   unitsNeeded?: number
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "+2348012345678" })
   @IsOptional()
   @IsString()
   contactPhone?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Updated patient notes" })
   @IsOptional()
   @IsString()
   additionalNotes?: string
 
-  @Field(() => String, { nullable: true })
+  @ApiPropertyOptional({ enum: RequestStatus, example: RequestStatus.PENDING })
   @IsOptional()
   @IsEnum(RequestStatus)
   status?: RequestStatus

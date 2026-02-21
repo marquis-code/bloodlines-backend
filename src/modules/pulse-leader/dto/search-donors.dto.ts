@@ -1,22 +1,22 @@
-import { InputType, Field, Float, Int } from "@nestjs/graphql"
+import { ApiPropertyOptional } from "@nestjs/swagger"
 
-@InputType()
 export class SearchDonorsFilterDto {
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "A+" })
   bloodType?: string
 
-  @Field(() => Float, { nullable: true })
+  @ApiPropertyOptional({ example: 50 })
   radiusKm?: number
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "AVAILABLE" })
   availability?: string
 
-  @Field(() => Int, { nullable: true })
+  @ApiPropertyOptional({ example: 0 })
   skip?: number
 
-  @Field(() => Int, { nullable: true })
+  @ApiPropertyOptional({ example: 10 })
   limit?: number
 
-  @Field(() => [Float], { nullable: true })
+  @ApiPropertyOptional({ example: [6.5244, 3.3792] })
   coordinates?: [number, number]
 }
+

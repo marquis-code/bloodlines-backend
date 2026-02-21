@@ -10,83 +10,80 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserType = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let UserType = class UserType {
-};
+const swagger_1 = require("@nestjs/swagger");
+class UserType {
+}
 exports.UserType = UserType;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "user_123" }),
     __metadata("design:type", String)
 ], UserType.prototype, "id", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "user@example.com" }),
     __metadata("design:type", String)
 ], UserType.prototype, "email", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "John Doe" }),
     __metadata("design:type", String)
 ], UserType.prototype, "fullName", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "Male" }),
     __metadata("design:type", String)
 ], UserType.prototype, "gender", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "+2348012345678" }),
     __metadata("design:type", String)
 ], UserType.prototype, "phoneNumber", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "A+" }),
     __metadata("design:type", String)
 ], UserType.prototype, "bloodGroup", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "AA" }),
     __metadata("design:type", String)
 ], UserType.prototype, "genotype", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Lagos, Nigeria" }),
     __metadata("design:type", String)
 ], UserType.prototype, "location", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "2024-01-01" }),
     __metadata("design:type", String)
 ], UserType.prototype, "lastDonationDate", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: true }),
     __metadata("design:type", Boolean)
 ], UserType.prototype, "emailVerified", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "DONOR" }),
     __metadata("design:type", String)
 ], UserType.prototype, "role", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Mercy Hospital" }),
     __metadata("design:type", String)
 ], UserType.prototype, "facilityName", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "123 Health St" }),
     __metadata("design:type", String)
 ], UserType.prototype, "facilityAddress", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: 5 }),
     __metadata("design:type", Number)
 ], UserType.prototype, "donationCount", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: true }),
     __metadata("design:type", Boolean)
 ], UserType.prototype, "agreedToDonate", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: true }),
     __metadata("design:type", Boolean)
 ], UserType.prototype, "isActive", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "2024-01-01T00:00:00Z" }),
     __metadata("design:type", String)
 ], UserType.prototype, "createdAt", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "2024-01-01T00:00:00Z" }),
     __metadata("design:type", String)
 ], UserType.prototype, "updatedAt", void 0);
-exports.UserType = UserType = __decorate([
-    (0, graphql_1.ObjectType)()
-], UserType);
 //# sourceMappingURL=user.type.js.map

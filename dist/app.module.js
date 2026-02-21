@@ -13,11 +13,7 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const mongoose_1 = require("@nestjs/mongoose");
-const graphql_1 = require("@nestjs/graphql");
-const apollo_1 = require("@nestjs/apollo");
-const default_1 = require("@apollo/server/plugin/landingPage/default");
 const axios_1 = require("@nestjs/axios");
-const path_1 = require("path");
 const configuration_1 = __importDefault(require("./config/configuration"));
 const auth_module_1 = require("./modules/auth/auth.module");
 const user_module_1 = require("./modules/user/user.module");
@@ -56,39 +52,6 @@ exports.AppModule = AppModule = __decorate([
                 inject: [config_1.ConfigService],
                 useFactory: (configService) => ({
                     uri: configService.get("database.uri"),
-                }),
-            }),
-            graphql_1.GraphQLModule.forRootAsync({
-                driver: apollo_1.ApolloDriver,
-                imports: [config_1.ConfigModule],
-                inject: [config_1.ConfigService],
-                useFactory: (configService) => ({
-                    autoSchemaFile: (0, path_1.join)(process.cwd(), "src/schema.gql"),
-                    sortSchema: true,
-                    csrfPrevention: false,
-                    playground: false,
-                    plugins: [(0, default_1.ApolloServerPluginLandingPageLocalDefault)()],
-                    introspection: true,
-                    buildSchemaOptions: {
-                        numberScalarMode: 'integer',
-                    },
-                    context: ({ req }) => ({ req }),
-                    formatError: (formattedError, error) => {
-                        var _a;
-                        console.error("GraphQL Error:", {
-                            message: formattedError.message,
-                            locations: formattedError.locations,
-                            path: formattedError.path,
-                            extensions: formattedError.extensions,
-                        });
-                        return {
-                            message: formattedError.message,
-                            locations: formattedError.locations,
-                            path: formattedError.path,
-                            extensions: Object.assign({ code: (_a = formattedError.extensions) === null || _a === void 0 ? void 0 : _a.code }, formattedError.extensions),
-                        };
-                    },
-                    includeStacktraceInErrorResponses: configService.get("nodeEnv") !== "production",
                 }),
             }),
             auth_module_1.AuthModule,

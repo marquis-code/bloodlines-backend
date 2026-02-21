@@ -10,19 +10,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RejectRequestInput = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let RejectRequestInput = class RejectRequestInput {
-};
+const swagger_1 = require("@nestjs/swagger");
+class RejectRequestInput {
+}
 exports.RejectRequestInput = RejectRequestInput;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "req_123" }),
     __metadata("design:type", String)
 ], RejectRequestInput.prototype, "requestId", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Too far away" }),
     __metadata("design:type", String)
 ], RejectRequestInput.prototype, "reason", void 0);
-exports.RejectRequestInput = RejectRequestInput = __decorate([
-    (0, graphql_1.InputType)()
-], RejectRequestInput);
 //# sourceMappingURL=reject-request.dto.js.map

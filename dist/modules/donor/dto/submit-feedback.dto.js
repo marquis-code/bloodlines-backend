@@ -10,24 +10,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubmitFeedbackInput = void 0;
-const graphql_1 = require("@nestjs/graphql");
+const swagger_1 = require("@nestjs/swagger");
 const feedback_type_1 = require("../types/feedback.type");
-let SubmitFeedbackInput = class SubmitFeedbackInput {
-};
+class SubmitFeedbackInput {
+}
 exports.SubmitFeedbackInput = SubmitFeedbackInput;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "req_123" }),
     __metadata("design:type", String)
 ], SubmitFeedbackInput.prototype, "requestId", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => feedback_type_1.FeedbackRatingEnum),
+    (0, swagger_1.ApiProperty)({ enum: feedback_type_1.FeedbackRatingEnum, example: feedback_type_1.FeedbackRatingEnum.AMAZING }),
     __metadata("design:type", String)
 ], SubmitFeedbackInput.prototype, "rating", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Great experience!" }),
     __metadata("design:type", String)
 ], SubmitFeedbackInput.prototype, "comments", void 0);
-exports.SubmitFeedbackInput = SubmitFeedbackInput = __decorate([
-    (0, graphql_1.InputType)()
-], SubmitFeedbackInput);
 //# sourceMappingURL=submit-feedback.dto.js.map

@@ -1,28 +1,27 @@
 import { IsEnum, IsNumber, IsString, Min, IsOptional } from "class-validator"
-import { InputType, Field } from "@nestjs/graphql"
-import { BloodGroup } from "../../../common/enums/blood-group.enum" 
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
+import { BloodGroup } from "../../../common/enums/blood-group.enum"
 import { PriorityLevel } from "../../../common/enums/priority-level.enum"
 
-@InputType()
 export class CreateBloodRequestDto {
-  @Field(() => String)
+  @ApiProperty({ enum: BloodGroup, example: BloodGroup.A_POSITIVE })
   @IsEnum(BloodGroup)
   bloodType: BloodGroup
 
-  @Field(() => String)
+  @ApiProperty({ enum: PriorityLevel, example: PriorityLevel.URGENT })
   @IsEnum(PriorityLevel)
   priorityLevel: PriorityLevel
 
-  @Field(() => Number)
+  @ApiProperty({ example: 2 })
   @IsNumber()
   @Min(1)
   unitsNeeded: number
 
-  @Field()
+  @ApiProperty({ example: "+2348012345678" })
   @IsString()
   contactPhone: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Patient needs blood for surgery" })
   @IsOptional()
   @IsString()
   additionalNotes?: string

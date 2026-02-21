@@ -1,17 +1,17 @@
-import { InputType, Field } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { DonationProgressStatusEnum } from "../types/donation-request.type"
 
-@InputType()
 export class UpdateProgressInput {
-  @Field()
+  @ApiProperty({ example: "req_123" })
   requestId: string
 
-  @Field(() => DonationProgressStatusEnum)
+  @ApiProperty({ enum: DonationProgressStatusEnum, example: DonationProgressStatusEnum.ACCEPTED })
   status: DonationProgressStatusEnum
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "At hospital" })
   location?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "15 mins" })
   estimatedArrivalTime?: string
 }
+

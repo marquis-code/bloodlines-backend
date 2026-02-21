@@ -1,19 +1,25 @@
 import { IsEmail, IsString, MinLength, Matches, IsEnum } from "class-validator"
+import { ApiProperty } from "@nestjs/swagger"
 import { Gender } from "../../../common/enums/gender.enum"
 
 export class SignupDto {
+  @ApiProperty({ example: "John Doe" })
   @IsString()
   fullName: string
 
+  @ApiProperty({ enum: Gender, example: Gender.MALE })
   @IsEnum(Gender)
   gender: Gender
 
+  @ApiProperty({ example: "+2348012345678" })
   @IsString()
   phoneNumber: string
 
+  @ApiProperty({ example: "john@example.com" })
   @IsEmail()
   email: string
 
+  @ApiProperty({ example: "Pass123!@#" })
   @IsString()
   @MinLength(8, { message: "Password must be at least 8 characters" })
   @Matches(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
@@ -21,6 +27,8 @@ export class SignupDto {
   @Matches(/[!@#$%^&*]/, { message: "Password must contain at least one special character" })
   password: string
 
+  @ApiProperty({ example: "Pass123!@#" })
   @IsString()
   confirmPassword: string
 }
+

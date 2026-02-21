@@ -10,7 +10,7 @@ exports.DonorModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const donor_service_1 = require("./donor.service");
-const donor_resolver_1 = require("./donor.resolver");
+const donor_controller_1 = require("./donor.controller");
 const user_schema_1 = require("../user/schemas/user.schema");
 const blood_request_schema_1 = require("../blood-request/schema/blood-request.schema");
 const notification_module_1 = require("../notification/notification.module");
@@ -26,7 +26,8 @@ exports.DonorModule = DonorModule = __decorate([
             ]),
             notification_module_1.NotificationModule,
         ],
-        providers: [donor_service_1.DonorService, donor_resolver_1.DonorResolver],
+        providers: [donor_service_1.DonorService],
+        controllers: [donor_controller_1.DonorController],
         exports: [donor_service_1.DonorService],
     })
 ], DonorModule);

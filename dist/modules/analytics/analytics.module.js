@@ -10,7 +10,7 @@ exports.AnalyticsModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const analytics_service_1 = require("./analytics.service");
-const analytics_resolver_1 = require("./analytics.resolver");
+const analytics_controller_1 = require("./analytics.controller");
 const blood_request_schema_1 = require("../blood-request/schema/blood-request.schema");
 const user_schema_1 = require("../user/schemas/user.schema");
 let AnalyticsModule = class AnalyticsModule {
@@ -24,7 +24,8 @@ exports.AnalyticsModule = AnalyticsModule = __decorate([
                 { name: user_schema_1.User.name, schema: user_schema_1.UserSchema },
             ]),
         ],
-        providers: [analytics_service_1.AnalyticsService, analytics_resolver_1.AnalyticsResolver],
+        providers: [analytics_service_1.AnalyticsService],
+        controllers: [analytics_controller_1.AnalyticsController],
         exports: [analytics_service_1.AnalyticsService],
     })
 ], AnalyticsModule);

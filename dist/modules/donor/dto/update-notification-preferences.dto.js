@@ -10,27 +10,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateNotificationPreferencesInput = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let UpdateNotificationPreferencesInput = class UpdateNotificationPreferencesInput {
-};
+const swagger_1 = require("@nestjs/swagger");
+class UpdateNotificationPreferencesInput {
+}
 exports.UpdateNotificationPreferencesInput = UpdateNotificationPreferencesInput;
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: true }),
     __metadata("design:type", Boolean)
 ], UpdateNotificationPreferencesInput.prototype, "emergencyAlerts", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: true }),
     __metadata("design:type", Boolean)
 ], UpdateNotificationPreferencesInput.prototype, "donationReminders", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: false }),
     __metadata("design:type", Boolean)
 ], UpdateNotificationPreferencesInput.prototype, "communityUpdates", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "daily" }),
     __metadata("design:type", String)
 ], UpdateNotificationPreferencesInput.prototype, "reminderFrequency", void 0);
-exports.UpdateNotificationPreferencesInput = UpdateNotificationPreferencesInput = __decorate([
-    (0, graphql_1.InputType)()
-], UpdateNotificationPreferencesInput);
 //# sourceMappingURL=update-notification-preferences.dto.js.map

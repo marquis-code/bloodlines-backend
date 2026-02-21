@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common"
 import { MongooseModule } from "@nestjs/mongoose"
 import { RoleUpgradeService } from "./role-upgrade.service"
-import { RoleUpgradeResolver } from "./role-upgrade.resolver"
+import { RoleUpgradeController } from "./role-upgrade.controller"
 import { RoleUpgradeRequest, RoleUpgradeRequestSchema } from "./schemas/request-role-upgrade.schema"
 import { User, UserSchema } from "../user/schemas/user.schema"
 
@@ -12,7 +12,9 @@ import { User, UserSchema } from "../user/schemas/user.schema"
       { name: User.name, schema: UserSchema },
     ]),
   ],
-  providers: [RoleUpgradeService, RoleUpgradeResolver],
+  providers: [RoleUpgradeService],
+  controllers: [RoleUpgradeController],
   exports: [RoleUpgradeService],
 })
-export class RoleUpgradeModule {}
+export class RoleUpgradeModule { }
+

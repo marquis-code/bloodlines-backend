@@ -10,7 +10,7 @@ exports.OnboardingModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const onboarding_service_1 = require("./onboarding.service");
-const onboarding_resolver_1 = require("./onboarding.resolver");
+const onboarding_controller_1 = require("./onboarding.controller");
 const onboarding_step_schema_1 = require("./schemas/onboarding-step.schema");
 const user_schema_1 = require("../user/schemas/user.schema");
 let OnboardingModule = class OnboardingModule {
@@ -22,7 +22,8 @@ exports.OnboardingModule = OnboardingModule = __decorate([
             mongoose_1.MongooseModule.forFeature([{ name: onboarding_step_schema_1.OnboardingStep.name, schema: onboarding_step_schema_1.OnboardingStepSchema }]),
             mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }]),
         ],
-        providers: [onboarding_service_1.OnboardingService, onboarding_resolver_1.OnboardingResolver],
+        providers: [onboarding_service_1.OnboardingService],
+        controllers: [onboarding_controller_1.OnboardingController],
     })
 ], OnboardingModule);
 //# sourceMappingURL=onboarding.module.js.map

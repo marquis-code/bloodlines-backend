@@ -10,7 +10,7 @@ exports.PulseLeaderModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const pulse_leader_service_1 = require("./pulse-leader.service");
-const pulse_leader_resolver_1 = require("./pulse-leader.resolver");
+const pulse_leader_controller_1 = require("./pulse-leader.controller");
 const blood_request_schema_1 = require("../blood-request/schema/blood-request.schema");
 const user_schema_1 = require("../user/schemas/user.schema");
 const notification_module_1 = require("../notification/notification.module");
@@ -26,7 +26,8 @@ exports.PulseLeaderModule = PulseLeaderModule = __decorate([
             ]),
             notification_module_1.NotificationModule,
         ],
-        providers: [pulse_leader_service_1.PulseLeaderService, pulse_leader_resolver_1.PulseLeaderResolver],
+        providers: [pulse_leader_service_1.PulseLeaderService],
+        controllers: [pulse_leader_controller_1.PulseLeaderController],
         exports: [pulse_leader_service_1.PulseLeaderService],
     })
 ], PulseLeaderModule);

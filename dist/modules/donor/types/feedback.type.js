@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DonationFeedback = exports.FeedbackRatingEnum = void 0;
-const graphql_1 = require("@nestjs/graphql");
+const swagger_1 = require("@nestjs/swagger");
 var FeedbackRatingEnum;
 (function (FeedbackRatingEnum) {
     FeedbackRatingEnum["TERRIBLE"] = "TERRIBLE";
@@ -19,34 +19,27 @@ var FeedbackRatingEnum;
     FeedbackRatingEnum["GOOD"] = "GOOD";
     FeedbackRatingEnum["AMAZING"] = "AMAZING";
 })(FeedbackRatingEnum || (exports.FeedbackRatingEnum = FeedbackRatingEnum = {}));
-(0, graphql_1.registerEnumType)(FeedbackRatingEnum, {
-    name: "FeedbackRatingEnum",
-    description: "Rating options for donation feedback",
-});
-let DonationFeedback = class DonationFeedback {
-};
+class DonationFeedback {
+}
 exports.DonationFeedback = DonationFeedback;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "fb_123" }),
     __metadata("design:type", String)
 ], DonationFeedback.prototype, "id", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "req_123" }),
     __metadata("design:type", String)
 ], DonationFeedback.prototype, "requestId", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => FeedbackRatingEnum),
+    (0, swagger_1.ApiProperty)({ enum: FeedbackRatingEnum, example: FeedbackRatingEnum.GOOD }),
     __metadata("design:type", String)
 ], DonationFeedback.prototype, "rating", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Great donor, very patient." }),
     __metadata("design:type", String)
 ], DonationFeedback.prototype, "comments", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "2024-02-21T10:00:00Z" }),
     __metadata("design:type", Date)
 ], DonationFeedback.prototype, "submittedAt", void 0);
-exports.DonationFeedback = DonationFeedback = __decorate([
-    (0, graphql_1.ObjectType)()
-], DonationFeedback);
 //# sourceMappingURL=feedback.type.js.map

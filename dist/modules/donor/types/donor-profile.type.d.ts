@@ -26,6 +26,13 @@ export declare class ProfileCompletion {
     completedFields: string[];
     remainingFields: string[];
 }
+export declare class CommunityActivity {
+    id: string;
+    message: string;
+    actorName: string;
+    timestamp: Date;
+    icon: string;
+}
 export declare class DonorDashboard {
     welcomeMessage: string;
     profileCompletion: ProfileCompletion;
@@ -35,13 +42,6 @@ export declare class DonorDashboard {
     nearbyBloodRequests: DonationRequest[];
     donationHistory: DonationHistory[];
     communityActivity: CommunityActivity[];
-}
-export declare class CommunityActivity {
-    id: string;
-    message: string;
-    actorName: string;
-    timestamp: Date;
-    icon: string;
 }
 export declare class DonorProfile {
     id: string;

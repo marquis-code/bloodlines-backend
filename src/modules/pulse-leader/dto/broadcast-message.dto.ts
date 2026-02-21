@@ -1,25 +1,25 @@
-import { InputType, Field, Float } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 
-@InputType()
 export class BroadcastMessageDto {
-  @Field()
+  @ApiProperty({ example: "req_123" })
   requestId: string
 
-  @Field()
+  @ApiProperty({ example: "Lagos pulse leaders: We need A+ blood at Mercy Hospital urgently!" })
   messageContent: string
 
-  @Field(() => [String], { nullable: true })
+  @ApiPropertyOptional({ type: [String], example: ["donor_1", "donor_2"] })
   recipientDonorIds?: string[]
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "A+" })
   bloodType?: string
 
-  @Field(() => [Float], { nullable: true })
+  @ApiPropertyOptional({ type: [Number], example: [6.5244, 3.3792] })
   coordinates?: [number, number]
 
-  @Field(() => Number, { nullable: true })
+  @ApiPropertyOptional({ example: 10 })
   radiusKm?: number
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "BOTH" })
   broadcastMethod?: string // 'SMS', 'PUSH', 'BOTH'
 }
+

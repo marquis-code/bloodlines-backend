@@ -1,34 +1,34 @@
-import { InputType, Field } from "@nestjs/graphql"
+import { ApiPropertyOptional } from "@nestjs/swagger"
 
-@InputType()
 export class UpdateProfileInput {
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "John Doe" })
   fullName?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "+2348012345678" })
   phone?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "A+" })
   bloodType?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "AA" })
   genotype?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Male" })
   gender?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: 6.5244 })
   latitude?: number
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: 3.3792 })
   longitude?: number
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Available" })
   availability?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Jane Doe" })
   emergencyContact?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "+2348098765432" })
   emergencyContactPhone?: string
 }
+

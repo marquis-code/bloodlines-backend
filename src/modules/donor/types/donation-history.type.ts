@@ -1,34 +1,34 @@
-import { ObjectType, Field, Int } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 
-@ObjectType()
 export class DonationHistory {
-  @Field()
+  @ApiProperty({ example: "hist_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "City Hospital" })
   hospitalName: string
 
-  @Field()
+  @ApiProperty({ example: "A+" })
   bloodType: string
 
-  @Field(() => Int)
+  @ApiProperty({ example: 1 })
   unitsGiven: number
 
-  @Field()
+  @ApiProperty({ example: "2024-01-15T10:00:00Z" })
   donatedAt: Date
 
-  @Field()
+  @ApiProperty({ example: "DONATED" })
   status: string // 'DONATED', 'DEFERRED', 'CANCELLED'
 
-  @Field()
+  @ApiProperty({ example: "Mercy Clinic" })
   facilityName: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "123 Clinic Rd" })
   facilityAddress?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "+2348000000000" })
   facilityPhone?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Smooth experience" })
   donorFeedback?: string
 }
+

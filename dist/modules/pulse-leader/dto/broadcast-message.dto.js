@@ -10,39 +10,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BroadcastMessageDto = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let BroadcastMessageDto = class BroadcastMessageDto {
-};
+const swagger_1 = require("@nestjs/swagger");
+class BroadcastMessageDto {
+}
 exports.BroadcastMessageDto = BroadcastMessageDto;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "req_123" }),
     __metadata("design:type", String)
 ], BroadcastMessageDto.prototype, "requestId", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "Lagos pulse leaders: We need A+ blood at Mercy Hospital urgently!" }),
     __metadata("design:type", String)
 ], BroadcastMessageDto.prototype, "messageContent", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [String], { nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ type: [String], example: ["donor_1", "donor_2"] }),
     __metadata("design:type", Array)
 ], BroadcastMessageDto.prototype, "recipientDonorIds", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "A+" }),
     __metadata("design:type", String)
 ], BroadcastMessageDto.prototype, "bloodType", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [graphql_1.Float], { nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ type: [Number], example: [6.5244, 3.3792] }),
     __metadata("design:type", Array)
 ], BroadcastMessageDto.prototype, "coordinates", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => Number, { nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: 10 }),
     __metadata("design:type", Number)
 ], BroadcastMessageDto.prototype, "radiusKm", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "BOTH" }),
     __metadata("design:type", String)
 ], BroadcastMessageDto.prototype, "broadcastMethod", void 0);
-exports.BroadcastMessageDto = BroadcastMessageDto = __decorate([
-    (0, graphql_1.InputType)()
-], BroadcastMessageDto);
 //# sourceMappingURL=broadcast-message.dto.js.map

@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ResourcesPage = exports.Resource = exports.ResourceCategoryEnum = void 0;
-const graphql_1 = require("@nestjs/graphql");
+const swagger_1 = require("@nestjs/swagger");
 var ResourceCategoryEnum;
 (function (ResourceCategoryEnum) {
     ResourceCategoryEnum["ALL"] = "ALL";
@@ -20,72 +20,62 @@ var ResourceCategoryEnum;
     ResourceCategoryEnum["EXPLAINER_VIDEOS"] = "EXPLAINER_VIDEOS";
     ResourceCategoryEnum["RESEARCH"] = "RESEARCH";
 })(ResourceCategoryEnum || (exports.ResourceCategoryEnum = ResourceCategoryEnum = {}));
-(0, graphql_1.registerEnumType)(ResourceCategoryEnum, {
-    name: "ResourceCategoryEnum",
-    description: "Categories for educational resources",
-});
-let Resource = class Resource {
-};
+class Resource {
+}
 exports.Resource = Resource;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "res_123" }),
     __metadata("design:type", String)
 ], Resource.prototype, "id", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "How to prepare for your first donation" }),
     __metadata("design:type", String)
 ], Resource.prototype, "title", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "A comprehensive guide for new donors." }),
     __metadata("design:type", String)
 ], Resource.prototype, "description", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => ResourceCategoryEnum),
+    (0, swagger_1.ApiProperty)({ enum: ResourceCategoryEnum, example: ResourceCategoryEnum.ARTICLES }),
     __metadata("design:type", String)
 ], Resource.prototype, "category", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "https://example.com/image.jpg" }),
     __metadata("design:type", String)
 ], Resource.prototype, "imageUrl", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "5 mins" }),
     __metadata("design:type", String)
 ], Resource.prototype, "duration", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "Read More" }),
     __metadata("design:type", String)
 ], Resource.prototype, "actionText", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "https://example.com/article" }),
     __metadata("design:type", String)
 ], Resource.prototype, "actionUrl", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: true }),
     __metadata("design:type", Boolean)
 ], Resource.prototype, "isFeatured", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "2024-02-21T10:00:00Z" }),
     __metadata("design:type", Date)
 ], Resource.prototype, "createdAt", void 0);
-exports.Resource = Resource = __decorate([
-    (0, graphql_1.ObjectType)()
-], Resource);
-let ResourcesPage = class ResourcesPage {
-};
+class ResourcesPage {
+}
 exports.ResourcesPage = ResourcesPage;
 __decorate([
-    (0, graphql_1.Field)(() => [Resource]),
+    (0, swagger_1.ApiProperty)({ type: [Resource] }),
     __metadata("design:type", Array)
 ], ResourcesPage.prototype, "resources", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: 45 }),
     __metadata("design:type", Number)
 ], ResourcesPage.prototype, "totalCount", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [String]),
+    (0, swagger_1.ApiProperty)({ type: [String], example: ["LATEST_NEWS", "ARTICLES"] }),
     __metadata("design:type", Array)
 ], ResourcesPage.prototype, "categories", void 0);
-exports.ResourcesPage = ResourcesPage = __decorate([
-    (0, graphql_1.ObjectType)()
-], ResourcesPage);
 //# sourceMappingURL=resource.type.js.map

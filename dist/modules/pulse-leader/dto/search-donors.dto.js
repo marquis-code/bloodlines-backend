@@ -10,35 +10,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SearchDonorsFilterDto = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let SearchDonorsFilterDto = class SearchDonorsFilterDto {
-};
+const swagger_1 = require("@nestjs/swagger");
+class SearchDonorsFilterDto {
+}
 exports.SearchDonorsFilterDto = SearchDonorsFilterDto;
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "A+" }),
     __metadata("design:type", String)
 ], SearchDonorsFilterDto.prototype, "bloodType", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => graphql_1.Float, { nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: 50 }),
     __metadata("design:type", Number)
 ], SearchDonorsFilterDto.prototype, "radiusKm", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "AVAILABLE" }),
     __metadata("design:type", String)
 ], SearchDonorsFilterDto.prototype, "availability", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int, { nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: 0 }),
     __metadata("design:type", Number)
 ], SearchDonorsFilterDto.prototype, "skip", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int, { nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: 10 }),
     __metadata("design:type", Number)
 ], SearchDonorsFilterDto.prototype, "limit", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [graphql_1.Float], { nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: [6.5244, 3.3792] }),
     __metadata("design:type", Array)
 ], SearchDonorsFilterDto.prototype, "coordinates", void 0);
-exports.SearchDonorsFilterDto = SearchDonorsFilterDto = __decorate([
-    (0, graphql_1.InputType)()
-], SearchDonorsFilterDto);
 //# sourceMappingURL=search-donors.dto.js.map

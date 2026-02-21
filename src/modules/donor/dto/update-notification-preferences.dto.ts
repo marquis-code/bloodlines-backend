@@ -1,16 +1,16 @@
-import { InputType, Field } from "@nestjs/graphql"
+import { ApiPropertyOptional } from "@nestjs/swagger"
 
-@InputType()
 export class UpdateNotificationPreferencesInput {
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: true })
   emergencyAlerts?: boolean
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: true })
   donationReminders?: boolean
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: false })
   communityUpdates?: boolean
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "daily" })
   reminderFrequency?: string
 }
+

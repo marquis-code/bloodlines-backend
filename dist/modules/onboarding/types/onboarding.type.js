@@ -10,27 +10,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OnboardingType = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let OnboardingType = class OnboardingType {
-};
+const swagger_1 = require("@nestjs/swagger");
+class OnboardingType {
+}
 exports.OnboardingType = OnboardingType;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "user_123" }),
     __metadata("design:type", String)
 ], OnboardingType.prototype, "userId", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "STEP_1" }),
     __metadata("design:type", String)
 ], OnboardingType.prototype, "currentStep", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: false }),
     __metadata("design:type", Boolean)
 ], OnboardingType.prototype, "isCompleted", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "2024-02-21T10:00:00Z" }),
     __metadata("design:type", String)
 ], OnboardingType.prototype, "completedAt", void 0);
-exports.OnboardingType = OnboardingType = __decorate([
-    (0, graphql_1.ObjectType)()
-], OnboardingType);
 //# sourceMappingURL=onboarding.type.js.map

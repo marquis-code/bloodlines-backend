@@ -1,176 +1,169 @@
-import { ObjectType, Field, Int, Float } from "@nestjs/graphql"
+import { ApiProperty } from "@nestjs/swagger"
 import { BloodRequestType } from "../../blood-request/types/blood-request.type"
 
-@ObjectType()
 export class DashboardStatisticsType {
-  @Field(() => Int)
+  @ApiProperty({ example: 120 })
   activeDonors: number
 
-  @Field()
+  @ApiProperty({ example: "12 mins" })
   avgResponseTime: string
 
-  @Field(() => Float)
+  @ApiProperty({ example: 0.85 })
   escalationFulfillmentRate: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 450 })
   totalRequests: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 380 })
   totalDonations: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 25 })
   newDonorsRecruited: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 60 })
   emergenciesHandled: number
 }
 
-@ObjectType()
 export class MonthlyCoordinationMetricsType {
-  @Field()
+  @ApiProperty({ example: "Feb" })
   month: string
 
-  @Field(() => Int)
+  @ApiProperty({ example: 15 })
   donations: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 20 })
   requests: number
 }
 
-@ObjectType()
 export class EscalationHistoryType {
-  @Field()
+  @ApiProperty({ example: "esc_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "O-" })
   bloodType: string
 
-  @Field()
+  @ApiProperty({ example: "CRITICAL" })
   urgency: string
 
-  @Field()
+  @ApiProperty({ example: "2 hours ago" })
   posted: string
 
-  @Field()
+  @ApiProperty({ example: "FULFILLED" })
   outcome: string
 
-  @Field(() => Int)
+  @ApiProperty({ example: 5 })
   donorsResponded: number
 }
 
-@ObjectType()
 export class DonorSearchResultType {
-  @Field()
+  @ApiProperty({ example: "donor_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "John Doe" })
   name: string
 
-  @Field()
+  @ApiProperty({ example: "A+" })
   bloodType: string
 
-  @Field()
+  @ApiProperty({ example: "AA" })
   genotype: string
 
-  @Field(() => Float)
+  @ApiProperty({ example: 5.2 })
   distanceKm: number
 
-  @Field()
+  @ApiProperty({ example: "2024-01-15" })
   lastDonatedDate: string
 
-  @Field()
+  @ApiProperty({ example: "AVAILABLE" })
   availability: string
 
-  @Field()
+  @ApiProperty({ example: "+2348012345678" })
   phone: string
 
-  @Field()
+  @ApiProperty({ example: "john@example.com" })
   email: string
 }
 
-@ObjectType()
 export class BroadcastMessageType {
-  @Field()
+  @ApiProperty({ example: "bc_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "req_123" })
   requestId: string
 
-  @Field()
+  @ApiProperty({ example: "pulse_123" })
   pulseLeaderId: string
 
-  @Field()
+  @ApiProperty({ example: "Urgent need for O- blood" })
   messageContent: string
 
-  @Field()
+  @ApiProperty({ example: "DELIVERED" })
   deliveryStatus: string
 
-  @Field()
+  @ApiProperty({ example: "2024-02-21T10:00:00Z" })
   sentAt: string
 
-  @Field(() => Int)
+  @ApiProperty({ example: 10 })
   recipientCount: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 10 })
   deliveredCount: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 5 })
   readCount: number
 }
 
-@ObjectType()
 export class RecentActivityType {
-  @Field()
+  @ApiProperty({ example: "act_1" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "BLOOD_REQUEST" })
   activityType: string
 
-  @Field()
+  @ApiProperty({ example: "New blood request posted" })
   description: string
 
-  @Field()
+  @ApiProperty({ example: "Hospital Admin" })
   actor: string
 
-  @Field()
+  @ApiProperty({ example: "2024-02-21T11:00:00Z" })
   timestamp: string
 
-  @Field()
+  @ApiProperty({ example: "B+" })
   bloodType: string
 
-  @Field()
+  @ApiProperty({ example: 2 })
   units: number
 }
 
-@ObjectType()
 export class AnalyticsBreakdownType {
-  @Field()
+  @ApiProperty({ example: "A+" })
   label: string
 
-  @Field(() => Float)
+  @ApiProperty({ example: 0.75 })
   value: number
 
-  @Field()
+  @ApiProperty({ example: "GOOD" })
   status: string
 }
 
-@ObjectType()
 export class PulseLeaderDashboardType {
-  @Field()
+  @ApiProperty({ type: DashboardStatisticsType })
   statistics: DashboardStatisticsType
 
-  @Field(() => [MonthlyCoordinationMetricsType])
+  @ApiProperty({ type: [MonthlyCoordinationMetricsType] })
   monthlyMetrics: MonthlyCoordinationMetricsType[]
 
-  @Field(() => [BloodRequestType])
+  @ApiProperty({ type: [BloodRequestType] })
   recentBloodRequests: BloodRequestType[]
 
-  @Field(() => [RecentActivityType])
+  @ApiProperty({ type: [RecentActivityType] })
   recentActivities: RecentActivityType[]
 
-  @Field(() => [AnalyticsBreakdownType])
+  @ApiProperty({ type: [AnalyticsBreakdownType] })
   requestFulfillmentByBloodType: AnalyticsBreakdownType[]
 
-  @Field(() => [AnalyticsBreakdownType])
+  @ApiProperty({ type: [AnalyticsBreakdownType] })
   requestFulfillmentByUrgency: AnalyticsBreakdownType[]
 }
+

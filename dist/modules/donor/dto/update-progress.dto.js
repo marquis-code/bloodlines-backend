@@ -10,28 +10,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateProgressInput = void 0;
-const graphql_1 = require("@nestjs/graphql");
+const swagger_1 = require("@nestjs/swagger");
 const donation_request_type_1 = require("../types/donation-request.type");
-let UpdateProgressInput = class UpdateProgressInput {
-};
+class UpdateProgressInput {
+}
 exports.UpdateProgressInput = UpdateProgressInput;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "req_123" }),
     __metadata("design:type", String)
 ], UpdateProgressInput.prototype, "requestId", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => donation_request_type_1.DonationProgressStatusEnum),
+    (0, swagger_1.ApiProperty)({ enum: donation_request_type_1.DonationProgressStatusEnum, example: donation_request_type_1.DonationProgressStatusEnum.ACCEPTED }),
     __metadata("design:type", String)
 ], UpdateProgressInput.prototype, "status", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "At hospital" }),
     __metadata("design:type", String)
 ], UpdateProgressInput.prototype, "location", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "15 mins" }),
     __metadata("design:type", String)
 ], UpdateProgressInput.prototype, "estimatedArrivalTime", void 0);
-exports.UpdateProgressInput = UpdateProgressInput = __decorate([
-    (0, graphql_1.InputType)()
-], UpdateProgressInput);
 //# sourceMappingURL=update-progress.dto.js.map

@@ -10,15 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateAvailabilityInput = void 0;
-const graphql_1 = require("@nestjs/graphql");
-let UpdateAvailabilityInput = class UpdateAvailabilityInput {
-};
+const swagger_1 = require("@nestjs/swagger");
+class UpdateAvailabilityInput {
+}
 exports.UpdateAvailabilityInput = UpdateAvailabilityInput;
 __decorate([
-    (0, graphql_1.Field)(),
+    (0, swagger_1.ApiProperty)({ example: "Available", description: "'Available', 'Busy', 'Unavailable'" }),
     __metadata("design:type", String)
 ], UpdateAvailabilityInput.prototype, "status", void 0);
-exports.UpdateAvailabilityInput = UpdateAvailabilityInput = __decorate([
-    (0, graphql_1.InputType)()
-], UpdateAvailabilityInput);
 //# sourceMappingURL=update-availability.dto.js.map

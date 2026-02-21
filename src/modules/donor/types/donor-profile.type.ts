@@ -1,201 +1,193 @@
-import { ObjectType, Field, Int } from "@nestjs/graphql"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { DonationRequest } from "./donation-request.type"
 import { DonationHistory } from "./donation-history.type"
 
-@ObjectType()
 export class DonorStatus {
-  @Field()
+  @ApiProperty({ example: "AVAILABLE" })
   availability: string
 
-  @Field()
+  @ApiProperty({ example: "A+" })
   bloodType: string
 
-  @Field()
+  @ApiProperty({ example: "2024-04-01" })
   nextEligibilityDate: Date
 
-  @Field()
+  @ApiPropertyOptional({ example: "2024-01-01" })
   lastDonationDate?: Date
 }
 
-@ObjectType()
 export class DonorImpact {
-  @Field(() => Int)
+  @ApiProperty({ example: 5 })
   totalDonations: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 15 })
   livesImpacted: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 2 })
   emergenciesHandled: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 1 })
   newDonorsRecruited: number
 }
 
-@ObjectType()
 export class Achievement {
-  @Field()
+  @ApiProperty({ example: "ach_1" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "First Donation" })
   name: string
 
-  @Field()
+  @ApiProperty({ example: "You donated for the first time!" })
   description: string
 
-  @Field()
+  @ApiProperty({ example: "badge_icon_url" })
   badge: string
 
-  @Field()
+  @ApiProperty({ example: "2024-01-01" })
   unlockedAt: Date
 
-  @Field(() => Int)
+  @ApiProperty({ example: 1 })
   level: number
 
-  @Field(() => Int)
+  @ApiProperty({ example: 1 })
   streakDays: number
 }
 
-@ObjectType()
 export class ProfileCompletion {
-  @Field(() => Int)
+  @ApiProperty({ example: 80 })
   percentComplete: number
 
-  @Field(() => [String])
+  @ApiProperty({ type: [String], example: ["fullName", "email"] })
   completedFields: string[]
 
-  @Field(() => [String])
+  @ApiProperty({ type: [String], example: ["genotype"] })
   remainingFields: string[]
 }
 
-@ObjectType()
-export class DonorDashboard {
-  @Field()
-  welcomeMessage: string
-
-  @Field(() => ProfileCompletion)
-  profileCompletion: ProfileCompletion
-
-  @Field(() => DonorStatus)
-  donorStatus: DonorStatus
-
-  @Field(() => DonorImpact)
-  impact: DonorImpact
-
-  @Field(() => [Achievement])
-  achievements: Achievement[]
-
-  @Field(() => [DonationRequest])
-  nearbyBloodRequests: DonationRequest[]
-
-  @Field(() => [DonationHistory])
-  donationHistory: DonationHistory[]
-
-  @Field(() => [CommunityActivity])
-  communityActivity: CommunityActivity[]
-}
-
-@ObjectType()
 export class CommunityActivity {
-  @Field()
+  @ApiProperty({ example: "act_1" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "John donated A+ blood" })
   message: string
 
-  @Field()
+  @ApiProperty({ example: "John Doe" })
   actorName: string
 
-  @Field()
+  @ApiProperty({ example: "2024-02-21T10:00:00Z" })
   timestamp: Date
 
-  @Field()
+  @ApiProperty({ example: "blood_drop" })
   icon: string
 }
 
-@ObjectType()
+export class DonorDashboard {
+  @ApiProperty({ example: "Welcome back, John!" })
+  welcomeMessage: string
+
+  @ApiProperty({ type: ProfileCompletion })
+  profileCompletion: ProfileCompletion
+
+  @ApiProperty({ type: DonorStatus })
+  donorStatus: DonorStatus
+
+  @ApiProperty({ type: DonorImpact })
+  impact: DonorImpact
+
+  @ApiProperty({ type: [Achievement] })
+  achievements: Achievement[]
+
+  @ApiProperty({ type: [DonationRequest] })
+  nearbyBloodRequests: DonationRequest[]
+
+  @ApiProperty({ type: [DonationHistory] })
+  donationHistory: DonationHistory[]
+
+  @ApiProperty({ type: [CommunityActivity] })
+  communityActivity: CommunityActivity[]
+}
+
 export class DonorProfile {
-  @Field()
+  @ApiProperty({ example: "donor_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "John Doe" })
   fullName: string
 
-  @Field()
+  @ApiProperty({ example: "john@example.com" })
   email: string
 
-  @Field()
+  @ApiProperty({ example: "+2348012345678" })
   phone: string
 
-  @Field()
+  @ApiProperty({ example: "A+" })
   bloodType: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "AA" })
   genotype?: string
 
-  @Field()
+  @ApiProperty({ example: "Male" })
   gender: string
 
-  @Field()
+  @ApiProperty({ example: 6.5244 })
   latitude: number
 
-  @Field()
+  @ApiProperty({ example: 3.3792 })
   longitude: number
 
-  @Field()
+  @ApiProperty({ example: "AVAILABLE" })
   availability: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Jane Doe" })
   emergencyContact?: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "+2348098765432" })
   emergencyContactPhone?: string
 
-  @Field()
+  @ApiProperty({ example: "2024-01-01" })
   createdAt: Date
 
-  @Field()
+  @ApiProperty({ example: "2024-01-01" })
   updatedAt: Date
 }
 
-@ObjectType()
 export class NotificationPreference {
-  @Field()
+  @ApiProperty({ example: "pref_123" })
   id: string
 
-  @Field()
+  @ApiProperty({ example: "user_123" })
   userId: string
 
-  @Field()
+  @ApiProperty({ example: true })
   emergencyAlerts: boolean
 
-  @Field()
+  @ApiProperty({ example: true })
   donationReminders: boolean
 
-  @Field()
+  @ApiProperty({ example: false })
   communityUpdates: boolean
 
-  @Field()
+  @ApiProperty({ example: "daily" })
   reminderFrequency: string // 'immediately', 'daily', 'weekly'
 
-  @Field()
+  @ApiProperty({ example: "2024-01-01" })
   updatedAt: Date
 }
 
-@ObjectType()
 export class MedicalEligibility {
-  @Field()
+  @ApiProperty({ example: true })
   isEligible: boolean
 
-  @Field()
+  @ApiProperty({ example: "2024-04-01" })
   nextEligibleDate: Date
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "Too soon after last donation" })
   reason?: string
 
-  @Field()
+  @ApiProperty({ example: 30 })
   daysSinceLastDonation: number
 
-  @Field()
+  @ApiProperty({ example: 60 })
   daysUntilEligible: number
 }
+

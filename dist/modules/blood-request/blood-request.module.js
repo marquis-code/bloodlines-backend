@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const jwt_1 = require("@nestjs/jwt");
 const blood_request_service_1 = require("./blood-request.service");
-const blood_request_resolver_1 = require("./blood-request.resolver");
+const blood_request_controller_1 = require("./blood-request.controller");
 const blood_request_gateway_1 = require("./blood-request.gateway");
 const blood_request_schema_1 = require("./schema/blood-request.schema");
 const user_schema_1 = require("../user/schemas/user.schema");
@@ -27,7 +27,8 @@ exports.BloodRequestModule = BloodRequestModule = __decorate([
             ]),
             jwt_1.JwtModule,
         ],
-        providers: [blood_request_service_1.BloodRequestService, blood_request_resolver_1.BloodRequestResolver, blood_request_gateway_1.BloodRequestGateway],
+        providers: [blood_request_service_1.BloodRequestService, blood_request_gateway_1.BloodRequestGateway],
+        controllers: [blood_request_controller_1.BloodRequestController],
         exports: [blood_request_service_1.BloodRequestService, blood_request_gateway_1.BloodRequestGateway],
     })
 ], BloodRequestModule);
