@@ -13,10 +13,12 @@ import { UpdateProfileInput } from "./dto/update-profile.dto";
 import { UpdateAvailabilityInput } from "./dto/update-availability.dto";
 import { UpdateNotificationPreferencesInput } from "./dto/update-notification-preferences.dto";
 import { DonationHistory } from "./types/donation-history.type";
+import { NotificationService } from "../notification/notification.service";
 export declare class DonorService {
     private userModel;
     private bloodRequestModel;
-    constructor(userModel: Model<User>, bloodRequestModel: Model<BloodRequest>);
+    private notificationService;
+    constructor(userModel: Model<User>, bloodRequestModel: Model<BloodRequest>, notificationService: NotificationService);
     getDonorDashboard(userId: string): Promise<DonorDashboard>;
     getDonorProfile(userId: string): Promise<DonorProfile>;
     updateProfile(userId: string, input: UpdateProfileInput): Promise<DonorProfile>;

@@ -19,11 +19,13 @@ const mongoose_2 = require("mongoose");
 const blood_request_schema_1 = require("../blood-request/schema/blood-request.schema");
 const user_schema_1 = require("../user/schemas/user.schema");
 const notification_gateway_1 = require("../notification/notification.gateway");
+const notification_service_1 = require("../notification/notification.service");
 let PulseLeaderService = class PulseLeaderService {
-    constructor(bloodRequestModel, userModel, notificationGateway) {
+    constructor(bloodRequestModel, userModel, notificationGateway, notificationService) {
         this.bloodRequestModel = bloodRequestModel;
         this.userModel = userModel;
         this.notificationGateway = notificationGateway;
+        this.notificationService = notificationService;
     }
     async getDashboardStatistics(pulseLeaderId) {
         const currentMonth = new Date();
@@ -217,6 +219,21 @@ let PulseLeaderService = class PulseLeaderService {
                 message: broadcastDto.messageContent,
             }, recipient._id.toString());
         });
+        try {
+            const recipientIds = recipients.map(r => r._id.toString());
+            await this.notificationService.sendNotificationToMultipleUsers(recipientIds, {
+                title: "📢 Pulse Leader Broadcast",
+                body: broadcastDto.messageContent,
+                type: "general",
+                data: {
+                    requestId: broadcastDto.requestId,
+                    pulseLeaderId
+                }
+            });
+        }
+        catch (error) {
+            console.error("Failed to send broadcast email notifications", error);
+        }
         return broadcastMessage;
     }
     async getEscalationHistory(pulseLeaderId, limit = 5) {
@@ -307,6 +324,7 @@ exports.PulseLeaderService = PulseLeaderService = __decorate([
     __param(1, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
         mongoose_2.Model,
-        notification_gateway_1.NotificationGateway])
+        notification_gateway_1.NotificationGateway,
+        notification_service_1.NotificationService])
 ], PulseLeaderService);
 //# sourceMappingURL=pulse-leader.service.js.map

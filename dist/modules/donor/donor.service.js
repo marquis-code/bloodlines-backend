@@ -20,10 +20,12 @@ const user_schema_1 = require("../user/schemas/user.schema");
 const blood_request_schema_1 = require("../blood-request/schema/blood-request.schema");
 const donation_request_type_1 = require("./types/donation-request.type");
 const resource_type_1 = require("./types/resource.type");
+const notification_service_1 = require("../notification/notification.service");
 let DonorService = class DonorService {
-    constructor(userModel, bloodRequestModel) {
+    constructor(userModel, bloodRequestModel, notificationService) {
         this.userModel = userModel;
         this.bloodRequestModel = bloodRequestModel;
+        this.notificationService = notificationService;
     }
     async getDonorDashboard(userId) {
         const user = await this.userModel.findById(userId);
@@ -194,6 +196,19 @@ let DonorService = class DonorService {
         }
         request.status = "ACCEPTED";
         await request.save();
+        try {
+            const donor = await this.userModel.findById(userId);
+            if (donor) {
+                await this.notificationService.notifyDonorAcceptance(request.createdBy.toString(), {
+                    fullName: donor.fullName,
+                    bloodGroup: donor.bloodGroup,
+                    requestId: request._id,
+                });
+            }
+        }
+        catch (error) {
+            console.error("Failed to send donor acceptance email notification", error);
+        }
         return {
             requestId: request._id.toString(),
             status: donation_request_type_1.DonationProgressStatusEnum.ACCEPTED,
@@ -219,6 +234,15 @@ let DonorService = class DonorService {
             }
         }
         await request.save();
+        if (input.status === donation_request_type_1.DonationProgressStatusEnum.DONATION_COMPLETE && request.status === "FULFILLED") {
+            try {
+                const donorIds = request.assignedDonors.map(id => id.toString());
+                await this.notificationService.notifyRequestFulfilled(donorIds, request._id.toString());
+            }
+            catch (error) {
+                console.error("Failed to send request fulfillment email notifications", error);
+            }
+        }
         return {
             requestId: request._id.toString(),
             status: input.status,
@@ -427,6 +451,7 @@ exports.DonorService = DonorService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
     __param(1, (0, mongoose_1.InjectModel)(blood_request_schema_1.BloodRequest.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
-        mongoose_2.Model])
+        mongoose_2.Model,
+        notification_service_1.NotificationService])
 ], DonorService);
 //# sourceMappingURL=donor.service.js.map

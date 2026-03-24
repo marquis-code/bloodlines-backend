@@ -339,7 +339,7 @@ export class BloodRequestGateway implements OnGatewayConnection, OnGatewayDiscon
     return undefined
   }
 
-  private async findNearbyDonors(bloodType: string, location: { lat: number; lng: number }, radiusKm: number) {
+  async findNearbyDonors(bloodType: string, location: { lat: number; lng: number }, radiusKm: number) {
     return this.userModel.find({
       role: UserRole.DONOR,
       bloodGroup: bloodType,

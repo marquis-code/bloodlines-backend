@@ -18,7 +18,6 @@ export declare class NotificationService {
     notifyRequestFulfilled(userIds: string[], requestId: string): Promise<void>;
     notifyDonorArrival(bridgerId: string, donorDetails: any): Promise<void>;
     private sendEmailNotification;
-    private generateEmailHTML;
     private sendSMSNotification;
     sendBulkNotification(userRole: string, notification: NotificationPayload): Promise<void>;
 }

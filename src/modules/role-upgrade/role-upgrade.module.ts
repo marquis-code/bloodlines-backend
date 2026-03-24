@@ -4,6 +4,7 @@ import { RoleUpgradeService } from "./role-upgrade.service"
 import { RoleUpgradeController } from "./role-upgrade.controller"
 import { RoleUpgradeRequest, RoleUpgradeRequestSchema } from "./schemas/request-role-upgrade.schema"
 import { User, UserSchema } from "../user/schemas/user.schema"
+import { EmailModule } from "../email/email.module"
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { User, UserSchema } from "../user/schemas/user.schema"
       { name: RoleUpgradeRequest.name, schema: RoleUpgradeRequestSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    EmailModule,
   ],
   providers: [RoleUpgradeService],
   controllers: [RoleUpgradeController],

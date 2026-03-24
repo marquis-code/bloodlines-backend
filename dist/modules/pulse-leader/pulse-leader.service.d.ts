@@ -4,11 +4,13 @@ import { User } from "../user/schemas/user.schema";
 import { SearchDonorsFilterDto } from "./dto/search-donors.dto";
 import { BroadcastMessageDto } from "./dto/broadcast-message.dto";
 import { NotificationGateway } from "../notification/notification.gateway";
+import { NotificationService } from "../notification/notification.service";
 export declare class PulseLeaderService {
     private bloodRequestModel;
     private userModel;
     private notificationGateway;
-    constructor(bloodRequestModel: Model<BloodRequest>, userModel: Model<User>, notificationGateway: NotificationGateway);
+    private notificationService;
+    constructor(bloodRequestModel: Model<BloodRequest>, userModel: Model<User>, notificationGateway: NotificationGateway, notificationService: NotificationService);
     getDashboardStatistics(pulseLeaderId: string): Promise<{
         activeDonors: number;
         avgResponseTime: string;

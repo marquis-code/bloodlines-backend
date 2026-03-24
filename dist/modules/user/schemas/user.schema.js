@@ -39,7 +39,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "phoneNumber", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String, enum: blood_group_enum_1.BloodGroup, required: true }),
+    (0, mongoose_1.Prop)({ type: String, enum: blood_group_enum_1.BloodGroup }),
     __metadata("design:type", String)
 ], User.prototype, "bloodGroup", void 0);
 __decorate([
@@ -51,7 +51,6 @@ __decorate([
         type: {
             type: String,
             enum: ["Point"],
-            default: "Point",
         },
         coordinates: {
             type: [Number],

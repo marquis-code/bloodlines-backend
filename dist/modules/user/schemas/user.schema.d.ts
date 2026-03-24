@@ -10,7 +10,7 @@ export declare class User {
     fullName: string;
     gender: Gender;
     phoneNumber: string;
-    bloodGroup: BloodGroup;
+    bloodGroup?: BloodGroup;
     genotype?: Genotype;
     geoLocation?: {
         type: string;

@@ -13,6 +13,7 @@ const role_upgrade_service_1 = require("./role-upgrade.service");
 const role_upgrade_controller_1 = require("./role-upgrade.controller");
 const request_role_upgrade_schema_1 = require("./schemas/request-role-upgrade.schema");
 const user_schema_1 = require("../user/schemas/user.schema");
+const email_module_1 = require("../email/email.module");
 let RoleUpgradeModule = class RoleUpgradeModule {
 };
 exports.RoleUpgradeModule = RoleUpgradeModule;
@@ -23,6 +24,7 @@ exports.RoleUpgradeModule = RoleUpgradeModule = __decorate([
                 { name: request_role_upgrade_schema_1.RoleUpgradeRequest.name, schema: request_role_upgrade_schema_1.RoleUpgradeRequestSchema },
                 { name: user_schema_1.User.name, schema: user_schema_1.UserSchema },
             ]),
+            email_module_1.EmailModule,
         ],
         providers: [role_upgrade_service_1.RoleUpgradeService],
         controllers: [role_upgrade_controller_1.RoleUpgradeController],

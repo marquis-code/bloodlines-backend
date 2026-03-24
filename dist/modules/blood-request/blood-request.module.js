@@ -15,6 +15,7 @@ const blood_request_controller_1 = require("./blood-request.controller");
 const blood_request_gateway_1 = require("./blood-request.gateway");
 const blood_request_schema_1 = require("./schema/blood-request.schema");
 const user_schema_1 = require("../user/schemas/user.schema");
+const notification_module_1 = require("../notification/notification.module");
 let BloodRequestModule = class BloodRequestModule {
 };
 exports.BloodRequestModule = BloodRequestModule;
@@ -26,6 +27,7 @@ exports.BloodRequestModule = BloodRequestModule = __decorate([
                 { name: user_schema_1.User.name, schema: user_schema_1.UserSchema },
             ]),
             jwt_1.JwtModule,
+            notification_module_1.NotificationModule,
         ],
         providers: [blood_request_service_1.BloodRequestService, blood_request_gateway_1.BloodRequestGateway],
         controllers: [blood_request_controller_1.BloodRequestController],

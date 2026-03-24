@@ -36,7 +36,14 @@ export declare class BloodRequestGateway implements OnGatewayConnection, OnGatew
     notifyDonorArrival(requestId: string, donorId: string): Promise<void>;
     broadcastRequestUpdate(requestId: string): Promise<void>;
     private getSocketIdByUserId;
-    private findNearbyDonors;
+    findNearbyDonors(bloodType: string, location: {
+        lat: number;
+        lng: number;
+    }, radiusKm: number): Promise<(import("mongoose").Document<unknown, {}, User, {}, import("mongoose").DefaultSchemaOptions> & User & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    })[]>;
     private calculateDistance;
     private deg2rad;
 }

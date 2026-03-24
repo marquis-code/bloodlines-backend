@@ -86,45 +86,17 @@ export class NotificationService {
 
   private async sendEmailNotification(email: string, notification: NotificationPayload) {
     try {
-      // Check if EmailService has the expected methods
-      if (typeof (this.emailService as any).sendEmail === 'function') {
-        await (this.emailService as any).sendEmail({
-          to: email,
-          subject: notification.title,
-          html: this.generateEmailHTML(notification),
-        })
-      } else if (typeof (this.emailService as any).sendMail === 'function') {
-        // Alternative method name
-        await (this.emailService as any).sendMail({
-          to: email,
-          subject: notification.title,
-          html: this.generateEmailHTML(notification),
-        })
-      } else {
-        // If neither method exists, log a warning
-        console.warn(`EmailService does not have sendEmail or sendMail method. Skipping email to ${email}`)
-      }
+      await this.emailService.sendNotification(
+        email,
+        notification.title,
+        notification.body,
+        notification.data,
+      )
     } catch (error) {
       console.error("Failed to send email notification:", error)
     }
   }
 
-  private generateEmailHTML(notification: NotificationPayload): string {
-    return `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #dc2626;">${notification.title}</h2>
-        <p style="font-size: 16px; color: #374151;">${notification.body}</p>
-        ${notification.data ? `
-          <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin-top: 20px;">
-            <pre style="margin: 0; white-space: pre-wrap;">${JSON.stringify(notification.data, null, 2)}</pre>
-          </div>
-        ` : ""}
-        <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">
-          Open the BloodLines app to take action.
-        </p>
-      </div>
-    `
-  }
 
   private async sendSMSNotification(phoneNumber: string, notification: NotificationPayload) {
     // TODO: Implement SMS service (Twilio, AWS SNS, etc.)

@@ -4,11 +4,13 @@ import { User } from "../user/schemas/user.schema";
 import { CreateBloodRequestDto } from "./dtos/create-blood-request.dto";
 import { UpdateBloodRequestDto } from "./dtos/update-blood-request.dto";
 import { BloodRequestGateway } from "./blood-request.gateway";
+import { NotificationService } from "../notification/notification.service";
 export declare class BloodRequestService {
     private bloodRequestModel;
     private userModel;
     private bloodRequestGateway;
-    constructor(bloodRequestModel: Model<BloodRequest>, userModel: Model<User>, bloodRequestGateway: BloodRequestGateway);
+    private notificationService;
+    constructor(bloodRequestModel: Model<BloodRequest>, userModel: Model<User>, bloodRequestGateway: BloodRequestGateway, notificationService: NotificationService);
     createBloodRequest(userId: string, createDto: CreateBloodRequestDto): Promise<import("mongoose").Document<unknown, {}, BloodRequest, {}, import("mongoose").DefaultSchemaOptions> & BloodRequest & {
         _id: import("mongoose").Types.ObjectId;
     } & {

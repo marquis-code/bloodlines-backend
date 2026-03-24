@@ -10,6 +10,7 @@ import { CreateBloodRequestDto } from "./dtos/create-blood-request.dto"
 import { UpdateBloodRequestDto } from "./dtos/update-blood-request.dto"
 import { BloodRequestGateway } from "./blood-request.gateway"
 import { BloodRequestWithCreatedBy } from "./interfaces/blood-request-populated.interface"
+import { NotificationService } from "../notification/notification.service"
 
 @Injectable()
 export class BloodRequestService {
@@ -17,6 +18,7 @@ export class BloodRequestService {
     @InjectModel(BloodRequest.name) private bloodRequestModel: Model<BloodRequest>,
     @InjectModel(User.name) private userModel: Model<User>,
     private bloodRequestGateway: BloodRequestGateway,
+    private notificationService: NotificationService,
   ) {}
 
   async createBloodRequest(userId: string, createDto: CreateBloodRequestDto) {
@@ -53,6 +55,25 @@ export class BloodRequestService {
     }
     
     await this.bloodRequestGateway.notifyNearbyDonors(populatedRequest, bridgerLocation)
+
+    // Notify nearby donors via Email
+    try {
+      const nearbyDonors = await this.bloodRequestGateway.findNearbyDonors(
+        populatedRequest.bloodType,
+        bridgerLocation,
+        50 // 50km
+      )
+      const donorIds = nearbyDonors.map(d => d._id.toString())
+      await this.notificationService.notifyNewBloodRequest(donorIds, {
+        requestId: savedRequest._id,
+        bloodType: populatedRequest.bloodType,
+        unitsNeeded: populatedRequest.unitsNeeded,
+        priorityLevel: populatedRequest.priorityLevel,
+        facilityName: populatedRequest.createdBy.facilityName
+      })
+    } catch (error) {
+      console.error("Failed to send blood request email notifications", error)
+    }
 
     return savedRequest
   }
@@ -132,6 +153,17 @@ export class BloodRequestService {
     // Notify bridger via WebSocket
     await this.bloodRequestGateway.notifyDonorAcceptance(requestId, donorId)
     
+    // Notify bridger via Email
+    try {
+      await this.notificationService.notifyDonorAcceptance(request.createdBy.toString(), {
+        fullName: donor.fullName,
+        bloodGroup: donor.bloodGroup,
+        requestId: request._id
+      })
+    } catch (error) {
+      console.error("Failed to send donor acceptance email notification", error)
+    }
+    
     // Broadcast update
     await this.bloodRequestGateway.broadcastRequestUpdate(requestId)
 
@@ -175,6 +207,14 @@ export class BloodRequestService {
 
       // Notify all parties that request is fulfilled
       await this.bloodRequestGateway.notifyRequestFulfilled(requestId)
+
+      // Notify all assigned donors via Email
+      try {
+        const donorIds = request.assignedDonors.map(id => id.toString())
+        await this.notificationService.notifyRequestFulfilled(donorIds, requestId)
+      } catch (error) {
+        console.error("Failed to send request fulfillment email notifications", error)
+      }
     } else {
       await request.save()
       // Broadcast update
@@ -195,8 +235,24 @@ export class BloodRequestService {
       throw new ForbiddenException("You are not assigned to this request")
     }
 
+    const donor = await this.userModel.findById(donorId)
+    if (!donor) {
+      throw new NotFoundException("Donor not found")
+    }
+
     // Notify bridger via WebSocket
     await this.bloodRequestGateway.notifyDonorArrival(requestId, donorId)
+
+    // Notify bridger via Email
+    try {
+      await this.notificationService.notifyDonorArrival(request.createdBy.toString(), {
+        fullName: donor.fullName,
+        bloodGroup: donor.bloodGroup,
+        requestId: request._id
+      })
+    } catch (error) {
+      console.error("Failed to send donor arrival email notification", error)
+    }
 
     return { message: "Arrival notification sent" }
   }

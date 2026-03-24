@@ -24,12 +24,14 @@ import { UpdateProfileInput } from "./dto/update-profile.dto"
 import { UpdateAvailabilityInput } from "./dto/update-availability.dto"
 import { UpdateNotificationPreferencesInput } from "./dto/update-notification-preferences.dto"
 import { DonationHistory } from "./types/donation-history.type"
+import { NotificationService } from "../notification/notification.service"
 
 @Injectable()
 export class DonorService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(BloodRequest.name) private bloodRequestModel: Model<BloodRequest>,
+    private notificationService: NotificationService,
   ) {}
 
   // ============= DASHBOARD & PROFILE =============
@@ -235,6 +237,20 @@ export class DonorService {
     request.status = "ACCEPTED" as any
     await request.save()
 
+    // Notify bridger via Email
+    try {
+      const donor = await this.userModel.findById(userId)
+      if (donor) {
+        await this.notificationService.notifyDonorAcceptance(request.createdBy.toString(), {
+          fullName: donor.fullName,
+          bloodGroup: donor.bloodGroup,
+          requestId: request._id,
+        })
+      }
+    } catch (error) {
+      console.error("Failed to send donor acceptance email notification", error)
+    }
+
     return {
       requestId: request._id.toString(),
       status: DonationProgressStatusEnum.ACCEPTED,
@@ -268,6 +284,16 @@ export class DonorService {
     }
 
     await request.save()
+
+    // Notify participants via Email if fulfilled
+    if (input.status === DonationProgressStatusEnum.DONATION_COMPLETE && request.status === "FULFILLED" as any) {
+      try {
+        const donorIds = request.assignedDonors.map(id => id.toString())
+        await this.notificationService.notifyRequestFulfilled(donorIds, request._id.toString())
+      } catch (error) {
+        console.error("Failed to send request fulfillment email notifications", error)
+      }
+    }
 
     return {
       requestId: request._id.toString(),

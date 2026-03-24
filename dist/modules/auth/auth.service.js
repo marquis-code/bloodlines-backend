@@ -89,7 +89,12 @@ let AuthService = class AuthService {
             emailVerified: false,
         });
         await user.save();
-        await this.emailService.sendEmailVerification(email, emailVerificationToken);
+        try {
+            await this.emailService.sendEmailVerification(email, emailVerificationToken);
+        }
+        catch (error) {
+            console.error("Failed to send verification email. Please check SMTP configuration.", error);
+        }
         return {
             message: "Signup successful. Please verify your email.",
             userId: user._id,
@@ -107,6 +112,12 @@ let AuthService = class AuthService {
         user.emailVerificationToken = undefined;
         user.emailVerificationExpiry = undefined;
         await user.save();
+        try {
+            await this.emailService.sendWelcomeEmail(user.email, user.fullName);
+        }
+        catch (error) {
+            console.error("Failed to send welcome email.", error);
+        }
         return { message: "Email verified successfully. You can now login." };
     }
     async login(loginDto) {
@@ -170,6 +181,12 @@ let AuthService = class AuthService {
         user.passwordResetToken = undefined;
         user.passwordResetExpiry = undefined;
         await user.save();
+        try {
+            await this.emailService.sendPasswordResetSuccess(user.email, user.fullName);
+        }
+        catch (error) {
+            console.error("Failed to send password reset confirmation email.", error);
+        }
         return { message: "Password reset successfully. You can now login." };
     }
 };

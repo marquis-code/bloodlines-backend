@@ -6,6 +6,7 @@ import { BloodRequestController } from "./blood-request.controller"
 import { BloodRequestGateway } from "./blood-request.gateway"
 import { BloodRequest, BloodRequestSchema } from "./schema/blood-request.schema"
 import { User, UserSchema } from "../user/schemas/user.schema"
+import { NotificationModule } from "../notification/notification.module"
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { User, UserSchema } from "../user/schemas/user.schema"
       { name: User.name, schema: UserSchema },
     ]),
     JwtModule,
+    NotificationModule,
   ],
   providers: [BloodRequestService, BloodRequestGateway],
   controllers: [BloodRequestController],

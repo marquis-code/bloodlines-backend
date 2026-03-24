@@ -108,8 +108,8 @@ export class User {
   @Prop({ required: true, unique: true })
   phoneNumber: string
 
-  @Prop({ type: String, enum: BloodGroup, required: true })
-  bloodGroup: BloodGroup
+  @Prop({ type: String, enum: BloodGroup })
+  bloodGroup?: BloodGroup
 
   @Prop({ type: String, enum: Genotype, sparse: true })
   genotype?: Genotype
@@ -119,7 +119,6 @@ export class User {
     type: {
       type: String,
       enum: ["Point"],
-      default: "Point",
     },
     coordinates: {
       type: [Number], // [longitude, latitude]

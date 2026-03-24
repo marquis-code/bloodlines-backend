@@ -19,10 +19,12 @@ const mongoose_2 = require("@nestjs/mongoose");
 const request_role_upgrade_schema_1 = require("./schemas/request-role-upgrade.schema");
 const user_schema_1 = require("../user/schemas/user.schema");
 const role_enum_1 = require("../../common/enums/role.enum");
+const email_service_1 = require("../email/email.service");
 let RoleUpgradeService = class RoleUpgradeService {
-    constructor(roleUpgradeModel, userModel) {
+    constructor(roleUpgradeModel, userModel, emailService) {
         this.roleUpgradeModel = roleUpgradeModel;
         this.userModel = userModel;
+        this.emailService = emailService;
     }
     async requestRoleUpgrade(userId, requestDto) {
         const user = await this.userModel.findById(userId);
@@ -46,7 +48,14 @@ let RoleUpgradeService = class RoleUpgradeService {
             throw new common_1.BadRequestException("You need at least 5 successful donations to become a Pulse Leader");
         }
         const roleUpgradeRequest = new this.roleUpgradeModel(Object.assign({ userId }, requestDto));
-        return roleUpgradeRequest.save();
+        const savedRequest = await roleUpgradeRequest.save();
+        try {
+            await this.emailService.sendRoleUpgradeNotification(user.email, user.fullName, requestDto.requestedRole);
+        }
+        catch (error) {
+            console.error("Failed to send role upgrade notification email.", error);
+        }
+        return savedRequest;
     }
     async getPendingRequests(limit = 10, skip = 0) {
         return this.roleUpgradeModel
@@ -73,6 +82,12 @@ let RoleUpgradeService = class RoleUpgradeService {
         request.reviewedBy = adminId;
         request.reviewDate = new Date();
         await request.save();
+        try {
+            await this.emailService.sendRoleUpgradeApproved(user.email, user.fullName, request.requestedRole);
+        }
+        catch (error) {
+            console.error("Failed to send role upgrade approved email.", error);
+        }
         return { message: "Role upgrade approved successfully" };
     }
     async rejectUpgrade(requestId, adminId, rejectionReason) {
@@ -85,6 +100,15 @@ let RoleUpgradeService = class RoleUpgradeService {
         request.reviewDate = new Date();
         request.rejectionReason = rejectionReason;
         await request.save();
+        const user = await this.userModel.findById(request.userId);
+        if (user) {
+            try {
+                await this.emailService.sendRoleUpgradeRejected(user.email, user.fullName, request.requestedRole, rejectionReason);
+            }
+            catch (error) {
+                console.error("Failed to send role upgrade rejected email.", error);
+            }
+        }
         return { message: "Role upgrade rejected successfully" };
     }
     async getUserUpgradeHistory(userId) {
@@ -97,6 +121,7 @@ exports.RoleUpgradeService = RoleUpgradeService = __decorate([
     __param(0, (0, mongoose_2.InjectModel)(request_role_upgrade_schema_1.RoleUpgradeRequest.name)),
     __param(1, (0, mongoose_2.InjectModel)(user_schema_1.User.name)),
     __metadata("design:paramtypes", [mongoose_1.Model,
-        mongoose_1.Model])
+        mongoose_1.Model,
+        email_service_1.EmailService])
 ], RoleUpgradeService);
 //# sourceMappingURL=role-upgrade.service.js.map

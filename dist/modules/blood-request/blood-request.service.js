@@ -22,11 +22,13 @@ const role_enum_1 = require("../../common/enums/role.enum");
 const request_status_enum_1 = require("../../common/enums/request-status.enum");
 const donor_response_enum_1 = require("../../common/enums/donor-response.enum");
 const blood_request_gateway_1 = require("./blood-request.gateway");
+const notification_service_1 = require("../notification/notification.service");
 let BloodRequestService = class BloodRequestService {
-    constructor(bloodRequestModel, userModel, bloodRequestGateway) {
+    constructor(bloodRequestModel, userModel, bloodRequestGateway, notificationService) {
         this.bloodRequestModel = bloodRequestModel;
         this.userModel = userModel;
         this.bloodRequestGateway = bloodRequestGateway;
+        this.notificationService = notificationService;
     }
     async createBloodRequest(userId, createDto) {
         const user = await this.userModel.findById(userId);
@@ -49,6 +51,20 @@ let BloodRequestService = class BloodRequestService {
             lng: user.geoLocation.coordinates[0],
         };
         await this.bloodRequestGateway.notifyNearbyDonors(populatedRequest, bridgerLocation);
+        try {
+            const nearbyDonors = await this.bloodRequestGateway.findNearbyDonors(populatedRequest.bloodType, bridgerLocation, 50);
+            const donorIds = nearbyDonors.map(d => d._id.toString());
+            await this.notificationService.notifyNewBloodRequest(donorIds, {
+                requestId: savedRequest._id,
+                bloodType: populatedRequest.bloodType,
+                unitsNeeded: populatedRequest.unitsNeeded,
+                priorityLevel: populatedRequest.priorityLevel,
+                facilityName: populatedRequest.createdBy.facilityName
+            });
+        }
+        catch (error) {
+            console.error("Failed to send blood request email notifications", error);
+        }
         return savedRequest;
     }
     async getActiveRequests(limit = 10, skip = 0) {
@@ -109,6 +125,16 @@ let BloodRequestService = class BloodRequestService {
         request.donorResponseStatus = donor_response_enum_1.DonorResponse.ACCEPTED;
         await request.save();
         await this.bloodRequestGateway.notifyDonorAcceptance(requestId, donorId);
+        try {
+            await this.notificationService.notifyDonorAcceptance(request.createdBy.toString(), {
+                fullName: donor.fullName,
+                bloodGroup: donor.bloodGroup,
+                requestId: request._id
+            });
+        }
+        catch (error) {
+            console.error("Failed to send donor acceptance email notification", error);
+        }
         await this.bloodRequestGateway.broadcastRequestUpdate(requestId);
         return request;
     }
@@ -137,6 +163,13 @@ let BloodRequestService = class BloodRequestService {
             request.fulfillmentDate = new Date();
             await request.save();
             await this.bloodRequestGateway.notifyRequestFulfilled(requestId);
+            try {
+                const donorIds = request.assignedDonors.map(id => id.toString());
+                await this.notificationService.notifyRequestFulfilled(donorIds, requestId);
+            }
+            catch (error) {
+                console.error("Failed to send request fulfillment email notifications", error);
+            }
         }
         else {
             await request.save();
@@ -153,7 +186,21 @@ let BloodRequestService = class BloodRequestService {
         if (!((_a = request.assignedDonors) === null || _a === void 0 ? void 0 : _a.some(id => id.toString() === donorId))) {
             throw new common_1.ForbiddenException("You are not assigned to this request");
         }
+        const donor = await this.userModel.findById(donorId);
+        if (!donor) {
+            throw new common_1.NotFoundException("Donor not found");
+        }
         await this.bloodRequestGateway.notifyDonorArrival(requestId, donorId);
+        try {
+            await this.notificationService.notifyDonorArrival(request.createdBy.toString(), {
+                fullName: donor.fullName,
+                bloodGroup: donor.bloodGroup,
+                requestId: request._id
+            });
+        }
+        catch (error) {
+            console.error("Failed to send donor arrival email notification", error);
+        }
         return { message: "Arrival notification sent" };
     }
     async escalateRequest(requestId, userId) {
@@ -239,6 +286,7 @@ exports.BloodRequestService = BloodRequestService = __decorate([
     __param(1, (0, mongoose_2.InjectModel)(user_schema_1.User.name)),
     __metadata("design:paramtypes", [mongoose_1.Model,
         mongoose_1.Model,
-        blood_request_gateway_1.BloodRequestGateway])
+        blood_request_gateway_1.BloodRequestGateway,
+        notification_service_1.NotificationService])
 ], BloodRequestService);
 //# sourceMappingURL=blood-request.service.js.map

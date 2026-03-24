@@ -2,10 +2,12 @@ import { Model } from "mongoose";
 import { RoleUpgradeRequest } from "./schemas/request-role-upgrade.schema";
 import { User } from "../user/schemas/user.schema";
 import { RequestRoleUpgradeDto } from "./dtos/request-role-upgrade.dto";
+import { EmailService } from "../email/email.service";
 export declare class RoleUpgradeService {
     private roleUpgradeModel;
     private userModel;
-    constructor(roleUpgradeModel: Model<RoleUpgradeRequest>, userModel: Model<User>);
+    private emailService;
+    constructor(roleUpgradeModel: Model<RoleUpgradeRequest>, userModel: Model<User>, emailService: EmailService);
     requestRoleUpgrade(userId: string, requestDto: RequestRoleUpgradeDto): Promise<import("mongoose").Document<unknown, {}, RoleUpgradeRequest, {}, import("mongoose").DefaultSchemaOptions> & RoleUpgradeRequest & {
         _id: import("mongoose").Types.ObjectId;
     } & {

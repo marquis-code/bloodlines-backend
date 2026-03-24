@@ -76,43 +76,11 @@ let NotificationService = class NotificationService {
     }
     async sendEmailNotification(email, notification) {
         try {
-            if (typeof this.emailService.sendEmail === 'function') {
-                await this.emailService.sendEmail({
-                    to: email,
-                    subject: notification.title,
-                    html: this.generateEmailHTML(notification),
-                });
-            }
-            else if (typeof this.emailService.sendMail === 'function') {
-                await this.emailService.sendMail({
-                    to: email,
-                    subject: notification.title,
-                    html: this.generateEmailHTML(notification),
-                });
-            }
-            else {
-                console.warn(`EmailService does not have sendEmail or sendMail method. Skipping email to ${email}`);
-            }
+            await this.emailService.sendNotification(email, notification.title, notification.body, notification.data);
         }
         catch (error) {
             console.error("Failed to send email notification:", error);
         }
-    }
-    generateEmailHTML(notification) {
-        return `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #dc2626;">${notification.title}</h2>
-        <p style="font-size: 16px; color: #374151;">${notification.body}</p>
-        ${notification.data ? `
-          <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin-top: 20px;">
-            <pre style="margin: 0; white-space: pre-wrap;">${JSON.stringify(notification.data, null, 2)}</pre>
-          </div>
-        ` : ""}
-        <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">
-          Open the BloodLines app to take action.
-        </p>
-      </div>
-    `;
     }
     async sendSMSNotification(phoneNumber, notification) {
         console.log(`SMS to ${phoneNumber}: ${notification.title} - ${notification.body}`);

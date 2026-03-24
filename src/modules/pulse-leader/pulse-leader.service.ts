@@ -6,6 +6,7 @@ import { User } from "../user/schemas/user.schema"
 import { SearchDonorsFilterDto } from "./dto/search-donors.dto"
 import { BroadcastMessageDto } from "./dto/broadcast-message.dto"
 import { NotificationGateway } from "../notification/notification.gateway"
+import { NotificationService } from "../notification/notification.service"
 
 @Injectable()
 export class PulseLeaderService {
@@ -13,6 +14,7 @@ export class PulseLeaderService {
     @InjectModel(BloodRequest.name) private bloodRequestModel: Model<BloodRequest>,
     @InjectModel(User.name) private userModel: Model<User>,
     private notificationGateway: NotificationGateway,
+    private notificationService: NotificationService,
   ) {}
 
   // Dashboard Statistics
@@ -222,7 +224,7 @@ export class PulseLeaderService {
       recipients = await this.userModel.find(query).select("_id phoneNumber email").lean()
     }
 
-    // Send broadcast via WebSocket and optionally SMS/Push
+    // Send broadcast via WebSocket and optionally SMS/Push/Email
     const broadcastMessage = {
       id: `msg_${Date.now()}`,
       requestId: broadcastDto.requestId,
@@ -236,7 +238,6 @@ export class PulseLeaderService {
     }
 
     // Emit via WebSocket for real-time delivery
-    // Note: Using broadcastBloodRequest instead of non-existent broadcastDonationAlert
     recipients.forEach((recipient: any) => {
       this.notificationGateway.broadcastBloodRequest(
         {
@@ -251,8 +252,21 @@ export class PulseLeaderService {
       )
     })
 
-    // TODO: Integrate SMS delivery via Twilio if broadcastMethod includes 'SMS'
-    // TODO: Integrate Push notifications if broadcastMethod includes 'PUSH'
+    // Notify via Email
+    try {
+      const recipientIds = recipients.map(r => r._id.toString())
+      await this.notificationService.sendNotificationToMultipleUsers(recipientIds, {
+        title: "📢 Pulse Leader Broadcast",
+        body: broadcastDto.messageContent,
+        type: "general",
+        data: {
+          requestId: broadcastDto.requestId,
+          pulseLeaderId
+        }
+      })
+    } catch (error) {
+      console.error("Failed to send broadcast email notifications", error)
+    }
 
     return broadcastMessage
   }
