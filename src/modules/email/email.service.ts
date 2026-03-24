@@ -9,13 +9,12 @@ export class EmailService {
   private readonly defaultFrom: string
 
   constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>("RESEND_API_KEY")
+    const apiKey = this.configService.get<string>("email.apiKey")
     if (!apiKey) {
-      this.logger.warn("RESEND_API_KEY is not defined. Email sending will be disabled.")
+      this.logger.warn("RESEND_API_KEY is not defined in configuration. Email sending will be disabled.")
     }
     this.resend = new Resend(apiKey)
-    this.defaultFrom =
-      this.configService.get<string>("EMAIL_FROM") || "Bloodlines <noreply@bloodlinesfoundation.org>"
+    this.defaultFrom = this.configService.get<string>("email.from")
   }
 
   // ─── Core Send Method ──────────────────────────────────────────────
