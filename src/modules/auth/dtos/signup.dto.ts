@@ -1,6 +1,8 @@
-import { IsEmail, IsString, MinLength, Matches, IsEnum } from "class-validator"
-import { ApiProperty } from "@nestjs/swagger"
+import { IsEmail, IsString, MinLength, Matches, IsEnum, IsOptional, IsDateString } from "class-validator"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { Gender } from "../../../common/enums/gender.enum"
+import { BloodGroup } from "../../../common/enums/blood-group.enum"
+import { Genotype } from "../../../common/enums/genotype.enum"
 
 export class SignupDto {
   @ApiProperty({ example: "John Doe" })
@@ -30,5 +32,45 @@ export class SignupDto {
   @ApiProperty({ example: "Pass123!@#" })
   @IsString()
   confirmPassword: string
+
+  @ApiPropertyOptional({ enum: BloodGroup, example: BloodGroup.O_POSITIVE })
+  @IsOptional()
+  @IsEnum(BloodGroup)
+  bloodGroup?: BloodGroup
+
+  @ApiPropertyOptional({ enum: Genotype, example: Genotype.AA })
+  @IsOptional()
+  @IsEnum(Genotype)
+  genotype?: Genotype
+
+  @ApiPropertyOptional({ example: "Lagos, Nigeria" })
+  @IsOptional()
+  @IsString()
+  location?: string
+
+  @ApiPropertyOptional({ example: "123 Street Name" })
+  @IsOptional()
+  @IsString()
+  address?: string
+
+  @ApiPropertyOptional({ example: "Lagos" })
+  @IsOptional()
+  @IsString()
+  city?: string
+
+  @ApiPropertyOptional({ example: "Lagos State" })
+  @IsOptional()
+  @IsString()
+  state?: string
+
+  @ApiPropertyOptional({ example: "Nigeria" })
+  @IsOptional()
+  @IsString()
+  country?: string
+
+  @ApiPropertyOptional({ example: "2023-10-01" })
+  @IsOptional()
+  @IsDateString()
+  lastDonationDate?: string
 }
 

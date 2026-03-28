@@ -3,11 +3,11 @@ import { DonationRequest } from "./donation-request.type"
 import { DonationHistory } from "./donation-history.type"
 
 export class DonorStatus {
-  @ApiProperty({ example: "AVAILABLE" })
-  availability: string
+  @ApiProperty({ example: true })
+  isAvailable: boolean
 
   @ApiProperty({ example: "A+" })
-  bloodType: string
+  bloodGroup: string
 
   @ApiProperty({ example: "2024-04-01" })
   nextEligibilityDate: Date
@@ -118,10 +118,10 @@ export class DonorProfile {
   email: string
 
   @ApiProperty({ example: "+2348012345678" })
-  phone: string
+  phoneNumber: string
 
   @ApiProperty({ example: "A+" })
-  bloodType: string
+  bloodGroup: string
 
   @ApiPropertyOptional({ example: "AA" })
   genotype?: string
@@ -135,8 +135,26 @@ export class DonorProfile {
   @ApiProperty({ example: 3.3792 })
   longitude: number
 
-  @ApiProperty({ example: "AVAILABLE" })
-  availability: string
+  @ApiPropertyOptional({ example: "Lagos, Nigeria" })
+  location?: string
+
+  @ApiPropertyOptional({ example: "123 Street Name" })
+  address?: string
+
+  @ApiPropertyOptional({ example: "Lagos" })
+  city?: string
+
+  @ApiPropertyOptional({ example: "Lagos State" })
+  state?: string
+
+  @ApiPropertyOptional({ example: "Nigeria" })
+  country?: string
+
+  @ApiPropertyOptional({ example: "2023-10-01" })
+  lastDonationDate?: Date
+
+  @ApiProperty({ example: true })
+  isAvailable: boolean
 
   @ApiPropertyOptional({ example: "Jane Doe" })
   emergencyContact?: string

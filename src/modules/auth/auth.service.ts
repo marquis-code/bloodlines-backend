@@ -22,7 +22,22 @@ export class AuthService {
   ) {}
 
   async signup(signupDto: SignupDto) {
-    const { email, password, confirmPassword, fullName, gender, phoneNumber } = signupDto
+    const {
+      email,
+      password,
+      confirmPassword,
+      fullName,
+      gender,
+      phoneNumber,
+      bloodGroup,
+      genotype,
+      location,
+      address,
+      city,
+      state,
+      country,
+      lastDonationDate,
+    } = signupDto
 
     if (password !== confirmPassword) {
       throw new BadRequestException("Passwords do not match")
@@ -48,6 +63,14 @@ export class AuthService {
       fullName,
       gender,
       phoneNumber,
+      bloodGroup,
+      genotype,
+      location,
+      address,
+      city,
+      state,
+      country,
+      lastDonationDate: lastDonationDate ? new Date(lastDonationDate) : undefined,
       emailVerificationToken,
       emailVerificationExpiry,
       emailVerified: false,

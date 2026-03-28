@@ -11,6 +11,7 @@ import {
 import {
   DonorDashboard,
   DonorProfile,
+  DonorStatus,
   NotificationPreference,
   MedicalEligibility,
 } from "./types/donor-profile.type"
@@ -72,13 +73,19 @@ export class DonorService {
       id: user._id.toString(),
       fullName: user.fullName,
       email: user.email,
-      phone: user.phoneNumber || "",
-      bloodType: user.bloodGroup || "",
+      phoneNumber: user.phoneNumber || "",
+      bloodGroup: user.bloodGroup || "",
       genotype: user.genotype,
       gender: user.gender,
       latitude,
       longitude,
-      availability: user.isAvailable ? "Available" : "Unavailable",
+      location: user.location,
+      address: user.address,
+      city: user.city,
+      state: user.state,
+      country: user.country,
+      lastDonationDate: user.lastDonationDate,
+      isAvailable: !!user.isAvailable,
       emergencyContact: user.emergencyContact,
       emergencyContactPhone: user.emergencyContactPhone,
       createdAt: user.createdAt,
@@ -90,10 +97,16 @@ export class DonorService {
     const updateData: any = {}
     
     if (input.fullName) updateData.fullName = input.fullName
-    if (input.phone) updateData.phoneNumber = input.phone
-    if (input.bloodType) updateData.bloodGroup = input.bloodType
+    if (input.phoneNumber) updateData.phoneNumber = input.phoneNumber
+    if (input.bloodGroup) updateData.bloodGroup = input.bloodGroup
     if (input.genotype) updateData.genotype = input.genotype
     if (input.gender) updateData.gender = input.gender
+    if (input.location) updateData.location = input.location
+    if (input.address) updateData.address = input.address
+    if (input.city) updateData.city = input.city
+    if (input.state) updateData.state = input.state
+    if (input.country) updateData.country = input.country
+    if (input.lastDonationDate) updateData.lastDonationDate = new Date(input.lastDonationDate)
     if (input.emergencyContact) updateData.emergencyContact = input.emergencyContact
     if (input.emergencyContactPhone) updateData.emergencyContactPhone = input.emergencyContactPhone
     
@@ -105,8 +118,8 @@ export class DonorService {
       }
     }
     
-    if (input.availability) {
-      updateData.isAvailable = input.availability === "Available"
+    if (input.isAvailable !== undefined) {
+      updateData.isAvailable = input.isAvailable
     }
 
     const user = await this.userModel.findByIdAndUpdate(userId, updateData, { new: true })
@@ -419,11 +432,10 @@ export class DonorService {
       remainingFields: fields.filter((f) => !completed.includes(f)),
     }
   }
-
-  private getDonorStatus(user: any): any {
+  private getDonorStatus(user: any): DonorStatus {
     return {
-      availability: user.isAvailable ? "Available" : "Unavailable",
-      bloodType: user.bloodGroup || "Unknown",
+      isAvailable: !!user.isAvailable,
+      bloodGroup: user.bloodGroup || "Unknown",
       nextEligibilityDate: this.calculateNextEligibilityDate(user),
       lastDonationDate: user.lastDonationDate,
     }

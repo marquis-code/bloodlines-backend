@@ -28,6 +28,44 @@ export class UserType {
   @ApiPropertyOptional({ example: "2024-01-01" })
   lastDonationDate?: string
 
+  @ApiPropertyOptional({ example: "123 Street Name" })
+  address?: string
+
+  @ApiPropertyOptional({ example: "Lagos" })
+  city?: string
+
+  @ApiPropertyOptional({ example: "Lagos State" })
+  state?: string
+
+  @ApiPropertyOptional({ example: "Nigeria" })
+  country?: string
+
+  @ApiPropertyOptional({
+    example: { type: "Point", coordinates: [3.3792, 6.5244] },
+  })
+  geoLocation?: {
+    type: string
+    coordinates: number[]
+  }
+
+  @ApiProperty({ example: true })
+  isAvailable: boolean
+
+  @ApiPropertyOptional({ example: "Jane Doe" })
+  emergencyContact?: string
+
+  @ApiPropertyOptional({ example: "+2348098765432" })
+  emergencyContactPhone?: string
+
+  @ApiProperty({ example: true })
+  emailNotifications: boolean
+
+  @ApiProperty({ example: true })
+  smsNotifications: boolean
+
+  @ApiProperty({ example: true })
+  pushNotifications: boolean
+
   @ApiProperty({ example: true })
   emailVerified: boolean
 
