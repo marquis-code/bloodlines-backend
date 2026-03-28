@@ -1,38 +1,34 @@
-import { IsEmail, IsString, MinLength, Matches, IsEnum } from "class-validator";
-import { InputType, Field } from "@nestjs/graphql";
-import { Gender } from "../../../common/enums/gender.enum";
+import { IsEmail, IsString, MinLength, Matches, IsEnum } from "class-validator"
+import { ApiProperty } from "@nestjs/swagger"
+import { Gender } from "../../../common/enums/gender.enum"
 
-@InputType()
 export class SignupDto {
-  @Field()
+  @ApiProperty({ example: "John Doe" })
   @IsString()
-  fullName: string;
+  fullName: string
 
-  @Field(() => Gender)
+  @ApiProperty({ enum: Gender, example: Gender.MALE })
   @IsEnum(Gender)
-  gender: Gender;
+  gender: Gender
 
-  @Field()
+  @ApiProperty({ example: "+2348012345678" })
   @IsString()
-  phoneNumber: string;
+  phoneNumber: string
 
-  @Field()
+  @ApiProperty({ example: "john@example.com" })
   @IsEmail()
-  email: string;
+  email: string
 
-  @Field()
+  @ApiProperty({ example: "Pass123!@#" })
   @IsString()
   @MinLength(8, { message: "Password must be at least 8 characters" })
-  @Matches(/[A-Z]/, {
-    message: "Password must contain at least one uppercase letter",
-  })
-  @Matches(/\d/, { message: "Password must contain at least one number" })
-  @Matches(/[!@#$%^&*]/, {
-    message: "Password must contain at least one special character",
-  })
-  password: string;
+  @Matches(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+  @Matches(/[0-9]/, { message: "Password must contain at least one number" })
+  @Matches(/[!@#$%^&*]/, { message: "Password must contain at least one special character" })
+  password: string
 
-  @Field()
+  @ApiProperty({ example: "Pass123!@#" })
   @IsString()
-  confirmPassword: string;
+  confirmPassword: string
 }
+

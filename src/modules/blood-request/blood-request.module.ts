@@ -1,9 +1,12 @@
 import { Module } from "@nestjs/common"
 import { MongooseModule } from "@nestjs/mongoose"
+import { JwtModule } from "@nestjs/jwt"
 import { BloodRequestService } from "./blood-request.service"
-import { BloodRequestResolver } from "./blood-request.resolver"
+import { BloodRequestController } from "./blood-request.controller"
+import { BloodRequestGateway } from "./blood-request.gateway"
 import { BloodRequest, BloodRequestSchema } from "./schema/blood-request.schema"
 import { User, UserSchema } from "../user/schemas/user.schema"
+import { NotificationModule } from "../notification/notification.module"
 
 @Module({
   imports: [
@@ -11,8 +14,11 @@ import { User, UserSchema } from "../user/schemas/user.schema"
       { name: BloodRequest.name, schema: BloodRequestSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    JwtModule,
+    NotificationModule,
   ],
-  providers: [BloodRequestService, BloodRequestResolver],
-  exports: [BloodRequestService],
+  providers: [BloodRequestService, BloodRequestGateway],
+  controllers: [BloodRequestController],
+  exports: [BloodRequestService, BloodRequestGateway],
 })
-export class BloodRequestModule {}
+export class BloodRequestModule { }

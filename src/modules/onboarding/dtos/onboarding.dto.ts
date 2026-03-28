@@ -1,61 +1,53 @@
-import {
-  IsEmail,
-  IsString,
-  IsEnum,
-  IsDateString,
-  IsOptional,
-} from "class-validator";
-import { InputType, Field } from "@nestjs/graphql";
-import { BloodGroup } from "../../../common/enums/blood-group.enum";
-import { Genotype } from "../../../common/enums/genotype.enum";
+import { IsEmail, IsString, IsEnum, IsDateString, IsOptional } from "class-validator"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
+import { BloodGroup } from "../../../common/enums/blood-group.enum"
+import { Genotype } from "../../../common/enums/genotype.enum"
 
-@InputType()
 export class OnboardingStep1Dto {
-  @Field()
+  @ApiProperty({ example: "John Doe" })
   @IsString()
-  fullName: string;
+  fullName: string
 
-  @Field()
+  @ApiProperty({ example: "Male" })
   @IsString()
-  gender: string;
+  gender: string
 
-  @Field()
+  @ApiProperty({ example: "+2348012345678" })
   @IsString()
-  phoneNumber: string;
+  phoneNumber: string
 }
 
-@InputType()
 export class OnboardingStep2Dto {
-  @Field()
+  @ApiProperty({ example: "john@example.com" })
   @IsEmail()
-  email: string;
+  email: string
 
-  @Field(() => BloodGroup)
+  @ApiProperty({ enum: BloodGroup, example: BloodGroup.A_POSITIVE })
   @IsEnum(BloodGroup)
-  bloodGroup: BloodGroup;
+  bloodGroup: BloodGroup
 
-  @Field(() => Genotype, { nullable: true })
+  @ApiPropertyOptional({ enum: Genotype, example: Genotype.AA })
   @IsOptional()
   @IsEnum(Genotype)
-  genotype?: Genotype;
+  genotype?: Genotype
 
-  @Field()
+  @ApiProperty({ example: "Lagos, Nigeria" })
   @IsString()
-  location: string;
+  location: string
 
-  @Field({ nullable: true })
+  @ApiPropertyOptional({ example: "2024-01-01" })
   @IsOptional()
   @IsDateString()
-  lastDonationDate?: string;
+  lastDonationDate?: string
 }
 
-@InputType()
 export class CompleteOnboardingDto {
-  @Field()
+  @ApiProperty({ example: "password123" })
   @IsString()
-  password: string;
+  password: string
 
-  @Field()
+  @ApiProperty({ example: "password123" })
   @IsString()
-  confirmPassword: string;
+  confirmPassword: string
 }
+

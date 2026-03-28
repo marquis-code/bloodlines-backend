@@ -1,16 +1,15 @@
-import { ObjectType, Field } from "@nestjs/graphql"
+import { ApiProperty } from "@nestjs/swagger"
 
-@ObjectType()
 export class AuthResponse {
-  @Field()
+  @ApiProperty({ example: "ey..." })
   accessToken: string
 
-  @Field()
+  @ApiProperty({ example: "Login successful" })
   message: string
 }
 
-@ObjectType()
 export class MessageResponse {
-  @Field()
+  @ApiProperty({ example: "Operation successful" })
   message: string
 }
+

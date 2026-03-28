@@ -5,12 +5,14 @@ import { RoleUpgradeRequest } from "./schemas/request-role-upgrade.schema"
 import { User } from "../user/schemas/user.schema"
 import { UserRole } from "../../common/enums/role.enum"
 import { RequestRoleUpgradeDto } from "./dtos/request-role-upgrade.dto"
+import { EmailService } from "../email/email.service"
 
 @Injectable()
 export class RoleUpgradeService {
   constructor(
     @InjectModel(RoleUpgradeRequest.name) private roleUpgradeModel: Model<RoleUpgradeRequest>,
     @InjectModel(User.name) private userModel: Model<User>,
+    private emailService: EmailService,
   ) {}
 
   async requestRoleUpgrade(userId: string, requestDto: RequestRoleUpgradeDto) {
@@ -49,7 +51,15 @@ export class RoleUpgradeService {
       ...requestDto,
     })
 
-    return roleUpgradeRequest.save()
+    const savedRequest = await roleUpgradeRequest.save()
+
+    try {
+      await this.emailService.sendRoleUpgradeNotification(user.email, user.fullName, requestDto.requestedRole)
+    } catch (error) {
+      console.error("Failed to send role upgrade notification email.", error)
+    }
+
+    return savedRequest
   }
 
   async getPendingRequests(limit = 10, skip = 0) {
@@ -82,6 +92,12 @@ export class RoleUpgradeService {
     request.reviewDate = new Date()
     await request.save()
 
+    try {
+      await this.emailService.sendRoleUpgradeApproved(user.email, user.fullName, request.requestedRole)
+    } catch (error) {
+      console.error("Failed to send role upgrade approved email.", error)
+    }
+
     return { message: "Role upgrade approved successfully" }
   }
 
@@ -96,6 +112,15 @@ export class RoleUpgradeService {
     request.reviewDate = new Date()
     request.rejectionReason = rejectionReason
     await request.save()
+
+    const user = await this.userModel.findById(request.userId)
+    if (user) {
+      try {
+        await this.emailService.sendRoleUpgradeRejected(user.email, user.fullName, request.requestedRole, rejectionReason)
+      } catch (error) {
+        console.error("Failed to send role upgrade rejected email.", error)
+      }
+    }
 
     return { message: "Role upgrade rejected successfully" }
   }

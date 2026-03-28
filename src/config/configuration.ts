@@ -2,7 +2,7 @@ export default () => ({
   nodeEnv: process.env.NODE_ENV || "development",
   port: parseInt(process.env.PORT || "3001", 10),
   database: {
-    uri: process.env.MONGODB_URI || "mongodb://localhost:27017/bloodlines",
+    uri: process.env.MONGODB_URI,
   },
   jwt: {
     secret: process.env.JWT_SECRET || "your-secret-key",
@@ -11,13 +11,9 @@ export default () => ({
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "30d",
   },
   email: {
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: Number.parseInt(process.env.SMTP_PORT || "587"),
-    user: process.env.SMTP_USER || "",
-    clientId: process.env.OAUTH_CLIENTID || "",
-    clientSecret: process.env.OAUTH_SECRET || "",
-    refreshToken: process.env.OAUTH_REFRESH || "",
-    from: process.env.SMTP_FROM || "noreply@bloodlines.com",
+    apiKey: process.env.RESEND_API_KEY || "resend-api-key",
+    from:
+      process.env.EMAIL_FROM || "Bloodlines <noreply@bloodlinesfoundation.org>",
   },
   axios: {
     timeout: parseInt(process.env.AXIOS_TIMEOUT || "5000", 10),
