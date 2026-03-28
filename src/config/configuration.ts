@@ -11,8 +11,9 @@ export default () => ({
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "30d",
   },
   email: {
-    apiKey: process.env.RESEND_API_KEY || "",
-    from: process.env.EMAIL_FROM || "Bloodlines <noreply@bloodlinesfoundation.org>",
+    apiKey: process.env.RESEND_API_KEY || "resend-api-key",
+    from:
+      process.env.EMAIL_FROM || "Bloodlines <noreply@bloodlinesfoundation.org>",
   },
   axios: {
     timeout: parseInt(process.env.AXIOS_TIMEOUT || "5000", 10),
@@ -29,4 +30,4 @@ export default () => ({
     version: process.env.APP_VERSION || "1.0.0",
     apiPrefix: process.env.API_PREFIX || "api",
   },
-})
+});

@@ -1,19 +1,19 @@
-import { Module } from "@nestjs/common"
-import { ConfigModule, ConfigService } from "@nestjs/config"
-import { MongooseModule } from "@nestjs/mongoose"
-import { HttpModule } from "@nestjs/axios"
-import configuration from "./config/configuration"
-import { AuthModule } from "./modules/auth/auth.module"
-import { UserModule } from "./modules/user/user.module"
-import { OnboardingModule } from "./modules/onboarding/onboarding.module"
-import { EmailModule } from "./modules/email/email.module"
-import { BloodRequestModule } from "./modules/blood-request/blood-request.module"
-import { AnalyticsModule } from "./modules/analytics/analytics.module"
-import { RoleUpgradeModule } from "./modules/role-upgrade/role-upgrade.module"
-import { DonorModule } from "./modules/donor/donor.module"
-import { PulseLeaderModule } from "./modules/pulse-leader/pulse-leader.module"
-import { NotificationModule } from "./modules/notification/notification.module"
-import jwtConfig from "./config/jwt.config"
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { MongooseModule } from "@nestjs/mongoose";
+import { HttpModule } from "@nestjs/axios";
+import configuration from "./config/configuration";
+import { AuthModule } from "./modules/auth/auth.module";
+import { UserModule } from "./modules/user/user.module";
+import { OnboardingModule } from "./modules/onboarding/onboarding.module";
+import { EmailModule } from "./modules/email/email.module";
+import { BloodRequestModule } from "./modules/blood-request/blood-request.module";
+import { AnalyticsModule } from "./modules/analytics/analytics.module";
+import { RoleUpgradeModule } from "./modules/role-upgrade/role-upgrade.module";
+import { DonorModule } from "./modules/donor/donor.module";
+import { PulseLeaderModule } from "./modules/pulse-leader/pulse-leader.module";
+import { NotificationModule } from "./modules/notification/notification.module";
+import jwtConfig from "./config/jwt.config";
 
 @Module({
   imports: [
@@ -49,7 +49,7 @@ import jwtConfig from "./config/jwt.config"
     AuthModule,
     UserModule,
     OnboardingModule,
-    EmailModule,
+    // EmailModule,
     BloodRequestModule,
     AnalyticsModule,
     RoleUpgradeModule,
@@ -58,4 +58,4 @@ import jwtConfig from "./config/jwt.config"
     NotificationModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}
