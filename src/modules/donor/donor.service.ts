@@ -1,30 +1,39 @@
-import { Injectable } from "@nestjs/common"
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common"
 import { InjectModel } from "@nestjs/mongoose"
 import { Model } from "mongoose"
-import { User } from "../user/schemas/user.schema"
+import { DonorResponse } from "../../common/enums/donor-response.enum"
+import { RequestStatus } from "../../common/enums/request-status.enum"
+import { UserRole } from "../../common/enums/role.enum"
 import { BloodRequest } from "../blood-request/schema/blood-request.schema"
+import { NotificationService } from "../notification/notification.service"
+import { User } from "../user/schemas/user.schema"
+import { AcceptRequestInput } from "./dto/accept-request.dto"
+import { RejectRequestInput } from "./dto/reject-request.dto"
+import { SubmitFeedbackInput } from "./dto/submit-feedback.dto"
+import { UpdateAvailabilityInput } from "./dto/update-availability.dto"
+import { UpdateNotificationPreferencesInput } from "./dto/update-notification-preferences.dto"
+import { UpdateProfileInput } from "./dto/update-profile.dto"
+import { UpdateProgressInput } from "./dto/update-progress.dto"
+import { DonationHistory } from "./types/donation-history.type"
 import {
   DonationProgressStatusEnum,
   DonationProgressUpdate,
   DonationRequest,
+  DonationRequestStatusEnum,
 } from "./types/donation-request.type"
 import {
   DonorDashboard,
   DonorProfile,
-  NotificationPreference,
   MedicalEligibility,
+  NotificationPreference,
 } from "./types/donor-profile.type"
-import { ResourcesPage, ResourceCategoryEnum, type Resource } from "./types/resource.type"
 import { DonationFeedback } from "./types/feedback.type"
-import { AcceptRequestInput } from "./dto/accept-request.dto"
-import { RejectRequestInput } from "./dto/reject-request.dto"
-import { SubmitFeedbackInput } from "./dto/submit-feedback.dto"
-import { UpdateProgressInput } from "./dto/update-progress.dto"
-import { UpdateProfileInput } from "./dto/update-profile.dto"
-import { UpdateAvailabilityInput } from "./dto/update-availability.dto"
-import { UpdateNotificationPreferencesInput } from "./dto/update-notification-preferences.dto"
-import { DonationHistory } from "./types/donation-history.type"
-import { NotificationService } from "../notification/notification.service"
+import { Resource, ResourceCategoryEnum, ResourcesPage } from "./types/resource.type"
 
 @Injectable()
 export class DonorService {
@@ -37,19 +46,24 @@ export class DonorService {
   // ============= DASHBOARD & PROFILE =============
 
   async getDonorDashboard(userId: string): Promise<DonorDashboard> {
-    const user = await this.userModel.findById(userId)
-    if (!user) throw new Error("User not found")
+    const user = await this.getDonorUserOrThrow(userId)
+    const welcomeMessage = `Welcome back, ${this.getFirstName(user.fullName)}!`
 
+    const nearbyRequests = await this.getNearbyBloodRequests(userId, 50)
+    const impact = await this.calculateDonorImpact(userId, user)
     const profileCompletion = this.calculateProfileCompletion(user)
     const donorStatus = this.getDonorStatus(user)
-    const impact = await this.calculateDonorImpact(userId)
-    const achievements = await this.getUserAchievements(userId)
-    const nearbyRequests = await this.getNearbyBloodRequests(userId, 50)
+    const achievements = await this.getUserAchievements(user, impact)
     const donationHistory = await this.getDonationHistory(userId, 5)
     const communityActivity = await this.getCommunityActivity()
 
     return {
-      welcomeMessage: `Welcome back, ${user.fullName}! 👋`,
+      welcomeMessage,
+      hero: {
+        title: welcomeMessage,
+        subtitle: this.buildNearbyRequestsSubtitle(nearbyRequests.length),
+        nearbyRequestsCount: nearbyRequests.length,
+      },
       profileCompletion,
       donorStatus,
       impact,
@@ -61,10 +75,8 @@ export class DonorService {
   }
 
   async getDonorProfile(userId: string): Promise<DonorProfile> {
-    const user = await this.userModel.findById(userId)
-    if (!user) throw new Error("User not found")
+    const user = await this.getDonorUserOrThrow(userId)
 
-    // Extract coordinates from geoLocation if available
     const latitude = user.geoLocation?.coordinates?.[1] || 0
     const longitude = user.geoLocation?.coordinates?.[0] || 0
 
@@ -87,8 +99,10 @@ export class DonorService {
   }
 
   async updateProfile(userId: string, input: UpdateProfileInput): Promise<DonorProfile> {
+    await this.getDonorUserOrThrow(userId)
+
     const updateData: any = {}
-    
+
     if (input.fullName) updateData.fullName = input.fullName
     if (input.phone) updateData.phoneNumber = input.phone
     if (input.bloodType) updateData.bloodGroup = input.bloodType
@@ -96,43 +110,37 @@ export class DonorService {
     if (input.gender) updateData.gender = input.gender
     if (input.emergencyContact) updateData.emergencyContact = input.emergencyContact
     if (input.emergencyContactPhone) updateData.emergencyContactPhone = input.emergencyContactPhone
-    
-    // Update geoLocation if latitude and longitude are provided
+
     if (input.latitude !== undefined && input.longitude !== undefined) {
       updateData.geoLocation = {
         type: "Point",
         coordinates: [input.longitude, input.latitude],
       }
     }
-    
+
     if (input.availability) {
       updateData.isAvailable = input.availability === "Available"
     }
 
     const user = await this.userModel.findByIdAndUpdate(userId, updateData, { new: true })
-    if (!user) throw new Error("User not found")
+    if (!user) throw new NotFoundException("User not found")
 
     return this.getDonorProfile(userId)
   }
 
   async updateAvailability(userId: string, input: UpdateAvailabilityInput): Promise<DonorProfile> {
+    await this.getDonorUserOrThrow(userId)
+
     const isAvailable = input.status === "Available"
-    const user = await this.userModel.findByIdAndUpdate(
-      userId, 
-      { isAvailable }, 
-      { new: true }
-    )
-    if (!user) throw new Error("User not found")
+    const user = await this.userModel.findByIdAndUpdate(userId, { isAvailable }, { new: true })
+    if (!user) throw new NotFoundException("User not found")
 
     return this.getDonorProfile(userId)
   }
 
   // ============= NOTIFICATIONS & PREFERENCES =============
-  // Note: You'll need to create NotificationPreference schema or store in User schema
 
   async getNotificationPreferences(userId: string): Promise<NotificationPreference> {
-    // For now, return default preferences
-    // TODO: Create NotificationPreference schema
     return {
       id: userId,
       userId,
@@ -148,60 +156,74 @@ export class DonorService {
     userId: string,
     input: UpdateNotificationPreferencesInput,
   ): Promise<NotificationPreference> {
-    // TODO: Implement with NotificationPreference schema
     return this.getNotificationPreferences(userId)
   }
 
   // ============= BLOOD REQUESTS & DONATIONS =============
 
   async getNearbyBloodRequests(userId: string, radiusKm: number): Promise<DonationRequest[]> {
-    const user = await this.userModel.findById(userId)
-    if (!user) throw new Error("User not found")
-
-    // Get user coordinates
+    const user = await this.getDonorUserOrThrow(userId)
     const userLat = user.geoLocation?.coordinates?.[1]
     const userLng = user.geoLocation?.coordinates?.[0]
 
+    if (!user.bloodGroup) {
+      return []
+    }
+
     const requests = await this.bloodRequestModel
       .find({
-        status: "PENDING",
-        bloodType: user.bloodGroup, // Match donor's blood group
+        status: {
+          $in: [RequestStatus.PENDING, RequestStatus.CONFIRMED, RequestStatus.IN_PROGRESS],
+        },
+        bloodType: user.bloodGroup,
+        createdBy: { $ne: user._id },
       })
-      .populate("createdBy", "fullName facilityName")
-      .limit(10)
+      .populate("createdBy", "fullName facilityName facilityAddress address city state location geoLocation")
+      .sort({ createdAt: -1 })
+      .limit(25)
       .lean()
 
-    return requests.map((req: any) => {
-      const reqLat = req.createdBy?.geoLocation?.coordinates?.[1] || 0
-      const reqLng = req.createdBy?.geoLocation?.coordinates?.[0] || 0
-      
-      const distance = userLat && userLng 
-        ? this.calculateDistance(userLat, userLng, reqLat, reqLng)
-        : 0
+    return requests
+      .map((req: any) => {
+        const reqLat = req.createdBy?.geoLocation?.coordinates?.[1]
+        const reqLng = req.createdBy?.geoLocation?.coordinates?.[0]
+        const hasCoordinates = [userLat, userLng, reqLat, reqLng].every(
+          (coordinate) => typeof coordinate === "number",
+        )
 
-      return {
-        id: req._id.toString(),
-        bloodType: req.bloodType,
-        priority: req.priorityLevel,
-        unitsNeeded: req.unitsNeeded,
-        hospitalName: req.createdBy?.facilityName || "Unknown Hospital",
-        address: req.createdBy?.facilityName || "",
-        contactPhone: req.contactPhone || "",
-        instructions: req.additionalNotes || "",
-        createdAt: req.createdAt,
-        status: DonationProgressStatusEnum.ACCEPTED,
-        distance,
-      }
-    })
+        const distance = hasCoordinates ? this.calculateDistance(userLat, userLng, reqLat, reqLng) : 0
+
+        return {
+          id: req._id.toString(),
+          bloodType: req.bloodType,
+          priority: req.priorityLevel,
+          unitsNeeded: req.unitsNeeded,
+          hospitalName: req.createdBy?.facilityName || "Unknown Hospital",
+          address: this.formatFacilityAddress(req.createdBy),
+          contactPhone: req.contactPhone || "",
+          instructions: req.additionalNotes || "",
+          createdAt: req.createdAt,
+          status: this.mapRequestStatus(req.status),
+          distance,
+        }
+      })
+      .filter((request) => {
+        if (typeof userLat !== "number" || typeof userLng !== "number" || request.distance === 0) {
+          return true
+        }
+
+        return request.distance <= radiusKm
+      })
+      .slice(0, 10)
   }
 
   async getBloodRequestDetails(requestId: string): Promise<DonationRequest> {
     const request = await this.bloodRequestModel
       .findById(requestId)
-      .populate("createdBy", "fullName facilityName contactPhone")
+      .populate("createdBy", "fullName facilityName facilityAddress address city state location geoLocation")
       .lean()
-      
-    if (!request) throw new Error("Request not found")
+
+    if (!request) throw new NotFoundException("Request not found")
 
     const createdBy: any = request.createdBy
 
@@ -211,33 +233,38 @@ export class DonorService {
       priority: request.priorityLevel,
       unitsNeeded: request.unitsNeeded,
       hospitalName: createdBy?.facilityName || "Unknown Hospital",
-      address: createdBy?.facilityName || "",
+      address: this.formatFacilityAddress(createdBy),
       contactPhone: request.contactPhone || "",
       instructions: request.additionalNotes || "",
       createdAt: request.createdAt,
-      status: DonationProgressStatusEnum.ACCEPTED,
+      status: this.mapRequestStatus(request.status),
       distance: 0,
     }
   }
 
   async acceptBloodRequest(userId: string, input: AcceptRequestInput): Promise<DonationProgressUpdate> {
-    const request = await this.bloodRequestModel.findById(input.requestId)
-    if (!request) throw new Error("Request not found")
+    await this.getDonorUserOrThrow(userId)
 
-    // Add donor to assignedDonors array if not already there
+    const request = await this.bloodRequestModel.findById(input.requestId)
+    if (!request) throw new NotFoundException("Request not found")
+
+    if ([RequestStatus.FULFILLED, RequestStatus.CANCELLED, RequestStatus.EXPIRED].includes(request.status)) {
+      throw new BadRequestException("This request is no longer active")
+    }
+
     if (!request.assignedDonors) {
       request.assignedDonors = []
     }
-    
+
     const userObjectId = userId as any
-    if (!request.assignedDonors.some(id => id.toString() === userId)) {
+    if (!request.assignedDonors.some((id) => id.toString() === userId)) {
       request.assignedDonors.push(userObjectId)
     }
 
-    request.status = "ACCEPTED" as any
+    request.status = RequestStatus.IN_PROGRESS
+    request.donorResponseStatus = DonorResponse.ACCEPTED
     await request.save()
 
-    // Notify bridger via Email
     try {
       const donor = await this.userModel.findById(userId)
       if (donor) {
@@ -260,35 +287,39 @@ export class DonorService {
   }
 
   async rejectBloodRequest(userId: string, input: RejectRequestInput): Promise<void> {
-    // You may want to track rejections in the future
-    // For now, just acknowledge the rejection
+    return
   }
 
   async updateDonationProgress(userId: string, input: UpdateProgressInput): Promise<DonationProgressUpdate> {
-    const request = await this.bloodRequestModel.findById(input.requestId)
-    if (!request) throw new Error("Request not found")
+    await this.getDonorUserOrThrow(userId)
 
-    // Update request status based on progress
+    const request = await this.bloodRequestModel.findById(input.requestId)
+    if (!request) throw new NotFoundException("Request not found")
+
     if (input.status === DonationProgressStatusEnum.DONATION_COMPLETE) {
-      request.status = "FULFILLED" as any
+      request.status = RequestStatus.FULFILLED
       request.unitsConfirmed += 1
       request.fulfillmentDate = new Date()
-      
-      // Update donor stats
+
       const donor = await this.userModel.findById(userId)
       if (donor) {
         donor.donationCount = (donor.donationCount || 0) + 1
         donor.lastDonationDate = new Date()
+        donor.nextEligibleDate = this.calculateEligibilityDateFromLastDonation(donor.lastDonationDate, donor.gender)
         await donor.save()
       }
+    } else if (
+      input.status === DonationProgressStatusEnum.ON_YOUR_WAY ||
+      input.status === DonationProgressStatusEnum.ARRIVED_AT_HOSPITAL
+    ) {
+      request.status = RequestStatus.IN_PROGRESS
     }
 
     await request.save()
 
-    // Notify participants via Email if fulfilled
-    if (input.status === DonationProgressStatusEnum.DONATION_COMPLETE && request.status === "FULFILLED" as any) {
+    if (input.status === DonationProgressStatusEnum.DONATION_COMPLETE && request.status === RequestStatus.FULFILLED) {
       try {
-        const donorIds = request.assignedDonors.map(id => id.toString())
+        const donorIds = request.assignedDonors?.map((id) => id.toString()) || []
         await this.notificationService.notifyRequestFulfilled(donorIds, request._id.toString())
       } catch (error) {
         console.error("Failed to send request fulfillment email notifications", error)
@@ -305,27 +336,30 @@ export class DonorService {
   }
 
   async getDonationHistory(userId: string, limit: number): Promise<DonationHistory[]> {
+    await this.getDonorUserOrThrow(userId)
+
     const history = await this.bloodRequestModel
-      .find({ 
+      .find({
         assignedDonors: userId,
-        status: { $in: ["FULFILLED", "ACCEPTED"] }
+        status: RequestStatus.FULFILLED,
       })
-      .populate("createdBy", "fullName facilityName contactPhone")
-      .sort({ createdAt: -1 })
+      .populate("createdBy", "fullName facilityName facilityAddress address city state location")
+      .sort({ fulfillmentDate: -1, createdAt: -1 })
       .limit(limit)
       .lean()
 
     return history.map((req: any) => {
       const createdBy = req.createdBy || {}
+
       return {
         id: req._id.toString(),
         hospitalName: createdBy.facilityName || "Unknown Hospital",
         bloodType: req.bloodType,
-        unitsGiven: 1, // Assuming 1 unit per donation
+        unitsGiven: 1,
         donatedAt: req.fulfillmentDate || req.createdAt,
         status: req.status,
         facilityName: createdBy.facilityName || "",
-        facilityAddress: createdBy.facilityName || "",
+        facilityAddress: this.formatFacilityAddress(createdBy),
         facilityPhone: req.contactPhone || "",
       }
     })
@@ -362,13 +396,13 @@ export class DonorService {
     ]
 
     let filtered =
-      category === ResourceCategoryEnum.ALL ? allResources : allResources.filter((r) => r.category === category)
+      category === ResourceCategoryEnum.ALL ? allResources : allResources.filter((resource) => resource.category === category)
 
     if (searchQuery) {
       filtered = filtered.filter(
-        (r) =>
-          r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          r.description.toLowerCase().includes(searchQuery.toLowerCase()),
+        (resource) =>
+          resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          resource.description.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     }
 
@@ -382,7 +416,6 @@ export class DonorService {
   // ============= FEEDBACK =============
 
   async submitFeedback(userId: string, input: SubmitFeedbackInput): Promise<DonationFeedback> {
-    // TODO: Create Feedback schema to persist this
     return {
       id: new Date().getTime().toString(),
       requestId: input.requestId,
@@ -394,53 +427,91 @@ export class DonorService {
 
   // ============= HELPER METHODS =============
 
+  private async getDonorUserOrThrow(userId: string) {
+    const user = await this.userModel.findById(userId)
+    if (!user) {
+      throw new NotFoundException("User not found")
+    }
+
+    if (user.role !== UserRole.DONOR) {
+      throw new ForbiddenException("Only donors can access donor data")
+    }
+
+    return user
+  }
+
   private calculateProfileCompletion(user: any): any {
     const fields = [
-      "fullName", 
-      "email", 
-      "phoneNumber", 
-      "bloodGroup", 
-      "genotype", 
-      "geoLocation", 
-      "emergencyContact"
+      "fullName",
+      "email",
+      "phoneNumber",
+      "bloodGroup",
+      "genotype",
+      "geoLocation",
+      "emergencyContact",
+      "emergencyContactPhone",
     ]
-    const completed = fields.filter((field) => {
+
+    const completedFields = fields.filter((field) => {
       const value = user[field]
       if (field === "geoLocation") {
-        return value && value.coordinates && value.coordinates.length === 2
+        return value?.coordinates?.length === 2
       }
+
       return value !== undefined && value !== null && value !== ""
     })
-    const percent = Math.round((completed.length / fields.length) * 100)
+
+    const remainingFields = fields.filter((field) => !completedFields.includes(field))
+    const nextSteps = this.buildProfileNextSteps(remainingFields)
 
     return {
-      percentComplete: percent,
-      completedFields: completed,
-      remainingFields: fields.filter((f) => !completed.includes(f)),
+      title: "Complete Your Profile",
+      percentComplete: Math.round((completedFields.length / fields.length) * 100),
+      completedFields,
+      remainingFields,
+      message:
+        nextSteps.length > 0
+          ? `${this.joinSentenceParts(nextSteps)} to help us match you with nearby requests.`
+          : "Your donor profile is ready for matching.",
+      nextSteps,
     }
   }
 
   private getDonorStatus(user: any): any {
+    const nextEligibilityDate = this.calculateNextEligibilityDate(user)
+    const isEligibleNow = !user.lastDonationDate || nextEligibilityDate.getTime() <= Date.now()
+
     return {
       availability: user.isAvailable ? "Available" : "Unavailable",
       bloodType: user.bloodGroup || "Unknown",
-      nextEligibilityDate: this.calculateNextEligibilityDate(user),
+      nextEligibilityDate,
       lastDonationDate: user.lastDonationDate,
+      nextEligibilityLabel: isEligibleNow ? "Eligible now" : this.formatDate(nextEligibilityDate),
+      isEligibleNow,
     }
   }
 
   private calculateNextEligibilityDate(user: any): Date {
-    const daysBetweenDonations = user.gender === "male" ? 56 : 112
-    if (!user.lastDonationDate) return new Date() // Eligible now if never donated
+    if (user.lastDonationDate) {
+      return this.calculateEligibilityDateFromLastDonation(new Date(user.lastDonationDate), user.gender)
+    }
 
-    const nextDate = new Date(user.lastDonationDate)
-    nextDate.setDate(nextDate.getDate() + daysBetweenDonations)
+    if (user.nextEligibleDate) {
+      return new Date(user.nextEligibleDate)
+    }
+
+    return new Date()
+  }
+
+  private calculateEligibilityDateFromLastDonation(lastDonationDate: Date, gender: string): Date {
+    const waitingPeriodDays = gender === "Female" ? 112 : 56
+    const nextDate = new Date(lastDonationDate)
+    nextDate.setDate(nextDate.getDate() + waitingPeriodDays)
     return nextDate
   }
 
   async getMedicalEligibility(userId: string): Promise<MedicalEligibility> {
-    const user = await this.userModel.findById(userId)
-    if (!user) throw new Error("User not found")
+    const user = await this.getDonorUserOrThrow(userId)
 
     const nextEligibleDate = this.calculateNextEligibilityDate(user)
     const today = new Date()
@@ -449,6 +520,7 @@ export class DonorService {
     const daysSinceLastDonation = user.lastDonationDate
       ? Math.floor((today.getTime() - user.lastDonationDate.getTime()) / (1000 * 60 * 60 * 24))
       : 999
+
     const daysUntilEligible = Math.max(
       0,
       Math.floor((nextEligibleDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)),
@@ -463,74 +535,257 @@ export class DonorService {
     }
   }
 
-  private async calculateDonorImpact(userId: string): Promise<any> {
-    const donations = await this.bloodRequestModel.countDocuments({
+  private async calculateDonorImpact(userId: string, user: any): Promise<any> {
+    const fulfilledDonations = await this.bloodRequestModel.countDocuments({
       assignedDonors: userId,
-      status: "FULFILLED",
+      status: RequestStatus.FULFILLED,
     })
 
+    const emergenciesHandled = await this.bloodRequestModel.countDocuments({
+      assignedDonors: userId,
+      status: RequestStatus.FULFILLED,
+      priorityLevel: "CRITICAL",
+    })
+
+    const totalDonations = Math.max(user.donationCount || 0, user.totalDonations || 0, fulfilledDonations)
+    const livesPotentiallySaved = totalDonations * 3
+    const impactLevel = this.getImpactLevel(totalDonations)
+
     return {
-      totalDonations: donations,
-      livesImpacted: donations * 3,
-      emergenciesHandled: Math.floor(donations * 0.3),
-      newDonorsRecruited: Math.floor(donations * 0.1),
+      totalDonations,
+      livesImpacted: livesPotentiallySaved,
+      livesPotentiallySaved,
+      emergenciesHandled,
+      newDonorsRecruited: Math.floor(totalDonations / 5),
+      level: impactLevel.level,
+      levelLabel: `Level ${impactLevel.level}`,
+      message: impactLevel.message,
+      nextLevelDonationTarget: impactLevel.nextTarget,
     }
   }
 
-  private async getUserAchievements(userId: string): Promise<any[]> {
-    const donations = await this.bloodRequestModel.countDocuments({
-      assignedDonors: userId,
-      status: "FULFILLED",
+  private async getUserAchievements(user: any, impact: any): Promise<any[]> {
+    const activeResponses = await this.bloodRequestModel.countDocuments({
+      assignedDonors: user._id,
+      status: { $in: [RequestStatus.CONFIRMED, RequestStatus.IN_PROGRESS] },
     })
 
-    const achievements = []
-
-    if (donations >= 1) {
-      achievements.push({
-        id: "bronze",
+    const achievements = [
+      {
+        id: "bronze-lifesaver",
         name: "Bronze Lifesaver",
-        description: "5 donations completed",
+        description: `${impact.totalDonations} donation${impact.totalDonations === 1 ? "" : "s"} completed`,
         badge: "🥉",
-        unlockedAt: new Date(),
+        icon: "🥉",
+        unlockedAt: user.lastDonationDate || user.createdAt || new Date(),
         level: 1,
         streakDays: 0,
-      })
-    }
-
-    if (donations >= 5) {
-      achievements.push({
-        id: "silver",
-        name: "Silver Lifesaver",
-        description: "10 donations completed",
-        badge: "🥈",
-        unlockedAt: new Date(),
+        unlocked: impact.totalDonations >= 1,
+      },
+      {
+        id: "quick-responder",
+        name: "Quick Responder",
+        description:
+          activeResponses > 0
+            ? `Responding to ${activeResponses} active request${activeResponses === 1 ? "" : "s"}`
+            : "Availability turned on for emergency requests",
+        badge: "⚡",
+        icon: "⚡",
+        unlockedAt: user.updatedAt || user.createdAt || new Date(),
         level: 2,
         streakDays: 0,
-      })
-    }
+        unlocked: Boolean(user.isAvailable || activeResponses > 0 || impact.totalDonations >= 1),
+      },
+      {
+        id: "community-hero",
+        name: "Community Hero",
+        description: `Potentially saved ${impact.livesPotentiallySaved} lives`,
+        badge: "🏆",
+        icon: "🏆",
+        unlockedAt: user.lastDonationDate || user.createdAt || new Date(),
+        level: 3,
+        streakDays: 0,
+        unlocked: impact.totalDonations >= 3 || impact.livesPotentiallySaved >= 9,
+      },
+    ]
 
-    return achievements
+    return achievements.filter((achievement) => achievement.unlocked)
   }
 
   private async getCommunityActivity(): Promise<any[]> {
-    return [
-      {
-        id: "1",
-        message: "donated O+ blood at City General Hospital",
-        actorName: "John A.",
-        timestamp: new Date(),
-        icon: "❤️",
-      },
+    const activities = await this.bloodRequestModel
+      .find({
+        status: RequestStatus.FULFILLED,
+        assignedDonors: { $exists: true, $ne: [] },
+      })
+      .populate("createdBy", "facilityName")
+      .populate("assignedDonors", "fullName")
+      .sort({ fulfillmentDate: -1, updatedAt: -1 })
+      .limit(5)
+      .lean()
+
+    return activities.flatMap((request: any) => {
+      const donor = Array.isArray(request.assignedDonors) ? request.assignedDonors[0] : undefined
+      if (!donor?.fullName) {
+        return []
+      }
+
+      return [
+        {
+          id: request._id.toString(),
+          message: `donated ${request.bloodType} blood at ${request.createdBy?.facilityName || "a nearby hospital"}`,
+          actorName: this.abbreviateName(donor.fullName),
+          timestamp: request.fulfillmentDate || request.updatedAt || request.createdAt || new Date(),
+          icon: "❤️",
+        },
+      ]
+    })
+  }
+
+  private buildProfileNextSteps(remainingFields: string[]): string[] {
+    const steps = new Set<string>()
+
+    if (remainingFields.includes("emergencyContact") || remainingFields.includes("emergencyContactPhone")) {
+      steps.add("Add your emergency contact")
+    }
+
+    if (remainingFields.includes("geoLocation")) {
+      steps.add("Verify your location")
+    }
+
+    if (remainingFields.includes("bloodGroup")) {
+      steps.add("Add your blood type")
+    }
+
+    if (remainingFields.includes("genotype")) {
+      steps.add("Add your genotype")
+    }
+
+    if (remainingFields.includes("phoneNumber")) {
+      steps.add("Update your phone number")
+    }
+
+    return Array.from(steps)
+  }
+
+  private joinSentenceParts(parts: string[]): string {
+    if (parts.length === 0) {
+      return ""
+    }
+
+    if (parts.length === 1) {
+      return parts[0]
+    }
+
+    if (parts.length === 2) {
+      return `${parts[0]} and ${parts[1].toLowerCase()}`
+    }
+
+    const leadingParts = parts.slice(0, -1)
+    const lastPart = parts[parts.length - 1].toLowerCase()
+
+    return `${leadingParts.join(", ")}, and ${lastPart}`
+  }
+
+  private getImpactLevel(totalDonations: number) {
+    const levels = [
+      { level: 1, minDonations: 0, nextTarget: 3, message: "Your first donation can save up to 3 lives." },
+      { level: 2, minDonations: 3, nextTarget: 6, message: "You are building a lifesaving streak." },
+      { level: 3, minDonations: 6, nextTarget: 10, message: "Way to go lifesaver!" },
+      { level: 4, minDonations: 10, nextTarget: 20, message: "Your consistency is making a huge impact." },
+      { level: 5, minDonations: 20, nextTarget: undefined, message: "Your impact is extraordinary." },
     ]
+
+    const currentLevel =
+      levels
+        .slice()
+        .reverse()
+        .find((level) => totalDonations >= level.minDonations) || levels[0]
+
+    return {
+      level: currentLevel.level,
+      nextTarget: currentLevel.nextTarget,
+      message: currentLevel.message,
+    }
+  }
+
+  private buildNearbyRequestsSubtitle(count: number): string {
+    if (count === 0) {
+      return "No blood requests near you need your help right now"
+    }
+
+    if (count === 1) {
+      return "1 blood request near you needs your help"
+    }
+
+    return `${count} blood requests near you need your help`
+  }
+
+  private mapRequestStatus(status: RequestStatus): DonationRequestStatusEnum {
+    switch (status) {
+      case RequestStatus.PENDING:
+        return DonationRequestStatusEnum.PENDING
+      case RequestStatus.CONFIRMED:
+        return DonationRequestStatusEnum.CONFIRMED
+      case RequestStatus.IN_PROGRESS:
+        return DonationRequestStatusEnum.IN_PROGRESS
+      case RequestStatus.FULFILLED:
+        return DonationRequestStatusEnum.FULFILLED
+      case RequestStatus.CANCELLED:
+        return DonationRequestStatusEnum.CANCELLED
+      case RequestStatus.EXPIRED:
+        return DonationRequestStatusEnum.EXPIRED
+      default:
+        return DonationRequestStatusEnum.PENDING
+    }
+  }
+
+  private getFirstName(fullName?: string): string {
+    if (!fullName) {
+      return "there"
+    }
+
+    return fullName.trim().split(/\s+/)[0]
+  }
+
+  private formatFacilityAddress(createdBy: any): string {
+    const inlineCityState = [createdBy?.city, createdBy?.state].filter(Boolean).join(", ")
+    const addressParts = [createdBy?.facilityAddress, createdBy?.address, createdBy?.location, inlineCityState].filter(Boolean)
+
+    return addressParts.join(", ")
+  }
+
+  private formatDate(date: Date): string {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(date)
+  }
+
+  private abbreviateName(fullName?: string): string {
+    if (!fullName) {
+      return "Anonymous Donor"
+    }
+
+    const [firstName, lastName] = fullName.trim().split(/\s+/)
+    if (!lastName) {
+      return firstName
+    }
+
+    return `${firstName} ${lastName.charAt(0)}.`
   }
 
   private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371 // Earth's radius in km
+    const R = 6371
     const dLat = ((lat2 - lat1) * Math.PI) / 180
     const dLon = ((lon2 - lon1) * Math.PI) / 180
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2)
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
     return Math.round(R * c * 10) / 10
   }

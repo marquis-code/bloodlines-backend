@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
-import { DonationRequest } from "./donation-request.type"
 import { DonationHistory } from "./donation-history.type"
+import { DonationRequest } from "./donation-request.type"
 
 export class DonorStatus {
   @ApiProperty({ example: "AVAILABLE" })
@@ -14,6 +14,12 @@ export class DonorStatus {
 
   @ApiPropertyOptional({ example: "2024-01-01" })
   lastDonationDate?: Date
+
+  @ApiProperty({ example: "Sep 10, 2025" })
+  nextEligibilityLabel: string
+
+  @ApiProperty({ example: true })
+  isEligibleNow: boolean
 }
 
 export class DonorImpact {
@@ -23,11 +29,26 @@ export class DonorImpact {
   @ApiProperty({ example: 15 })
   livesImpacted: number
 
+  @ApiProperty({ example: 15 })
+  livesPotentiallySaved: number
+
   @ApiProperty({ example: 2 })
   emergenciesHandled: number
 
   @ApiProperty({ example: 1 })
   newDonorsRecruited: number
+
+  @ApiProperty({ example: 3 })
+  level: number
+
+  @ApiProperty({ example: "Level 3" })
+  levelLabel: string
+
+  @ApiProperty({ example: "Way to go lifesaver!" })
+  message: string
+
+  @ApiPropertyOptional({ example: 10 })
+  nextLevelDonationTarget?: number
 }
 
 export class Achievement {
@@ -43,6 +64,9 @@ export class Achievement {
   @ApiProperty({ example: "badge_icon_url" })
   badge: string
 
+  @ApiProperty({ example: "🏆" })
+  icon: string
+
   @ApiProperty({ example: "2024-01-01" })
   unlockedAt: Date
 
@@ -51,9 +75,15 @@ export class Achievement {
 
   @ApiProperty({ example: 1 })
   streakDays: number
+
+  @ApiProperty({ example: true })
+  unlocked: boolean
 }
 
 export class ProfileCompletion {
+  @ApiProperty({ example: "Complete Your Profile" })
+  title: string
+
   @ApiProperty({ example: 80 })
   percentComplete: number
 
@@ -62,6 +92,25 @@ export class ProfileCompletion {
 
   @ApiProperty({ type: [String], example: ["genotype"] })
   remainingFields: string[]
+
+  @ApiProperty({
+    example: "Add your emergency contact and verify your location to help us match you with nearby requests.",
+  })
+  message: string
+
+  @ApiProperty({ type: [String], example: ["Add your emergency contact", "Verify your location"] })
+  nextSteps: string[]
+}
+
+export class DashboardHero {
+  @ApiProperty({ example: "Welcome back, Abdul!" })
+  title: string
+
+  @ApiProperty({ example: "4 blood requests near you need your help" })
+  subtitle: string
+
+  @ApiProperty({ example: 4 })
+  nearbyRequestsCount: number
 }
 
 export class CommunityActivity {
@@ -84,6 +133,9 @@ export class CommunityActivity {
 export class DonorDashboard {
   @ApiProperty({ example: "Welcome back, John!" })
   welcomeMessage: string
+
+  @ApiProperty({ type: DashboardHero })
+  hero: DashboardHero
 
   @ApiProperty({ type: ProfileCompletion })
   profileCompletion: ProfileCompletion
@@ -168,7 +220,7 @@ export class NotificationPreference {
   communityUpdates: boolean
 
   @ApiProperty({ example: "daily" })
-  reminderFrequency: string // 'immediately', 'daily', 'weekly'
+  reminderFrequency: string
 
   @ApiProperty({ example: "2024-01-01" })
   updatedAt: Date
@@ -190,4 +242,3 @@ export class MedicalEligibility {
   @ApiProperty({ example: 60 })
   daysUntilEligible: number
 }
-

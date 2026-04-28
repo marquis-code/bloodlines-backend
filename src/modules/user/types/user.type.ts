@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
+import { DonorDashboard } from "../../donor/types/donor-profile.type"
 
 export class UserType {
   @ApiProperty({ example: "user_123" })
@@ -56,3 +57,10 @@ export class UserType {
   updatedAt: string
 }
 
+export class CurrentUserType extends UserType {
+  @ApiPropertyOptional({
+    type: DonorDashboard,
+    description: "Included for donor accounts when includeDashboard=true is passed to GET /users/me.",
+  })
+  dashboard?: DonorDashboard
+}

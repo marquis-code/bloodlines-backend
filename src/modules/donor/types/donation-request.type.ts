@@ -10,6 +10,15 @@ export enum DonationProgressStatusEnum {
   CANCELLED = "CANCELLED",
 }
 
+export enum DonationRequestStatusEnum {
+  PENDING = "PENDING",
+  CONFIRMED = "CONFIRMED",
+  IN_PROGRESS = "IN_PROGRESS",
+  FULFILLED = "FULFILLED",
+  CANCELLED = "CANCELLED",
+  EXPIRED = "EXPIRED",
+}
+
 export class DonationProgressUpdate {
   @ApiProperty({ example: "req_123" })
   requestId: string
@@ -61,8 +70,8 @@ export class DonationRequest {
   @ApiPropertyOptional({ example: "2024-02-21T09:30:00Z" })
   rejectedAt?: Date
 
-  @ApiProperty({ enum: DonationProgressStatusEnum, example: DonationProgressStatusEnum.ACCEPTED })
-  status: DonationProgressStatusEnum
+  @ApiProperty({ enum: DonationRequestStatusEnum, example: DonationRequestStatusEnum.PENDING })
+  status: DonationRequestStatusEnum
 
   @ApiProperty({ example: 5.2 })
   distance: number

@@ -1,18 +1,36 @@
-import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common"
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common"
+import { InjectModel } from "@nestjs/mongoose"
 import { Model } from "mongoose"
-import { InjectModel } from "@nestjs/mongoose" 
+import { UserRole } from "../../common/enums/role.enum"
+import { DonorService } from "../donor/donor.service"
 import { User } from "./schemas/user.schema"
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  private readonly userProjection =
+    "-password -emailVerificationToken -emailVerificationExpiry -passwordResetToken -passwordResetExpiry -__v"
 
-  async getUserById(id: string) {
-    const user = await this.userModel.findById(id)
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly donorService: DonorService,
+  ) {}
+
+  async getUserById(id: string, options?: { includeDashboard?: boolean }) {
+    const user = await this.userModel.findById(id).select(this.userProjection).lean()
     if (!user) {
       throw new NotFoundException("User not found")
     }
-    return user
+
+    const response: any = {
+      ...user,
+      id: user._id.toString(),
+    }
+
+    if (options?.includeDashboard && user.role === UserRole.DONOR) {
+      response.dashboard = await this.donorService.getDonorDashboard(id)
+    }
+
+    return response
   }
 
   async getUserByEmail(email: string) {
@@ -24,7 +42,8 @@ export class UserService {
     if (!user) {
       throw new NotFoundException("User not found")
     }
-    return user
+
+    return this.getUserById(id)
   }
 
   async updateProfile(userId: string, updateData: any) {
@@ -33,7 +52,6 @@ export class UserService {
       throw new NotFoundException("User not found")
     }
 
-    // Update allowed fields only
     if (updateData.fullName) user.fullName = updateData.fullName
     if (updateData.phoneNumber) {
       const existingPhone = await this.userModel.findOne({
@@ -49,15 +67,16 @@ export class UserService {
     if (updateData.bloodGroup) user.bloodGroup = updateData.bloodGroup
     if (updateData.genotype !== undefined) user.genotype = updateData.genotype
 
-    return user.save()
+    await user.save()
+    return this.getUserById(userId)
   }
 
   async getAllUsers() {
-    return this.userModel.find()
+    return this.userModel.find().select(this.userProjection).lean()
   }
 
   async getUsersByRole(role: string) {
-    return this.userModel.find({ role })
+    return this.userModel.find({ role }).select(this.userProjection).lean()
   }
 
   async incrementDonationCount(userId: string) {
