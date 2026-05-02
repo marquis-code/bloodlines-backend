@@ -29,6 +29,10 @@ export class SignupDto {
   @IsEnum(BloodGroup)
   bloodGroup: BloodGroup;
 
+  @ApiProperty({ example: "Lagos" })
+  @IsString()
+  location: string;
+
   @ApiProperty({ example: "Pass123!@#" })
   @IsString()
   @MinLength(8, { message: "Password must be at least 8 characters" })

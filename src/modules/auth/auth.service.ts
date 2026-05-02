@@ -36,6 +36,7 @@ export class AuthService {
       phoneNumber,
       genotype,
       bloodGroup,
+      location,
     } = signupDto;
 
     if (password !== confirmPassword) {
@@ -67,6 +68,7 @@ export class AuthService {
       emailVerified: false,
       genotype,
       bloodGroup,
+      location,
     });
 
     await user.save();
