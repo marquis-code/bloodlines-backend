@@ -11,6 +11,9 @@ export declare class BloodRequest {
     unitsNeeded: number;
     contactPhone: string;
     additionalNotes?: string;
+    patientCondition?: string;
+    requiredByDate?: Date;
+    statusHistory?: any[];
     status: RequestStatus;
     createdBy: Types.ObjectId;
     assignedDonors?: Types.ObjectId[];
@@ -72,6 +75,33 @@ export declare const BloodRequestSchema: import("mongoose").Schema<BloodRequest,
         id: string;
     }>;
     additionalNotes?: import("mongoose").SchemaDefinitionProperty<string, BloodRequest, import("mongoose").Document<unknown, {}, BloodRequest, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<BloodRequest & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    patientCondition?: import("mongoose").SchemaDefinitionProperty<string, BloodRequest, import("mongoose").Document<unknown, {}, BloodRequest, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<BloodRequest & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    requiredByDate?: import("mongoose").SchemaDefinitionProperty<Date, BloodRequest, import("mongoose").Document<unknown, {}, BloodRequest, {
+        id: string;
+    }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<BloodRequest & {
+        _id: Types.ObjectId;
+    } & {
+        __v: number;
+    }, "id"> & {
+        id: string;
+    }>;
+    statusHistory?: import("mongoose").SchemaDefinitionProperty<any[], BloodRequest, import("mongoose").Document<unknown, {}, BloodRequest, {
         id: string;
     }, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & Omit<BloodRequest & {
         _id: Types.ObjectId;

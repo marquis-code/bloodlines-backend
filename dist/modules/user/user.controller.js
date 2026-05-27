@@ -13,11 +13,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const user_service_1 = require("./user.service");
 const jwt_guard_1 = require("../auth/guards/jwt.guard");
 const current_user_decorator_1 = require("../auth/decorators/current-user.decorator");
+const update_user_profile_dto_1 = require("./dtos/update-user-profile.dto");
+const change_password_dto_1 = require("./dtos/change-password.dto");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -26,16 +29,20 @@ let UserController = class UserController {
         return this.userService.getUserById(user.userId);
     }
     async getUser(id) {
-        return this.userService.getUserById(id);
+        return this.userService.getPublicProfile(id);
     }
     async updateProfile(user, updateData) {
         return this.userService.updateProfile(user.userId, updateData);
+    }
+    async changePassword(user, changePasswordDto) {
+        return this.userService.changePassword(user.userId, changePasswordDto.oldPassword, changePasswordDto.newPassword);
     }
 };
 exports.UserController = UserController;
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     (0, common_1.Get)("me"),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -44,6 +51,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     (0, common_1.Get)(":id"),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -51,13 +59,24 @@ __decorate([
 ], UserController.prototype, "getUser", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
-    (0, common_1.Post)("profile"),
+    (0, common_1.Put)("me"),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, update_user_profile_dto_1.UpdateUserProfileDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "updateProfile", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, common_1.Put)("me/change-password"),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, change_password_dto_1.ChangePasswordDto]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "changePassword", null);
 exports.UserController = UserController = __decorate([
     (0, swagger_1.ApiTags)("Users"),
     (0, swagger_1.ApiBearerAuth)(),

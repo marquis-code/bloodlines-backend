@@ -51,6 +51,52 @@ __decorate([
     __metadata("design:type", String)
 ], UserType.prototype, "lastDonationDate", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "123 Street Name" }),
+    __metadata("design:type", String)
+], UserType.prototype, "address", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Lagos" }),
+    __metadata("design:type", String)
+], UserType.prototype, "city", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Lagos State" }),
+    __metadata("design:type", String)
+], UserType.prototype, "state", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Nigeria" }),
+    __metadata("design:type", String)
+], UserType.prototype, "country", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        example: { type: "Point", coordinates: [3.3792, 6.5244] },
+    }),
+    __metadata("design:type", Object)
+], UserType.prototype, "geoLocation", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true }),
+    __metadata("design:type", Boolean)
+], UserType.prototype, "isAvailable", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Jane Doe" }),
+    __metadata("design:type", String)
+], UserType.prototype, "emergencyContact", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "+2348098765432" }),
+    __metadata("design:type", String)
+], UserType.prototype, "emergencyContactPhone", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true }),
+    __metadata("design:type", Boolean)
+], UserType.prototype, "emailNotifications", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true }),
+    __metadata("design:type", Boolean)
+], UserType.prototype, "smsNotifications", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true }),
+    __metadata("design:type", Boolean)
+], UserType.prototype, "pushNotifications", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: true }),
     __metadata("design:type", Boolean)
 ], UserType.prototype, "emailVerified", void 0);

@@ -4,6 +4,8 @@ import { DonorService } from "./donor.service"
 import { DonorController } from "./donor.controller"
 import { User, UserSchema } from "../user/schemas/user.schema"
 import { BloodRequest, BloodRequestSchema } from "../blood-request/schema/blood-request.schema"
+import { DonorGoal, DonorGoalSchema } from "./schemas/donor-goal.schema"
+import { HealthScreening, HealthScreeningSchema } from "./schemas/health-screening.schema"
 import { NotificationModule } from "../notification/notification.module"
 
 @Module({
@@ -11,6 +13,8 @@ import { NotificationModule } from "../notification/notification.module"
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: BloodRequest.name, schema: BloodRequestSchema },
+      { name: DonorGoal.name, schema: DonorGoalSchema },
+      { name: HealthScreening.name, schema: HealthScreeningSchema },
     ]),
     NotificationModule,
   ],

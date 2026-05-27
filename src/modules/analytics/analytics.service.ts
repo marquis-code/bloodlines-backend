@@ -18,6 +18,21 @@ export class AnalyticsService {
     return this.bloodRequestModel.countDocuments()
   }
 
+  async getBridgerSpecificAnalytics(bridgerId: string) {
+    const totalRequests = await this.bloodRequestModel.countDocuments({ createdBy: bridgerId });
+    const fulfilledRequests = await this.bloodRequestModel.countDocuments({ createdBy: bridgerId, status: "FULFILLED" });
+    const emergencyRequests = await this.bloodRequestModel.countDocuments({ createdBy: bridgerId, priorityLevel: "CRITICAL" });
+    
+    const fulfillmentRate = totalRequests > 0 ? (fulfilledRequests / totalRequests) * 100 : 0;
+
+    return {
+      totalRequests,
+      fulfilledRequests,
+      emergencyRequests,
+      fulfillmentRate,
+    }
+  }
+
   async getBloodInventory() {
     const inventory = {}
     for (const bloodType of Object.values(BloodType)) {

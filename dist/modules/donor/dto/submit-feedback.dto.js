@@ -10,9 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubmitFeedbackInput = void 0;
+const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const feedback_type_1 = require("../types/feedback.type");
 class SubmitFeedbackInput {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { requestId: { required: true, type: () => String }, rating: { required: true, enum: require("../types/feedback.type").FeedbackRatingEnum }, comments: { required: false, type: () => String } };
+    }
 }
 exports.SubmitFeedbackInput = SubmitFeedbackInput;
 __decorate([

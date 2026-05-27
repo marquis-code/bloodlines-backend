@@ -3,6 +3,8 @@ import { SignupDto } from "./dtos/signup.dto";
 import { LoginDto } from "./dtos/login.dto";
 import { ForgotPasswordDto } from "./dtos/forgot-password.dto";
 import { ResetPasswordDto } from "./dtos/reset-password.dto";
+import { RefreshTokenDto } from "./dtos/refresh-token.dto";
+import { ResendVerificationDto } from "./dtos/resend-verification.dto";
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
@@ -15,6 +17,7 @@ export declare class AuthController {
     }>;
     login(loginDto: LoginDto): Promise<{
         accessToken: string;
+        refreshToken: string;
         user: {
             id: import("mongoose").Types.ObjectId;
             email: string;
@@ -27,6 +30,21 @@ export declare class AuthController {
         message: string;
     }>;
     resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{
+        message: string;
+    }>;
+    logout(user: any): Promise<{
+        message: string;
+    }>;
+    refreshToken(refreshTokenDto: RefreshTokenDto): Promise<{
+        accessToken: string;
+        refreshToken: string;
+    }>;
+    getMe(user: any): Promise<import("mongoose").Document<unknown, {}, import("../user/schemas/user.schema").User, {}, import("mongoose").DefaultSchemaOptions> & import("../user/schemas/user.schema").User & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }>;
+    resendVerification(resendVerificationDto: ResendVerificationDto): Promise<{
         message: string;
     }>;
 }

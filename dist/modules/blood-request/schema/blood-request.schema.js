@@ -40,6 +40,23 @@ __decorate([
     __metadata("design:type", String)
 ], BloodRequest.prototype, "additionalNotes", void 0);
 __decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], BloodRequest.prototype, "patientCondition", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Date)
+], BloodRequest.prototype, "requiredByDate", void 0);
+__decorate([
+    (0, mongoose_1.Prop)([{
+            status: { type: String, enum: request_status_enum_1.RequestStatus },
+            timestamp: { type: Date, default: Date.now },
+            updatedBy: { type: mongoose_2.Types.ObjectId, ref: "User" },
+            note: String
+        }]),
+    __metadata("design:type", Array)
+], BloodRequest.prototype, "statusHistory", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ type: String, enum: request_status_enum_1.RequestStatus, default: request_status_enum_1.RequestStatus.PENDING }),
     __metadata("design:type", String)
 ], BloodRequest.prototype, "status", void 0);

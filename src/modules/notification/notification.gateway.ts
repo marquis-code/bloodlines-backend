@@ -48,6 +48,16 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
     client.join(`user-${userId}`)
   }
 
+  @SubscribeMessage("subscribe-facility")
+  subscribeFacility(client: Socket, facilityId: string) {
+    client.join(`facility-${facilityId}`)
+  }
+
+  @SubscribeMessage("subscribe-request")
+  subscribeRequest(client: Socket, requestId: string) {
+    client.join(`request-${requestId}`)
+  }
+
   broadcastDonationAccepted(data: DonationProgressData) {
     this.server.emit("donation-accepted", data)
     this.donationProgressSubject.next(data)
@@ -71,6 +81,27 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
   broadcastMessage(data: any) {
     this.server.emit("broadcast", data)
     this.broadcastSubject.next(data)
+  }
+
+  broadcastEmergencyAlert(data: any) {
+    this.server.emit("emergency-alert", data)
+    this.broadcastSubject.next(data)
+  }
+
+  broadcastInventoryAlert(data: any, facilityId?: string) {
+    if (facilityId) {
+      this.server.to(`facility-${facilityId}`).emit("inventory-alert", data)
+    } else {
+      this.server.emit("inventory-alert", data)
+    }
+  }
+
+  broadcastAppointmentReminder(data: any, userId: string) {
+    this.server.to(`user-${userId}`).emit("appointment-reminder", data)
+  }
+
+  broadcastRequestStatusUpdate(data: any, requestId: string) {
+    this.server.to(`request-${requestId}`).emit("request-status-update", data)
   }
 
   // Filter donation progress updates by requestId

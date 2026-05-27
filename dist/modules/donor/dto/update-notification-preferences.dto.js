@@ -10,8 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateNotificationPreferencesInput = void 0;
+const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 class UpdateNotificationPreferencesInput {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { emergencyAlerts: { required: false, type: () => Boolean }, donationReminders: { required: false, type: () => Boolean }, communityUpdates: { required: false, type: () => Boolean }, reminderFrequency: { required: false, type: () => String } };
+    }
 }
 exports.UpdateNotificationPreferencesInput = UpdateNotificationPreferencesInput;
 __decorate([

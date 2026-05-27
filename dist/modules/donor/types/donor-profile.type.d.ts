@@ -1,8 +1,8 @@
 import { DonationRequest } from "./donation-request.type";
 import { DonationHistory } from "./donation-history.type";
 export declare class DonorStatus {
-    availability: string;
-    bloodType: string;
+    isAvailable: boolean;
+    bloodGroup: string;
     nextEligibilityDate: Date;
     lastDonationDate?: Date;
 }
@@ -47,13 +47,19 @@ export declare class DonorProfile {
     id: string;
     fullName: string;
     email: string;
-    phone: string;
-    bloodType: string;
+    phoneNumber: string;
+    bloodGroup: string;
     genotype?: string;
     gender: string;
     latitude: number;
     longitude: number;
-    availability: string;
+    location?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    lastDonationDate?: Date;
+    isAvailable: boolean;
     emergencyContact?: string;
     emergencyContactPhone?: string;
     createdAt: Date;

@@ -10,9 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RequestRoleUpgradeDto = void 0;
+const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const role_enum_1 = require("../../../common/enums/role.enum");
 class RequestRoleUpgradeDto {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { requestedRole: { required: true, enum: require("../../../common/enums/role.enum").UserRole }, facilityName: { required: true, type: () => String }, facilityAddress: { required: true, type: () => String }, reason: { required: true, type: () => String } };
+    }
 }
 exports.RequestRoleUpgradeDto = RequestRoleUpgradeDto;
 __decorate([

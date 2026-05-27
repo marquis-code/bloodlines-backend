@@ -3,6 +3,7 @@ import { ValidationPipe } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger"
 import { AppModule } from "./app.module"
+import { HttpExceptionFilter } from "./common/filters/http-exception.filter"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -27,10 +28,13 @@ async function bootstrap() {
     }),
   )
 
+  // Enable global exception filter
+  app.useGlobalFilters(new HttpExceptionFilter())
+
   // Configure Swagger
   const config = new DocumentBuilder()
     .setTitle("BloodLines API")
-    .setDescription("The BloodLines donor onboarding REST API documentation")
+    .setDescription("The BloodLines complete backend REST API documentation")
     .setVersion("1.0")
     .addBearerAuth()
     .build()

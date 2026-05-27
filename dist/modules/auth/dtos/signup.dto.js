@@ -10,10 +10,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SignupDto = void 0;
+const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 const gender_enum_1 = require("../../../common/enums/gender.enum");
+const blood_group_enum_1 = require("../../../common/enums/blood-group.enum");
+const genotype_enum_1 = require("../../../common/enums/genotype.enum");
 class SignupDto {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { fullName: { required: true, type: () => String }, gender: { required: true, enum: require("../../../common/enums/gender.enum").Gender }, phoneNumber: { required: true, type: () => String }, email: { required: true, type: () => String, format: "email" }, password: { required: true, type: () => String, minLength: 8, pattern: "/[A-Z]/" }, confirmPassword: { required: true, type: () => String }, bloodGroup: { required: false, enum: require("../../../common/enums/blood-group.enum").BloodGroup }, genotype: { required: false, enum: require("../../../common/enums/genotype.enum").Genotype }, location: { required: false, type: () => String }, address: { required: false, type: () => String }, city: { required: false, type: () => String }, state: { required: false, type: () => String }, country: { required: false, type: () => String }, lastDonationDate: { required: false, type: () => String } };
+    }
 }
 exports.SignupDto = SignupDto;
 __decorate([
@@ -50,4 +56,52 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], SignupDto.prototype, "confirmPassword", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ enum: blood_group_enum_1.BloodGroup, example: blood_group_enum_1.BloodGroup.O_POSITIVE }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(blood_group_enum_1.BloodGroup),
+    __metadata("design:type", String)
+], SignupDto.prototype, "bloodGroup", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ enum: genotype_enum_1.Genotype, example: genotype_enum_1.Genotype.AA }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(genotype_enum_1.Genotype),
+    __metadata("design:type", String)
+], SignupDto.prototype, "genotype", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Lagos, Nigeria" }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SignupDto.prototype, "location", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "123 Street Name" }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SignupDto.prototype, "address", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Lagos" }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SignupDto.prototype, "city", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Lagos State" }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SignupDto.prototype, "state", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Nigeria" }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SignupDto.prototype, "country", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "2023-10-01" }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", String)
+], SignupDto.prototype, "lastDonationDate", void 0);
 //# sourceMappingURL=signup.dto.js.map

@@ -131,17 +131,24 @@ export class AuthService {
     }
 
     const jwtSecret = this.configService.get<string>("jwt.secret")
+    const jwtRefreshSecret = this.configService.get<string>("jwt.refreshSecret") || "refresh_secret"
+
     const token = this.jwtService.sign(
-      {
-        sub: user._id,
-        email: user.email,
-        role: user.role,
-      },
-      { secret: jwtSecret },
+      { sub: user._id.toString(), email: user.email, role: user.role },
+      { secret: jwtSecret, expiresIn: (this.configService.get<string>("jwt.expiresIn") || "1h") as any },
     )
+
+    const refreshToken = this.jwtService.sign(
+      { sub: user._id.toString() },
+      { secret: jwtRefreshSecret, expiresIn: (this.configService.get<string>("jwt.refreshExpiresIn") || "7d") as any },
+    )
+
+    user.refreshToken = refreshToken
+    await user.save()
 
     return {
       accessToken: token,
+      refreshToken: refreshToken,
       user: {
         id: user._id,
         email: user.email,
@@ -201,5 +208,75 @@ export class AuthService {
     }
 
     return { message: "Password reset successfully. You can now login." }
+  }
+
+  async logout(userId: string) {
+    await this.userModel.findByIdAndUpdate(userId, { refreshToken: null })
+    return { message: "Logged out successfully" }
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const jwtRefreshSecret = this.configService.get<string>("jwt.refreshSecret") || "refresh_secret"
+      const payload = this.jwtService.verify(refreshToken, { secret: jwtRefreshSecret })
+
+      const user = await this.userModel.findOne({ _id: payload.sub, refreshToken })
+      if (!user) {
+        throw new UnauthorizedException("Invalid refresh token")
+      }
+
+      const jwtSecret = this.configService.get<string>("jwt.secret")
+      const newAccessToken = this.jwtService.sign(
+        { sub: user._id.toString(), email: user.email, role: user.role },
+        { secret: jwtSecret, expiresIn: (this.configService.get<string>("jwt.expiresIn") || "1h") as any },
+      )
+
+      const newRefreshToken = this.jwtService.sign(
+        { sub: user._id.toString() },
+        { secret: jwtRefreshSecret, expiresIn: (this.configService.get<string>("jwt.refreshExpiresIn") || "7d") as any },
+      )
+
+      user.refreshToken = newRefreshToken
+      await user.save()
+
+      return { accessToken: newAccessToken, refreshToken: newRefreshToken }
+    } catch (e) {
+      throw new UnauthorizedException("Invalid or expired refresh token")
+    }
+  }
+
+  async getMe(userId: string) {
+    const user = await this.userModel.findById(userId).select("-password -refreshToken")
+    if (!user) {
+      throw new UnauthorizedException("User not found")
+    }
+    return user
+  }
+
+  async resendVerification(email: string) {
+    const user = await this.userModel.findOne({ email })
+    if (!user) {
+      // Do not throw an error to prevent email enumeration
+      return { message: "If the email is registered and not verified, a new verification link will be sent." }
+    }
+
+    if (user.emailVerified) {
+      return { message: "Email is already verified." }
+    }
+
+    const emailVerificationToken = crypto.randomBytes(32).toString("hex")
+    const emailVerificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000)
+
+    user.emailVerificationToken = emailVerificationToken
+    user.emailVerificationExpiry = emailVerificationExpiry
+    await user.save()
+
+    try {
+      await this.emailService.sendEmailVerification(email, emailVerificationToken)
+    } catch (error) {
+      console.error("Failed to resend verification email.", error)
+    }
+
+    return { message: "If the email is registered and not verified, a new verification link will be sent." }
   }
 }

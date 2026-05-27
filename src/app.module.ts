@@ -13,6 +13,9 @@ import { RoleUpgradeModule } from "./modules/role-upgrade/role-upgrade.module"
 import { DonorModule } from "./modules/donor/donor.module"
 import { PulseLeaderModule } from "./modules/pulse-leader/pulse-leader.module"
 import { NotificationModule } from "./modules/notification/notification.module"
+import { InventoryModule } from "./modules/inventory/inventory.module"
+import { AppointmentModule } from "./modules/appointment/appointment.module"
+import { BridgerModule } from "./modules/bridger/bridger.module"
 import jwtConfig from "./config/jwt.config"
 
 @Module({
@@ -56,6 +59,9 @@ import jwtConfig from "./config/jwt.config"
     DonorModule,
     PulseLeaderModule,
     NotificationModule,
+    InventoryModule,
+    AppointmentModule,
+    BridgerModule,
   ],
 })
 export class AppModule { }

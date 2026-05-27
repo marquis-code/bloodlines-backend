@@ -162,8 +162,14 @@ export class User {
   @Prop()
   passwordResetExpiry?: Date
 
+  @Prop()
+  refreshToken?: string
+
   @Prop({ type: String, enum: UserRole, default: UserRole.DONOR })
   role: UserRole
+
+  @Prop({ default: false })
+  anonymous?: boolean
 
   // Bridger-specific fields
   @Prop()

@@ -20,10 +20,18 @@ const blood_request_schema_1 = require("../blood-request/schema/blood-request.sc
 const user_schema_1 = require("../user/schemas/user.schema");
 const notification_gateway_1 = require("../notification/notification.gateway");
 const notification_service_1 = require("../notification/notification.service");
+const organization_schema_1 = require("./schemas/organization.schema");
+const campaign_schema_1 = require("./schemas/campaign.schema");
+const inventory_schema_1 = require("../inventory/schemas/inventory.schema");
+const analytics_schema_1 = require("./schemas/analytics.schema");
 let PulseLeaderService = class PulseLeaderService {
-    constructor(bloodRequestModel, userModel, notificationGateway, notificationService) {
+    constructor(bloodRequestModel, userModel, organizationModel, campaignModel, inventoryModel, analyticsModel, notificationGateway, notificationService) {
         this.bloodRequestModel = bloodRequestModel;
         this.userModel = userModel;
+        this.organizationModel = organizationModel;
+        this.campaignModel = campaignModel;
+        this.inventoryModel = inventoryModel;
+        this.analyticsModel = analyticsModel;
         this.notificationGateway = notificationGateway;
         this.notificationService = notificationService;
     }
@@ -316,13 +324,95 @@ let PulseLeaderService = class PulseLeaderService {
             requestFulfillmentByUrgency: fulfillmentByUrgency,
         };
     }
+    async getNetworkPerformance(leaderId) {
+        const org = await this.organizationModel.findOne({ leaderId });
+        if (!org)
+            return [];
+        const bridgers = await this.userModel.find({ _id: { $in: org.bridgerIds } }).select("_id facilityName");
+        const performance = await Promise.all(bridgers.map(async (b) => {
+            const donations = await this.bloodRequestModel.countDocuments({ createdBy: b._id, status: "FULFILLED" });
+            const active = await this.bloodRequestModel.countDocuments({ createdBy: b._id, status: { $in: ["PENDING", "ACCEPTED"] } });
+            return {
+                facilityName: b.facilityName,
+                totalFulfilled: donations,
+                activeRequests: active
+            };
+        }));
+        return performance;
+    }
+    async getCampaigns(leaderId, page = 1, limit = 10) {
+        const org = await this.organizationModel.findOne({ leaderId });
+        if (!org)
+            throw new common_1.NotFoundException("Organization not found");
+        const skip = (page - 1) * limit;
+        const [data, total] = await Promise.all([
+            this.campaignModel.find({ organizationId: org._id }).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+            this.campaignModel.countDocuments({ organizationId: org._id })
+        ]);
+        return {
+            data,
+            page,
+            limit,
+            total,
+            hasMore: total > skip + data.length
+        };
+    }
+    async createCampaign(leaderId, dto) {
+        const org = await this.organizationModel.findOne({ leaderId });
+        if (!org)
+            throw new common_1.NotFoundException("Organization not found. Cannot create campaign.");
+        const campaign = new this.campaignModel(Object.assign(Object.assign({}, dto), { startDate: new Date(dto.startDate), endDate: new Date(dto.endDate), organizationId: org._id, createdBy: leaderId }));
+        return campaign.save();
+    }
+    async getBridgers(leaderId, page = 1, limit = 10) {
+        const org = await this.organizationModel.findOne({ leaderId });
+        if (!org)
+            throw new common_1.NotFoundException("Organization not found");
+        const skip = (page - 1) * limit;
+        const [data, total] = await Promise.all([
+            this.userModel.find({ _id: { $in: org.bridgerIds } })
+                .select("fullName email facilityName phoneNumber state city")
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            this.userModel.countDocuments({ _id: { $in: org.bridgerIds } })
+        ]);
+        return {
+            data,
+            page,
+            limit,
+            total,
+            hasMore: total > skip + data.length
+        };
+    }
+    async addBridgerToOrg(leaderId, bridgerId) {
+        const org = await this.organizationModel.findOne({ leaderId });
+        if (!org)
+            throw new common_1.NotFoundException("Organization not found");
+        const bridger = await this.userModel.findOne({ _id: bridgerId, role: "BRIDGER" });
+        if (!bridger)
+            throw new common_1.NotFoundException("Bridger not found or invalid role");
+        if (org.bridgerIds.includes(bridger._id)) {
+            return org;
+        }
+        org.bridgerIds.push(bridger._id);
+        return org.save();
+    }
 };
 exports.PulseLeaderService = PulseLeaderService;
 exports.PulseLeaderService = PulseLeaderService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(blood_request_schema_1.BloodRequest.name)),
     __param(1, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
+    __param(2, (0, mongoose_1.InjectModel)(organization_schema_1.Organization.name)),
+    __param(3, (0, mongoose_1.InjectModel)(campaign_schema_1.Campaign.name)),
+    __param(4, (0, mongoose_1.InjectModel)(inventory_schema_1.Inventory.name)),
+    __param(5, (0, mongoose_1.InjectModel)(analytics_schema_1.OrganizationAnalytics.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         notification_gateway_1.NotificationGateway,
         notification_service_1.NotificationService])

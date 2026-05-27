@@ -10,8 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RejectRequestInput = void 0;
+const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 class RejectRequestInput {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { requestId: { required: true, type: () => String }, reason: { required: false, type: () => String } };
+    }
 }
 exports.RejectRequestInput = RejectRequestInput;
 __decorate([

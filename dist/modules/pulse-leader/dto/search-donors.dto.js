@@ -10,8 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SearchDonorsFilterDto = void 0;
+const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 class SearchDonorsFilterDto {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { bloodType: { required: false, type: () => String }, radiusKm: { required: false, type: () => Number }, availability: { required: false, type: () => String }, skip: { required: false, type: () => Number }, limit: { required: false, type: () => Number }, coordinates: { required: false } };
+    }
 }
 exports.SearchDonorsFilterDto = SearchDonorsFilterDto;
 __decorate([

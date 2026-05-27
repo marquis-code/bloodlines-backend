@@ -10,11 +10,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateBloodRequestDto = void 0;
+const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 const blood_group_enum_1 = require("../../../common/enums/blood-group.enum");
 const priority_level_enum_1 = require("../../../common/enums/priority-level.enum");
 class CreateBloodRequestDto {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { bloodType: { required: true, enum: require("../../../common/enums/blood-group.enum").BloodGroup }, priorityLevel: { required: true, enum: require("../../../common/enums/priority-level.enum").PriorityLevel }, unitsNeeded: { required: true, type: () => Number, minimum: 1 }, contactPhone: { required: true, type: () => String }, additionalNotes: { required: false, type: () => String }, patientCondition: { required: false, type: () => String }, requiredByDate: { required: false, type: () => String } };
+    }
 }
 exports.CreateBloodRequestDto = CreateBloodRequestDto;
 __decorate([
@@ -42,6 +46,19 @@ __decorate([
     (0, swagger_1.ApiPropertyOptional)({ example: "Patient needs blood for surgery" }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiPropertyOptional)(),
     __metadata("design:type", String)
 ], CreateBloodRequestDto.prototype, "additionalNotes", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiPropertyOptional)(),
+    __metadata("design:type", String)
+], CreateBloodRequestDto.prototype, "patientCondition", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDateString)(),
+    (0, swagger_1.ApiPropertyOptional)(),
+    __metadata("design:type", String)
+], CreateBloodRequestDto.prototype, "requiredByDate", void 0);
 //# sourceMappingURL=create-blood-request.dto.js.map

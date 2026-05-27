@@ -1,12 +1,19 @@
+import { BloodGroup } from "../../../common/enums/blood-group.enum";
 export declare class UpdateProfileInput {
     fullName?: string;
-    phone?: string;
-    bloodType?: string;
+    phoneNumber?: string;
+    bloodGroup?: BloodGroup;
     genotype?: string;
     gender?: string;
     latitude?: number;
     longitude?: number;
-    availability?: string;
+    location?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    lastDonationDate?: string;
+    isAvailable?: boolean;
     emergencyContact?: string;
     emergencyContactPhone?: string;
 }

@@ -6,4 +6,6 @@ export declare class CreateBloodRequestDto {
     unitsNeeded: number;
     contactPhone: string;
     additionalNotes?: string;
+    patientCondition?: string;
+    requiredByDate?: string;
 }

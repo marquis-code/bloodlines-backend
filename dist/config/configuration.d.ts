@@ -11,10 +11,7 @@ declare const _default: () => {
         refreshExpiresIn: string;
     };
     email: {
-        host: string;
-        port: number;
-        user: string;
-        password: string;
+        apiKey: string;
         from: string;
     };
     axios: {

@@ -6,6 +6,12 @@ export declare class AnalyticsService {
     private userModel;
     constructor(bloodRequestModel: Model<BloodRequest>, userModel: Model<User>);
     getTotalRequests(): Promise<number>;
+    getBridgerSpecificAnalytics(bridgerId: string): Promise<{
+        totalRequests: number;
+        fulfilledRequests: number;
+        emergencyRequests: number;
+        fulfillmentRate: number;
+    }>;
     getBloodInventory(): Promise<{}>;
     getRequestsFulfillmentByBloodType(): Promise<any[]>;
     getRequestsFulfillmentByUrgency(): Promise<any[]>;

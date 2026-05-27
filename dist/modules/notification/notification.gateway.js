@@ -32,6 +32,12 @@ let NotificationGateway = class NotificationGateway {
     subscribeBloodRequests(client, userId) {
         client.join(`user-${userId}`);
     }
+    subscribeFacility(client, facilityId) {
+        client.join(`facility-${facilityId}`);
+    }
+    subscribeRequest(client, requestId) {
+        client.join(`request-${requestId}`);
+    }
     broadcastDonationAccepted(data) {
         this.server.emit("donation-accepted", data);
         this.donationProgressSubject.next(data);
@@ -53,6 +59,24 @@ let NotificationGateway = class NotificationGateway {
     broadcastMessage(data) {
         this.server.emit("broadcast", data);
         this.broadcastSubject.next(data);
+    }
+    broadcastEmergencyAlert(data) {
+        this.server.emit("emergency-alert", data);
+        this.broadcastSubject.next(data);
+    }
+    broadcastInventoryAlert(data, facilityId) {
+        if (facilityId) {
+            this.server.to(`facility-${facilityId}`).emit("inventory-alert", data);
+        }
+        else {
+            this.server.emit("inventory-alert", data);
+        }
+    }
+    broadcastAppointmentReminder(data, userId) {
+        this.server.to(`user-${userId}`).emit("appointment-reminder", data);
+    }
+    broadcastRequestStatusUpdate(data, requestId) {
+        this.server.to(`request-${requestId}`).emit("request-status-update", data);
     }
     getDonationProgressStream(requestId) {
         return this.donationProgressSubject.asObservable().pipe((0, operators_1.filter)(data => data.requestId === requestId), (0, operators_1.map)(data => data));
@@ -81,6 +105,18 @@ __decorate([
     __metadata("design:paramtypes", [Function, String]),
     __metadata("design:returntype", void 0)
 ], NotificationGateway.prototype, "subscribeBloodRequests", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)("subscribe-facility"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Function, String]),
+    __metadata("design:returntype", void 0)
+], NotificationGateway.prototype, "subscribeFacility", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)("subscribe-request"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Function, String]),
+    __metadata("design:returntype", void 0)
+], NotificationGateway.prototype, "subscribeRequest", null);
 exports.NotificationGateway = NotificationGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({ cors: true }),
     (0, common_1.Injectable)()

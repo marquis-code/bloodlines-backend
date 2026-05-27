@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OnboardingController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const onboarding_service_1 = require("./onboarding.service");
@@ -42,6 +43,7 @@ let OnboardingController = class OnboardingController {
 exports.OnboardingController = OnboardingController;
 __decorate([
     (0, common_1.Post)("initialize"),
+    openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -49,6 +51,7 @@ __decorate([
 ], OnboardingController.prototype, "initializeOnboarding", null);
 __decorate([
     (0, common_1.Post)("step1"),
+    openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -57,6 +60,7 @@ __decorate([
 ], OnboardingController.prototype, "submitStep1", null);
 __decorate([
     (0, common_1.Post)("step2"),
+    openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -65,6 +69,7 @@ __decorate([
 ], OnboardingController.prototype, "submitStep2", null);
 __decorate([
     (0, common_1.Post)("complete"),
+    openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -73,6 +78,7 @@ __decorate([
 ], OnboardingController.prototype, "completeOnboarding", null);
 __decorate([
     (0, common_1.Get)("status"),
+    openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

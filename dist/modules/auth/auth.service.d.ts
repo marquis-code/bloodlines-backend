@@ -22,6 +22,7 @@ export declare class AuthService {
     }>;
     login(loginDto: LoginDto): Promise<{
         accessToken: string;
+        refreshToken: string;
         user: {
             id: import("mongoose").Types.ObjectId;
             email: string;
@@ -34,6 +35,21 @@ export declare class AuthService {
         message: string;
     }>;
     resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{
+        message: string;
+    }>;
+    logout(userId: string): Promise<{
+        message: string;
+    }>;
+    refreshToken(refreshToken: string): Promise<{
+        accessToken: string;
+        refreshToken: string;
+    }>;
+    getMe(userId: string): Promise<import("mongoose").Document<unknown, {}, User, {}, import("mongoose").DefaultSchemaOptions> & User & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }>;
+    resendVerification(email: string): Promise<{
         message: string;
     }>;
 }

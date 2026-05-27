@@ -1,8 +1,10 @@
-import { Injectable } from "@nestjs/common"
+import { Injectable, BadRequestException } from "@nestjs/common"
 import { InjectModel } from "@nestjs/mongoose"
 import { Model } from "mongoose"
 import { User } from "../user/schemas/user.schema"
 import { BloodRequest } from "../blood-request/schema/blood-request.schema"
+import { DonorGoal } from "./schemas/donor-goal.schema"
+import { HealthScreening } from "./schemas/health-screening.schema"
 import {
   DonationProgressStatusEnum,
   DonationProgressUpdate,
@@ -32,6 +34,8 @@ export class DonorService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(BloodRequest.name) private bloodRequestModel: Model<BloodRequest>,
+    @InjectModel(DonorGoal.name) private donorGoalModel: Model<DonorGoal>,
+    @InjectModel(HealthScreening.name) private healthScreeningModel: Model<HealthScreening>,
     private notificationService: NotificationService,
   ) {}
 
@@ -55,10 +59,42 @@ export class DonorService {
       donorStatus,
       impact,
       achievements,
-      nearbyBloodRequests: nearbyRequests,
+      nearbyBloodRequests: nearbyRequests.data,
       donationHistory,
       communityActivity,
     }
+  }
+
+  async getDonorDashboardSummary(userId: string) {
+    const user = await this.userModel.findById(userId)
+    if (!user) throw new Error("User not found")
+    
+    // Default radius to 50km
+    const requests = await this.getNearbyBloodRequests(userId, 50, 1, 5)
+    
+    return {
+      name: user.fullName,
+      nearbyRequestsCount: requests.total,
+      profileCompletion: this.calculateProfileCompletion(user).percentComplete,
+    }
+  }
+
+  async getDonorStats(userId: string) {
+    const impact = await this.calculateDonorImpact(userId)
+    const achievements = await this.getUserAchievements(userId)
+    
+    return {
+      totalDonations: impact.totalDonations,
+      livesSaved: impact.livesImpacted,
+      currentBadge: achievements.length > 0 ? achievements[achievements.length - 1].badge : null,
+      nextMilestone: "Silver Lifesaver (10 donations)" // Stub logic
+    }
+  }
+
+  async getDonorProfileCompletion(userId: string) {
+    const user = await this.userModel.findById(userId)
+    if (!user) throw new Error("User not found")
+    return this.calculateProfileCompletion(user)
   }
 
   async getDonorProfile(userId: string): Promise<DonorProfile> {
@@ -167,7 +203,7 @@ export class DonorService {
 
   // ============= BLOOD REQUESTS & DONATIONS =============
 
-  async getNearbyBloodRequests(userId: string, radiusKm: number): Promise<DonationRequest[]> {
+  async getNearbyBloodRequests(userId: string, radiusKm: number, page: number = 1, limit: number = 10) {
     const user = await this.userModel.findById(userId)
     if (!user) throw new Error("User not found")
 
@@ -175,16 +211,24 @@ export class DonorService {
     const userLat = user.geoLocation?.coordinates?.[1]
     const userLng = user.geoLocation?.coordinates?.[0]
 
-    const requests = await this.bloodRequestModel
-      .find({
-        status: "PENDING",
-        bloodType: user.bloodGroup, // Match donor's blood group
-      })
-      .populate("createdBy", "fullName facilityName")
-      .limit(10)
-      .lean()
+    const skip = (page - 1) * limit;
 
-    return requests.map((req: any) => {
+    const query = {
+      status: "PENDING",
+      bloodType: user.bloodGroup,
+    };
+
+    const [requests, total] = await Promise.all([
+      this.bloodRequestModel
+        .find(query)
+        .populate("createdBy", "fullName facilityName")
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      this.bloodRequestModel.countDocuments(query)
+    ]);
+
+    const mappedRequests = requests.map((req: any) => {
       const reqLat = req.createdBy?.geoLocation?.coordinates?.[1] || 0
       const reqLng = req.createdBy?.geoLocation?.coordinates?.[0] || 0
       
@@ -205,7 +249,15 @@ export class DonorService {
         status: DonationProgressStatusEnum.ACCEPTED,
         distance,
       }
-    })
+    });
+
+    return {
+      data: mappedRequests,
+      page,
+      limit,
+      total,
+      hasMore: total > skip + requests.length
+    }
   }
 
   async getBloodRequestDetails(requestId: string): Promise<DonationRequest> {
@@ -241,13 +293,16 @@ export class DonorService {
     if (!request.assignedDonors) {
       request.assignedDonors = []
     }
-    
     const userObjectId = userId as any
-    if (!request.assignedDonors.some(id => id.toString() === userId)) {
-      request.assignedDonors.push(userObjectId)
+    if (request.assignedDonors.some(id => id.toString() === userId)) {
+      throw new BadRequestException("Already accepted");
     }
-
-    request.status = "ACCEPTED" as any
+    
+    request.assignedDonors.push(userObjectId)
+    
+    if (request.status === "PENDING") {
+      request.status = "ACCEPTED" as any
+    }
     await request.save()
 
     // Notify bridger via Email
@@ -314,6 +369,65 @@ export class DonorService {
       timestamp: new Date(),
       location: input.location,
       estimatedArrivalTime: input.estimatedArrivalTime,
+    }
+  }
+
+  async getDonationHistoryPaginated(userId: string, page: number, limit: number, status?: string) {
+    const skip = (page - 1) * limit;
+    
+    const query: any = { assignedDonors: userId };
+    if (status) {
+      query.status = status;
+    } else {
+      query.status = { $in: ["FULFILLED", "ACCEPTED"] };
+    }
+
+    const [history, total] = await Promise.all([
+      this.bloodRequestModel
+        .find(query)
+        .populate("createdBy", "fullName facilityName contactPhone")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      this.bloodRequestModel.countDocuments(query)
+    ]);
+
+    const data = history.map((req: any) => {
+      const createdBy = req.createdBy || {}
+      return {
+        id: req._id.toString(),
+        hospitalName: createdBy.facilityName || "Unknown Hospital",
+        bloodType: req.bloodType,
+        unitsGiven: 1, // Assuming 1 unit per donation
+        donatedAt: req.fulfillmentDate || req.createdAt,
+        status: req.status,
+        facilityName: createdBy.facilityName || "",
+        facilityAddress: createdBy.facilityName || "",
+        facilityPhone: req.contactPhone || "",
+      }
+    })
+
+    return {
+      data,
+      page,
+      limit,
+      total,
+      hasMore: total > skip + data.length
+    }
+  }
+
+  async getDonationRecord(userId: string, donationId: string) {
+    const record = await this.bloodRequestModel.findOne({ _id: donationId, assignedDonors: userId }).populate("createdBy", "fullName facilityName")
+    if (!record) throw new Error("Record not found")
+    return record;
+  }
+
+  async getDonationCertificate(userId: string, donationId: string) {
+    const record = await this.getDonationRecord(userId, donationId);
+    return {
+      certificateUrl: `https://api.bloodlines.org/certificates/${donationId}.pdf`,
+      issuedAt: record.fulfillmentDate || record.updatedAt
     }
   }
 
@@ -389,6 +503,109 @@ export class DonorService {
       resources: filtered,
       totalCount: filtered.length,
       categories: Object.values(ResourceCategoryEnum),
+    }
+  }
+
+  async getBadges(userId: string) {
+    const achievements = await this.getUserAchievements(userId)
+    const nextBadge = {
+      id: "gold",
+      name: "Gold Lifesaver",
+      description: "20 donations completed",
+      badge: "🥇",
+      progress: 50 // Mock progress
+    }
+    return {
+      earned: achievements,
+      next: nextBadge
+    }
+  }
+
+  async getLeaderboard(limit = 10, region?: string) {
+    const donors = await this.userModel.find({ role: "DONOR" })
+      .sort({ donationCount: -1 })
+      .limit(limit)
+      .select("fullName donationCount anonymous city state avatar");
+
+    return donors.map(d => ({
+      id: d._id,
+      name: d.anonymous ? "Anonymous Donor" : d.fullName,
+      donations: d.donationCount,
+      location: `${d.city}, ${d.state}`
+    }))
+  }
+
+  async toggleAnonymity(userId: string, isAnonymous: boolean) {
+    await this.userModel.findByIdAndUpdate(userId, { anonymous: isAnonymous });
+    return { message: "Anonymity setting updated" };
+  }
+
+  async getHealthScreeningQuestions() {
+    return [
+      { id: "feelingWell", question: "Are you feeling well today?", expected: true },
+      { id: "takenAntibiotics", question: "Have you taken any antibiotics in the last 7 days?", expected: false },
+      { id: "traveled", question: "Have you traveled outside the country in the past 6 months?", expected: false }
+    ]
+  }
+
+  async submitHealthScreening(userId: string, answers: Record<string, boolean>) {
+    const questions = await this.getHealthScreeningQuestions()
+    let cleared = true;
+    let deferredReason = "";
+
+    for (const q of questions) {
+      if (answers[q.id] !== q.expected) {
+        cleared = false;
+        deferredReason = `Failed question: ${q.question}`;
+        break;
+      }
+    }
+
+    const screening = new this.healthScreeningModel({
+      userId,
+      answers,
+      cleared,
+      deferredReason,
+      eligibleDate: cleared ? new Date() : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 days later if deferred
+    });
+    await screening.save();
+
+    return { cleared, deferredReason, eligibleDate: screening.eligibleDate };
+  }
+
+  async getGoal(userId: string, year: number) {
+    let goal = await this.donorGoalModel.findOne({ userId, year });
+    if (!goal) {
+      goal = new this.donorGoalModel({ userId, year, target: 4, current: 0 }); // Default 4 per year
+      await goal.save();
+    }
+    return goal;
+  }
+
+  async setGoal(userId: string, target: number, year: number) {
+    const goal = await this.donorGoalModel.findOneAndUpdate(
+      { userId, year },
+      { target },
+      { new: true, upsert: true }
+    );
+    return goal;
+  }
+
+  async getShareableImpact(userId: string) {
+    const impact = await this.calculateDonorImpact(userId);
+    return {
+      text: `I have saved ${impact.livesImpacted} lives through Bloodlines! Join me in saving more lives.`,
+      url: `https://bloodlines.org/impact/${userId}`,
+      stats: impact
+    }
+  }
+
+  async getCommunityActivityFeed(page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const activities = await this.getCommunityActivity();
+    return {
+      data: activities,
+      page, limit, total: activities.length, hasMore: false
     }
   }
 

@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsString, Min, IsOptional } from "class-validator"
+import { IsEnum, IsNumber, IsString, Min, IsOptional, IsDateString } from "class-validator"
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { BloodGroup } from "../../../common/enums/blood-group.enum"
 import { PriorityLevel } from "../../../common/enums/priority-level.enum"
@@ -24,5 +24,16 @@ export class CreateBloodRequestDto {
   @ApiPropertyOptional({ example: "Patient needs blood for surgery" })
   @IsOptional()
   @IsString()
+  @ApiPropertyOptional()
   additionalNotes?: string
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional()
+  patientCondition?: string
+
+  @IsOptional()
+  @IsDateString()
+  @ApiPropertyOptional()
+  requiredByDate?: string
 }

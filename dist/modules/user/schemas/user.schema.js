@@ -103,9 +103,17 @@ __decorate([
     __metadata("design:type", Date)
 ], User.prototype, "passwordResetExpiry", void 0);
 __decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], User.prototype, "refreshToken", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ type: String, enum: role_enum_1.UserRole, default: role_enum_1.UserRole.DONOR }),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "anonymous", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)

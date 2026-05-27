@@ -10,11 +10,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompleteOnboardingDto = exports.OnboardingStep2Dto = exports.OnboardingStep1Dto = void 0;
+const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 const blood_group_enum_1 = require("../../../common/enums/blood-group.enum");
 const genotype_enum_1 = require("../../../common/enums/genotype.enum");
 class OnboardingStep1Dto {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { fullName: { required: true, type: () => String }, gender: { required: true, type: () => String }, phoneNumber: { required: true, type: () => String } };
+    }
 }
 exports.OnboardingStep1Dto = OnboardingStep1Dto;
 __decorate([
@@ -33,6 +37,9 @@ __decorate([
     __metadata("design:type", String)
 ], OnboardingStep1Dto.prototype, "phoneNumber", void 0);
 class OnboardingStep2Dto {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { email: { required: true, type: () => String, format: "email" }, bloodGroup: { required: true, enum: require("../../../common/enums/blood-group.enum").BloodGroup }, genotype: { required: false, enum: require("../../../common/enums/genotype.enum").Genotype }, location: { required: true, type: () => String }, lastDonationDate: { required: false, type: () => String } };
+    }
 }
 exports.OnboardingStep2Dto = OnboardingStep2Dto;
 __decorate([
@@ -63,6 +70,9 @@ __decorate([
     __metadata("design:type", String)
 ], OnboardingStep2Dto.prototype, "lastDonationDate", void 0);
 class CompleteOnboardingDto {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { password: { required: true, type: () => String }, confirmPassword: { required: true, type: () => String } };
+    }
 }
 exports.CompleteOnboardingDto = CompleteOnboardingDto;
 __decorate([

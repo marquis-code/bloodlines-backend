@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from "@nestjs/comm
 import { Model } from "mongoose"
 import { InjectModel } from "@nestjs/mongoose" 
 import { User } from "./schemas/user.schema"
+import * as bcrypt from "bcrypt"
 
 @Injectable()
 export class UserService {
@@ -17,6 +18,32 @@ export class UserService {
 
   async getUserByEmail(email: string) {
     return this.userModel.findOne({ email })
+  }
+
+  async getPublicProfile(id: string) {
+    const user = await this.userModel.findById(id).select("fullName bloodGroup location donationCount role joinedAt anonymous")
+    if (!user) {
+      throw new NotFoundException("User not found")
+    }
+    return user
+  }
+
+  async changePassword(userId: string, oldPassword: string, newPassword: string) {
+    const user = await this.userModel.findById(userId)
+    if (!user) {
+      throw new NotFoundException("User not found")
+    }
+
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password)
+    if (!isPasswordValid) {
+      throw new BadRequestException("Invalid old password")
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+    user.password = hashedPassword
+    await user.save()
+
+    return { message: "Password changed successfully" }
   }
 
   async updateUser(id: string, updateData: Partial<User>) {

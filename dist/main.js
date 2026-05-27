@@ -5,6 +5,7 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const swagger_1 = require("@nestjs/swagger");
 const app_module_1 = require("./app.module");
+const http_exception_filter_1 = require("./common/filters/http-exception.filter");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const configService = app.get(config_1.ConfigService);
@@ -19,9 +20,10 @@ async function bootstrap() {
         whitelist: true,
         forbidNonWhitelisted: true,
     }));
+    app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
     const config = new swagger_1.DocumentBuilder()
         .setTitle("BloodLines API")
-        .setDescription("The BloodLines donor onboarding REST API documentation")
+        .setDescription("The BloodLines complete backend REST API documentation")
         .setVersion("1.0")
         .addBearerAuth()
         .build();

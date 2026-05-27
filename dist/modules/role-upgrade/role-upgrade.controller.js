@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleUpgradeController = void 0;
+const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const role_upgrade_service_1 = require("./role-upgrade.service");
@@ -43,6 +44,7 @@ let RoleUpgradeController = class RoleUpgradeController {
 exports.RoleUpgradeController = RoleUpgradeController;
 __decorate([
     (0, common_1.Post)("request"),
+    openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
@@ -51,6 +53,7 @@ __decorate([
 ], RoleUpgradeController.prototype, "requestRoleUpgrade", null);
 __decorate([
     (0, common_1.Get)("pending"),
+    openapi.ApiResponse({ status: 200, type: [Object] }),
     __param(0, (0, common_1.Query)("limit")),
     __param(1, (0, common_1.Query)("skip")),
     __metadata("design:type", Function),
@@ -59,6 +62,7 @@ __decorate([
 ], RoleUpgradeController.prototype, "getPendingUpgradeRequests", null);
 __decorate([
     (0, common_1.Post)(":requestId/approve"),
+    openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Param)("requestId")),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
@@ -67,6 +71,7 @@ __decorate([
 ], RoleUpgradeController.prototype, "approveRoleUpgrade", null);
 __decorate([
     (0, common_1.Post)(":requestId/reject"),
+    openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Param)("requestId")),
     __param(1, (0, common_1.Body)("rejectionReason")),
     __param(2, (0, current_user_decorator_1.CurrentUser)()),
@@ -76,6 +81,7 @@ __decorate([
 ], RoleUpgradeController.prototype, "rejectRoleUpgrade", null);
 __decorate([
     (0, common_1.Get)("my-history"),
+    openapi.ApiResponse({ status: 200, type: [Object] }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

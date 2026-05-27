@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, UseGuards, Param } from "@nestjs/common"
+import { Controller, Get, Post, Body, Query, UseGuards, Param, Put } from "@nestjs/common"
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger"
 import { DonorService } from "./donor.service"
 import { AcceptRequestInput } from "./dto/accept-request.dto"
@@ -8,7 +8,10 @@ import { UpdateProgressInput } from "./dto/update-progress.dto"
 import { UpdateProfileInput } from "./dto/update-profile.dto"
 import { UpdateAvailabilityInput } from "./dto/update-availability.dto"
 import { UpdateNotificationPreferencesInput } from "./dto/update-notification-preferences.dto"
+import { SetGoalDto } from "./dto/set-goal.dto"
+import { SubmitHealthScreeningDto } from "./dto/submit-health-screening.dto"
 import { ResourceCategoryEnum } from "./types/resource.type"
+import { PaginationDto } from "../../common/dto/pagination.dto"
 import { JwtAuthGuard } from "../auth/guards/jwt.guard"
 import { CurrentUser } from "../auth/decorators/current-user.decorator"
 import { NotificationGateway } from "../notification/notification.gateway"
@@ -30,6 +33,24 @@ export class DonorController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get("dashboard/summary")
+    async getDonorDashboardSummary(@CurrentUser() user: any) {
+        return this.donorService.getDonorDashboardSummary(user.userId)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("stats")
+    async getDonorStats(@CurrentUser() user: any) {
+        return this.donorService.getDonorStats(user.userId)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("profile/completion")
+    async getDonorProfileCompletion(@CurrentUser() user: any) {
+        return this.donorService.getDonorProfileCompletion(user.userId)
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get("profile")
     async getDonorProfile(@CurrentUser() user: any) {
         return this.donorService.getDonorProfile(user.userId)
@@ -40,8 +61,9 @@ export class DonorController {
     async getNearbyBloodRequests(
         @CurrentUser() user: any,
         @Query("radiusKm") radiusKm?: string,
+        @Query() paginationDto?: PaginationDto
     ) {
-        return this.donorService.getNearbyBloodRequests(user.userId, radiusKm ? Number(radiusKm) : 50)
+        return this.donorService.getNearbyBloodRequests(user.userId, radiusKm ? Number(radiusKm) : 50, paginationDto?.page, paginationDto?.limit)
     }
 
     @Get("blood-request/:requestId")
@@ -61,9 +83,22 @@ export class DonorController {
     @Get("history")
     async getDonationHistory(
         @CurrentUser() user: any,
-        @Query("limit") limit?: string,
+        @Query() paginationDto: PaginationDto,
+        @Query("status") status?: string,
     ) {
-        return this.donorService.getDonationHistory(user.userId, limit ? Number(limit) : 10)
+        return this.donorService.getDonationHistoryPaginated(user.userId, paginationDto.page || 1, paginationDto.limit || 10, status)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("history/:donationId")
+    async getDonationRecord(@CurrentUser() user: any, @Param("donationId") donationId: string) {
+        return this.donorService.getDonationRecord(user.userId, donationId)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("certificate/:donationId")
+    async getDonationCertificate(@CurrentUser() user: any, @Param("donationId") donationId: string) {
+        return this.donorService.getDonationCertificate(user.userId, donationId)
     }
 
     @UseGuards(JwtAuthGuard)
@@ -120,6 +155,64 @@ export class DonorController {
         const result = await this.donorService.updateDonationProgress(user.userId, input)
         this.notificationGateway.broadcastProgressUpdate(result)
         return result
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("request-progress/:requestId")
+    async getRequestProgress(@CurrentUser() user: any, @Param("requestId") requestId: string) {
+        return this.donorService.getDonationRecord(user.userId, requestId)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("badges")
+    async getBadges(@CurrentUser() user: any) {
+        return this.donorService.getBadges(user.userId)
+    }
+
+    @Get("leaderboard")
+    async getLeaderboard(@Query("limit") limit?: string, @Query("region") region?: string) {
+        return this.donorService.getLeaderboard(limit ? Number(limit) : 10, region)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put("settings/anonymity")
+    async toggleAnonymity(@CurrentUser() user: any, @Body("anonymous") anonymous: boolean) {
+        return this.donorService.toggleAnonymity(user.userId, anonymous)
+    }
+
+    @Get("health-screening/questions")
+    async getHealthScreeningQuestions() {
+        return this.donorService.getHealthScreeningQuestions()
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post("health-screening/submit")
+    async submitHealthScreening(@CurrentUser() user: any, @Body() dto: SubmitHealthScreeningDto) {
+        return this.donorService.submitHealthScreening(user.userId, dto.answers)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("goal")
+    async getGoal(@CurrentUser() user: any, @Query("year") year?: string) {
+        return this.donorService.getGoal(user.userId, year ? Number(year) : new Date().getFullYear())
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post("goal")
+    async setGoal(@CurrentUser() user: any, @Body() dto: SetGoalDto) {
+        return this.donorService.setGoal(user.userId, dto.target, dto.year)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("shareable-impact")
+    async getShareableImpact(@CurrentUser() user: any) {
+        return this.donorService.getShareableImpact(user.userId)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("activity-feed")
+    async getActivityFeed(@Query() paginationDto: PaginationDto) {
+        return this.donorService.getCommunityActivityFeed(paginationDto.page || 1, paginationDto.limit || 10)
     }
 
     @UseGuards(JwtAuthGuard)

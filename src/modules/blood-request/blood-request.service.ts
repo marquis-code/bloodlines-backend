@@ -35,6 +35,12 @@ export class BloodRequestService {
       ...createDto,
       createdBy: userId,
       status: RequestStatus.PENDING,
+      statusHistory: [{
+        status: RequestStatus.PENDING,
+        timestamp: new Date(),
+        updatedBy: userId,
+        note: "Request created"
+      }]
     })
 
     const savedRequest = await bloodRequest.save()
@@ -203,6 +209,13 @@ export class BloodRequestService {
     if (request.unitsConfirmed >= request.unitsNeeded) {
       request.status = RequestStatus.FULFILLED
       request.fulfillmentDate = new Date()
+      if (!request.statusHistory) request.statusHistory = [];
+      request.statusHistory.push({
+        status: RequestStatus.FULFILLED,
+        timestamp: new Date(),
+        updatedBy: donorId,
+        note: "Units confirmed by donor"
+      });
       await request.save()
 
       // Notify all parties that request is fulfilled
@@ -305,6 +318,16 @@ export class BloodRequestService {
       throw new BadRequestException("Cannot update fulfilled requests")
     }
 
+    if (updateDto.status && updateDto.status !== request.status) {
+      if (!request.statusHistory) request.statusHistory = [];
+      request.statusHistory.push({
+        status: updateDto.status,
+        timestamp: new Date(),
+        updatedBy: userId,
+        note: "Status updated manually"
+      });
+    }
+
     Object.assign(request, updateDto)
     await request.save()
 
@@ -325,6 +348,13 @@ export class BloodRequestService {
     }
 
     request.status = RequestStatus.CANCELLED
+    if (!request.statusHistory) request.statusHistory = [];
+    request.statusHistory.push({
+      status: RequestStatus.CANCELLED,
+      timestamp: new Date(),
+      updatedBy: userId,
+      note: "Request cancelled by user"
+    });
     await request.save()
 
     // Notify all assigned donors

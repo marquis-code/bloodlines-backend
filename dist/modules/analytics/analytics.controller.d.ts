@@ -2,6 +2,12 @@ import { AnalyticsService } from "./analytics.service";
 export declare class AnalyticsController {
     private analyticsService;
     constructor(analyticsService: AnalyticsService);
+    getBridgerAnalytics(user: any): Promise<{
+        totalRequests: number;
+        fulfilledRequests: number;
+        emergencyRequests: number;
+        fulfillmentRate: number;
+    }>;
     getAnalytics(): Promise<{
         totalRequests: number;
         bloodInventory: {

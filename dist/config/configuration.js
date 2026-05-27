@@ -13,11 +13,8 @@ exports.default = () => ({
         refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "30d",
     },
     email: {
-        host: process.env.SMTP_HOST || "smtp.gmail.com",
-        port: Number.parseInt(process.env.SMTP_PORT || "587"),
-        user: process.env.SMTP_USER || "",
-        password: process.env.SMTP_PASSWORD || "",
-        from: process.env.SMTP_FROM || "noreply@bloodlines.com",
+        apiKey: process.env.RESEND_API_KEY || "",
+        from: process.env.EMAIL_FROM || "Bloodlines <noreply@bloodlinesfoundation.org>",
     },
     axios: {
         timeout: parseInt(process.env.AXIOS_TIMEOUT || "5000", 10),

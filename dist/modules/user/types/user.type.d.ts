@@ -8,6 +8,20 @@ export declare class UserType {
     genotype?: string;
     location?: string;
     lastDonationDate?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    geoLocation?: {
+        type: string;
+        coordinates: number[];
+    };
+    isAvailable: boolean;
+    emergencyContact?: string;
+    emergencyContactPhone?: string;
+    emailNotifications: boolean;
+    smsNotifications: boolean;
+    pushNotifications: boolean;
     emailVerified: boolean;
     role: string;
     facilityName?: string;

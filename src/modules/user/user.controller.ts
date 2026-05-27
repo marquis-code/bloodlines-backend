@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from "@nestjs/common"
+import { Controller, Get, Post, Body, Param, UseGuards, Put } from "@nestjs/common"
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger"
 import { UserService } from "./user.service"
 import { JwtAuthGuard } from "../auth/guards/jwt.guard"
 import { CurrentUser } from "../auth/decorators/current-user.decorator"
+import { UpdateUserProfileDto } from "./dtos/update-user-profile.dto"
+import { ChangePasswordDto } from "./dtos/change-password.dto"
 
 @ApiTags("Users")
 @ApiBearerAuth()
@@ -20,21 +22,24 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Get(":id")
     async getUser(@Param("id") id: string) {
-        return this.userService.getUserById(id)
+        return this.userService.getPublicProfile(id)
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post("profile")
+    @Put("me")
     async updateProfile(
         @CurrentUser() user: any,
-        @Body() updateData: {
-            fullName?: string
-            phoneNumber?: string
-            location?: string
-            bloodGroup?: string
-            genotype?: string
-        }
+        @Body() updateData: UpdateUserProfileDto
     ) {
         return this.userService.updateProfile(user.userId, updateData)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put("me/change-password")
+    async changePassword(
+        @CurrentUser() user: any,
+        @Body() changePasswordDto: ChangePasswordDto
+    ) {
+        return this.userService.changePassword(user.userId, changePasswordDto.oldPassword, changePasswordDto.newPassword)
     }
 }

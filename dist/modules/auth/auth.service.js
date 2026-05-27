@@ -63,7 +63,7 @@ let AuthService = class AuthService {
         this.configService = configService;
     }
     async signup(signupDto) {
-        const { email, password, confirmPassword, fullName, gender, phoneNumber } = signupDto;
+        const { email, password, confirmPassword, fullName, gender, phoneNumber, bloodGroup, genotype, location, address, city, state, country, lastDonationDate, } = signupDto;
         if (password !== confirmPassword) {
             throw new common_1.BadRequestException("Passwords do not match");
         }
@@ -84,6 +84,14 @@ let AuthService = class AuthService {
             fullName,
             gender,
             phoneNumber,
+            bloodGroup,
+            genotype,
+            location,
+            address,
+            city,
+            state,
+            country,
+            lastDonationDate: lastDonationDate ? new Date(lastDonationDate) : undefined,
             emailVerificationToken,
             emailVerificationExpiry,
             emailVerified: false,
@@ -134,13 +142,14 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException("Invalid email or password");
         }
         const jwtSecret = this.configService.get("jwt.secret");
-        const token = this.jwtService.sign({
-            sub: user._id,
-            email: user.email,
-            role: user.role,
-        }, { secret: jwtSecret });
+        const jwtRefreshSecret = this.configService.get("jwt.refreshSecret") || "refresh_secret";
+        const token = this.jwtService.sign({ sub: user._id.toString(), email: user.email, role: user.role }, { secret: jwtSecret, expiresIn: (this.configService.get("jwt.expiresIn") || "1h") });
+        const refreshToken = this.jwtService.sign({ sub: user._id.toString() }, { secret: jwtRefreshSecret, expiresIn: (this.configService.get("jwt.refreshExpiresIn") || "7d") });
+        user.refreshToken = refreshToken;
+        await user.save();
         return {
             accessToken: token,
+            refreshToken: refreshToken,
             user: {
                 id: user._id,
                 email: user.email,
@@ -188,6 +197,57 @@ let AuthService = class AuthService {
             console.error("Failed to send password reset confirmation email.", error);
         }
         return { message: "Password reset successfully. You can now login." };
+    }
+    async logout(userId) {
+        await this.userModel.findByIdAndUpdate(userId, { refreshToken: null });
+        return { message: "Logged out successfully" };
+    }
+    async refreshToken(refreshToken) {
+        try {
+            const jwtRefreshSecret = this.configService.get("jwt.refreshSecret") || "refresh_secret";
+            const payload = this.jwtService.verify(refreshToken, { secret: jwtRefreshSecret });
+            const user = await this.userModel.findOne({ _id: payload.sub, refreshToken });
+            if (!user) {
+                throw new common_1.UnauthorizedException("Invalid refresh token");
+            }
+            const jwtSecret = this.configService.get("jwt.secret");
+            const newAccessToken = this.jwtService.sign({ sub: user._id.toString(), email: user.email, role: user.role }, { secret: jwtSecret, expiresIn: (this.configService.get("jwt.expiresIn") || "1h") });
+            const newRefreshToken = this.jwtService.sign({ sub: user._id.toString() }, { secret: jwtRefreshSecret, expiresIn: (this.configService.get("jwt.refreshExpiresIn") || "7d") });
+            user.refreshToken = newRefreshToken;
+            await user.save();
+            return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+        }
+        catch (e) {
+            throw new common_1.UnauthorizedException("Invalid or expired refresh token");
+        }
+    }
+    async getMe(userId) {
+        const user = await this.userModel.findById(userId).select("-password -refreshToken");
+        if (!user) {
+            throw new common_1.UnauthorizedException("User not found");
+        }
+        return user;
+    }
+    async resendVerification(email) {
+        const user = await this.userModel.findOne({ email });
+        if (!user) {
+            return { message: "If the email is registered and not verified, a new verification link will be sent." };
+        }
+        if (user.emailVerified) {
+            return { message: "Email is already verified." };
+        }
+        const emailVerificationToken = crypto.randomBytes(32).toString("hex");
+        const emailVerificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        user.emailVerificationToken = emailVerificationToken;
+        user.emailVerificationExpiry = emailVerificationExpiry;
+        await user.save();
+        try {
+            await this.emailService.sendEmailVerification(email, emailVerificationToken);
+        }
+        catch (error) {
+            console.error("Failed to resend verification email.", error);
+        }
+        return { message: "If the email is registered and not verified, a new verification link will be sent." };
     }
 };
 exports.AuthService = AuthService;

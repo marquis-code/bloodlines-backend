@@ -25,6 +25,20 @@ export class BloodRequest {
   @Prop()
   additionalNotes?: string
 
+  @Prop()
+  patientCondition?: string
+
+  @Prop()
+  requiredByDate?: Date
+
+  @Prop([{
+    status: { type: String, enum: RequestStatus },
+    timestamp: { type: Date, default: Date.now },
+    updatedBy: { type: Types.ObjectId, ref: "User" },
+    note: String
+  }])
+  statusHistory?: any[]
+
   @Prop({ type: String, enum: RequestStatus, default: RequestStatus.PENDING })
   status: RequestStatus
 

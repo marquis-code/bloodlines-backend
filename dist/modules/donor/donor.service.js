@@ -18,13 +18,17 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const user_schema_1 = require("../user/schemas/user.schema");
 const blood_request_schema_1 = require("../blood-request/schema/blood-request.schema");
+const donor_goal_schema_1 = require("./schemas/donor-goal.schema");
+const health_screening_schema_1 = require("./schemas/health-screening.schema");
 const donation_request_type_1 = require("./types/donation-request.type");
 const resource_type_1 = require("./types/resource.type");
 const notification_service_1 = require("../notification/notification.service");
 let DonorService = class DonorService {
-    constructor(userModel, bloodRequestModel, notificationService) {
+    constructor(userModel, bloodRequestModel, donorGoalModel, healthScreeningModel, notificationService) {
         this.userModel = userModel;
         this.bloodRequestModel = bloodRequestModel;
+        this.donorGoalModel = donorGoalModel;
+        this.healthScreeningModel = healthScreeningModel;
         this.notificationService = notificationService;
     }
     async getDonorDashboard(userId) {
@@ -44,10 +48,37 @@ let DonorService = class DonorService {
             donorStatus,
             impact,
             achievements,
-            nearbyBloodRequests: nearbyRequests,
+            nearbyBloodRequests: nearbyRequests.data,
             donationHistory,
             communityActivity,
         };
+    }
+    async getDonorDashboardSummary(userId) {
+        const user = await this.userModel.findById(userId);
+        if (!user)
+            throw new Error("User not found");
+        const requests = await this.getNearbyBloodRequests(userId, 50, 1, 5);
+        return {
+            name: user.fullName,
+            nearbyRequestsCount: requests.total,
+            profileCompletion: this.calculateProfileCompletion(user).percentComplete,
+        };
+    }
+    async getDonorStats(userId) {
+        const impact = await this.calculateDonorImpact(userId);
+        const achievements = await this.getUserAchievements(userId);
+        return {
+            totalDonations: impact.totalDonations,
+            livesSaved: impact.livesImpacted,
+            currentBadge: achievements.length > 0 ? achievements[achievements.length - 1].badge : null,
+            nextMilestone: "Silver Lifesaver (10 donations)"
+        };
+    }
+    async getDonorProfileCompletion(userId) {
+        const user = await this.userModel.findById(userId);
+        if (!user)
+            throw new Error("User not found");
+        return this.calculateProfileCompletion(user);
     }
     async getDonorProfile(userId) {
         var _a, _b, _c, _d;
@@ -60,13 +91,19 @@ let DonorService = class DonorService {
             id: user._id.toString(),
             fullName: user.fullName,
             email: user.email,
-            phone: user.phoneNumber || "",
-            bloodType: user.bloodGroup || "",
+            phoneNumber: user.phoneNumber || "",
+            bloodGroup: user.bloodGroup || "",
             genotype: user.genotype,
             gender: user.gender,
             latitude,
             longitude,
-            availability: user.isAvailable ? "Available" : "Unavailable",
+            location: user.location,
+            address: user.address,
+            city: user.city,
+            state: user.state,
+            country: user.country,
+            lastDonationDate: user.lastDonationDate,
+            isAvailable: !!user.isAvailable,
             emergencyContact: user.emergencyContact,
             emergencyContactPhone: user.emergencyContactPhone,
             createdAt: user.createdAt,
@@ -77,14 +114,26 @@ let DonorService = class DonorService {
         const updateData = {};
         if (input.fullName)
             updateData.fullName = input.fullName;
-        if (input.phone)
-            updateData.phoneNumber = input.phone;
-        if (input.bloodType)
-            updateData.bloodGroup = input.bloodType;
+        if (input.phoneNumber)
+            updateData.phoneNumber = input.phoneNumber;
+        if (input.bloodGroup)
+            updateData.bloodGroup = input.bloodGroup;
         if (input.genotype)
             updateData.genotype = input.genotype;
         if (input.gender)
             updateData.gender = input.gender;
+        if (input.location)
+            updateData.location = input.location;
+        if (input.address)
+            updateData.address = input.address;
+        if (input.city)
+            updateData.city = input.city;
+        if (input.state)
+            updateData.state = input.state;
+        if (input.country)
+            updateData.country = input.country;
+        if (input.lastDonationDate)
+            updateData.lastDonationDate = new Date(input.lastDonationDate);
         if (input.emergencyContact)
             updateData.emergencyContact = input.emergencyContact;
         if (input.emergencyContactPhone)
@@ -95,8 +144,8 @@ let DonorService = class DonorService {
                 coordinates: [input.longitude, input.latitude],
             };
         }
-        if (input.availability) {
-            updateData.isAvailable = input.availability === "Available";
+        if (input.isAvailable !== undefined) {
+            updateData.isAvailable = input.isAvailable;
         }
         const user = await this.userModel.findByIdAndUpdate(userId, updateData, { new: true });
         if (!user)
@@ -124,22 +173,28 @@ let DonorService = class DonorService {
     async updateNotificationPreferences(userId, input) {
         return this.getNotificationPreferences(userId);
     }
-    async getNearbyBloodRequests(userId, radiusKm) {
+    async getNearbyBloodRequests(userId, radiusKm, page = 1, limit = 10) {
         var _a, _b, _c, _d;
         const user = await this.userModel.findById(userId);
         if (!user)
             throw new Error("User not found");
         const userLat = (_b = (_a = user.geoLocation) === null || _a === void 0 ? void 0 : _a.coordinates) === null || _b === void 0 ? void 0 : _b[1];
         const userLng = (_d = (_c = user.geoLocation) === null || _c === void 0 ? void 0 : _c.coordinates) === null || _d === void 0 ? void 0 : _d[0];
-        const requests = await this.bloodRequestModel
-            .find({
+        const skip = (page - 1) * limit;
+        const query = {
             status: "PENDING",
             bloodType: user.bloodGroup,
-        })
-            .populate("createdBy", "fullName facilityName")
-            .limit(10)
-            .lean();
-        return requests.map((req) => {
+        };
+        const [requests, total] = await Promise.all([
+            this.bloodRequestModel
+                .find(query)
+                .populate("createdBy", "fullName facilityName")
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            this.bloodRequestModel.countDocuments(query)
+        ]);
+        const mappedRequests = requests.map((req) => {
             var _a, _b, _c, _d, _e, _f, _g, _h;
             const reqLat = ((_c = (_b = (_a = req.createdBy) === null || _a === void 0 ? void 0 : _a.geoLocation) === null || _b === void 0 ? void 0 : _b.coordinates) === null || _c === void 0 ? void 0 : _c[1]) || 0;
             const reqLng = ((_f = (_e = (_d = req.createdBy) === null || _d === void 0 ? void 0 : _d.geoLocation) === null || _e === void 0 ? void 0 : _e.coordinates) === null || _f === void 0 ? void 0 : _f[0]) || 0;
@@ -160,6 +215,13 @@ let DonorService = class DonorService {
                 distance,
             };
         });
+        return {
+            data: mappedRequests,
+            page,
+            limit,
+            total,
+            hasMore: total > skip + requests.length
+        };
     }
     async getBloodRequestDetails(requestId) {
         const request = await this.bloodRequestModel
@@ -191,10 +253,13 @@ let DonorService = class DonorService {
             request.assignedDonors = [];
         }
         const userObjectId = userId;
-        if (!request.assignedDonors.some(id => id.toString() === userId)) {
-            request.assignedDonors.push(userObjectId);
+        if (request.assignedDonors.some(id => id.toString() === userId)) {
+            throw new common_1.BadRequestException("Already accepted");
         }
-        request.status = "ACCEPTED";
+        request.assignedDonors.push(userObjectId);
+        if (request.status === "PENDING") {
+            request.status = "ACCEPTED";
+        }
         await request.save();
         try {
             const donor = await this.userModel.findById(userId);
@@ -249,6 +314,60 @@ let DonorService = class DonorService {
             timestamp: new Date(),
             location: input.location,
             estimatedArrivalTime: input.estimatedArrivalTime,
+        };
+    }
+    async getDonationHistoryPaginated(userId, page, limit, status) {
+        const skip = (page - 1) * limit;
+        const query = { assignedDonors: userId };
+        if (status) {
+            query.status = status;
+        }
+        else {
+            query.status = { $in: ["FULFILLED", "ACCEPTED"] };
+        }
+        const [history, total] = await Promise.all([
+            this.bloodRequestModel
+                .find(query)
+                .populate("createdBy", "fullName facilityName contactPhone")
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            this.bloodRequestModel.countDocuments(query)
+        ]);
+        const data = history.map((req) => {
+            const createdBy = req.createdBy || {};
+            return {
+                id: req._id.toString(),
+                hospitalName: createdBy.facilityName || "Unknown Hospital",
+                bloodType: req.bloodType,
+                unitsGiven: 1,
+                donatedAt: req.fulfillmentDate || req.createdAt,
+                status: req.status,
+                facilityName: createdBy.facilityName || "",
+                facilityAddress: createdBy.facilityName || "",
+                facilityPhone: req.contactPhone || "",
+            };
+        });
+        return {
+            data,
+            page,
+            limit,
+            total,
+            hasMore: total > skip + data.length
+        };
+    }
+    async getDonationRecord(userId, donationId) {
+        const record = await this.bloodRequestModel.findOne({ _id: donationId, assignedDonors: userId }).populate("createdBy", "fullName facilityName");
+        if (!record)
+            throw new Error("Record not found");
+        return record;
+    }
+    async getDonationCertificate(userId, donationId) {
+        const record = await this.getDonationRecord(userId, donationId);
+        return {
+            certificateUrl: `https://api.bloodlines.org/certificates/${donationId}.pdf`,
+            issuedAt: record.fulfillmentDate || record.updatedAt
         };
     }
     async getDonationHistory(userId, limit) {
@@ -314,6 +433,92 @@ let DonorService = class DonorService {
             categories: Object.values(resource_type_1.ResourceCategoryEnum),
         };
     }
+    async getBadges(userId) {
+        const achievements = await this.getUserAchievements(userId);
+        const nextBadge = {
+            id: "gold",
+            name: "Gold Lifesaver",
+            description: "20 donations completed",
+            badge: "🥇",
+            progress: 50
+        };
+        return {
+            earned: achievements,
+            next: nextBadge
+        };
+    }
+    async getLeaderboard(limit = 10, region) {
+        const donors = await this.userModel.find({ role: "DONOR" })
+            .sort({ donationCount: -1 })
+            .limit(limit)
+            .select("fullName donationCount anonymous city state avatar");
+        return donors.map(d => ({
+            id: d._id,
+            name: d.anonymous ? "Anonymous Donor" : d.fullName,
+            donations: d.donationCount,
+            location: `${d.city}, ${d.state}`
+        }));
+    }
+    async toggleAnonymity(userId, isAnonymous) {
+        await this.userModel.findByIdAndUpdate(userId, { anonymous: isAnonymous });
+        return { message: "Anonymity setting updated" };
+    }
+    async getHealthScreeningQuestions() {
+        return [
+            { id: "feelingWell", question: "Are you feeling well today?", expected: true },
+            { id: "takenAntibiotics", question: "Have you taken any antibiotics in the last 7 days?", expected: false },
+            { id: "traveled", question: "Have you traveled outside the country in the past 6 months?", expected: false }
+        ];
+    }
+    async submitHealthScreening(userId, answers) {
+        const questions = await this.getHealthScreeningQuestions();
+        let cleared = true;
+        let deferredReason = "";
+        for (const q of questions) {
+            if (answers[q.id] !== q.expected) {
+                cleared = false;
+                deferredReason = `Failed question: ${q.question}`;
+                break;
+            }
+        }
+        const screening = new this.healthScreeningModel({
+            userId,
+            answers,
+            cleared,
+            deferredReason,
+            eligibleDate: cleared ? new Date() : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
+        });
+        await screening.save();
+        return { cleared, deferredReason, eligibleDate: screening.eligibleDate };
+    }
+    async getGoal(userId, year) {
+        let goal = await this.donorGoalModel.findOne({ userId, year });
+        if (!goal) {
+            goal = new this.donorGoalModel({ userId, year, target: 4, current: 0 });
+            await goal.save();
+        }
+        return goal;
+    }
+    async setGoal(userId, target, year) {
+        const goal = await this.donorGoalModel.findOneAndUpdate({ userId, year }, { target }, { new: true, upsert: true });
+        return goal;
+    }
+    async getShareableImpact(userId) {
+        const impact = await this.calculateDonorImpact(userId);
+        return {
+            text: `I have saved ${impact.livesImpacted} lives through Bloodlines! Join me in saving more lives.`,
+            url: `https://bloodlines.org/impact/${userId}`,
+            stats: impact
+        };
+    }
+    async getCommunityActivityFeed(page = 1, limit = 10) {
+        const skip = (page - 1) * limit;
+        const activities = await this.getCommunityActivity();
+        return {
+            data: activities,
+            page, limit, total: activities.length, hasMore: false
+        };
+    }
     async submitFeedback(userId, input) {
         return {
             id: new Date().getTime().toString(),
@@ -349,8 +554,8 @@ let DonorService = class DonorService {
     }
     getDonorStatus(user) {
         return {
-            availability: user.isAvailable ? "Available" : "Unavailable",
-            bloodType: user.bloodGroup || "Unknown",
+            isAvailable: !!user.isAvailable,
+            bloodGroup: user.bloodGroup || "Unknown",
             nextEligibilityDate: this.calculateNextEligibilityDate(user),
             lastDonationDate: user.lastDonationDate,
         };
@@ -450,7 +655,11 @@ exports.DonorService = DonorService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
     __param(1, (0, mongoose_1.InjectModel)(blood_request_schema_1.BloodRequest.name)),
+    __param(2, (0, mongoose_1.InjectModel)(donor_goal_schema_1.DonorGoal.name)),
+    __param(3, (0, mongoose_1.InjectModel)(health_screening_schema_1.HealthScreening.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         notification_service_1.NotificationService])
 ], DonorService);

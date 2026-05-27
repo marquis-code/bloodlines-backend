@@ -5,12 +5,21 @@ import { SearchDonorsFilterDto } from "./dto/search-donors.dto";
 import { BroadcastMessageDto } from "./dto/broadcast-message.dto";
 import { NotificationGateway } from "../notification/notification.gateway";
 import { NotificationService } from "../notification/notification.service";
+import { Organization } from "./schemas/organization.schema";
+import { Campaign } from "./schemas/campaign.schema";
+import { Inventory } from "../inventory/schemas/inventory.schema";
+import { CreateCampaignDto } from "./dtos/create-campaign.dto";
+import { OrganizationAnalytics } from "./schemas/analytics.schema";
 export declare class PulseLeaderService {
     private bloodRequestModel;
     private userModel;
+    private organizationModel;
+    private campaignModel;
+    private inventoryModel;
+    private analyticsModel;
     private notificationGateway;
     private notificationService;
-    constructor(bloodRequestModel: Model<BloodRequest>, userModel: Model<User>, notificationGateway: NotificationGateway, notificationService: NotificationService);
+    constructor(bloodRequestModel: Model<BloodRequest>, userModel: Model<User>, organizationModel: Model<Organization>, campaignModel: Model<Campaign>, inventoryModel: Model<Inventory>, analyticsModel: Model<OrganizationAnalytics>, notificationGateway: NotificationGateway, notificationService: NotificationService);
     getDashboardStatistics(pulseLeaderId: string): Promise<{
         activeDonors: number;
         avgResponseTime: string;
@@ -102,5 +111,42 @@ export declare class PulseLeaderService {
             value: number;
             status: string;
         }[];
+    }>;
+    getNetworkPerformance(leaderId: string): Promise<{
+        facilityName: string;
+        totalFulfilled: number;
+        activeRequests: number;
+    }[]>;
+    getCampaigns(leaderId: string, page?: number, limit?: number): Promise<{
+        data: (Campaign & {
+            _id: import("mongoose").Types.ObjectId;
+        } & {
+            __v: number;
+        })[];
+        page: number;
+        limit: number;
+        total: number;
+        hasMore: boolean;
+    }>;
+    createCampaign(leaderId: string, dto: CreateCampaignDto): Promise<import("mongoose").Document<unknown, {}, Campaign, {}, import("mongoose").DefaultSchemaOptions> & Campaign & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }>;
+    getBridgers(leaderId: string, page?: number, limit?: number): Promise<{
+        data: (User & {
+            _id: import("mongoose").Types.ObjectId;
+        } & {
+            __v: number;
+        })[];
+        page: number;
+        limit: number;
+        total: number;
+        hasMore: boolean;
+    }>;
+    addBridgerToOrg(leaderId: string, bridgerId: string): Promise<import("mongoose").Document<unknown, {}, Organization, {}, import("mongoose").DefaultSchemaOptions> & Organization & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
     }>;
 }

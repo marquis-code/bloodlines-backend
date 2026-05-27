@@ -17,13 +17,13 @@ class DonorStatus {
 }
 exports.DonorStatus = DonorStatus;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: "AVAILABLE" }),
-    __metadata("design:type", String)
-], DonorStatus.prototype, "availability", void 0);
+    (0, swagger_1.ApiProperty)({ example: true }),
+    __metadata("design:type", Boolean)
+], DonorStatus.prototype, "isAvailable", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: "A+" }),
     __metadata("design:type", String)
-], DonorStatus.prototype, "bloodType", void 0);
+], DonorStatus.prototype, "bloodGroup", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: "2024-04-01" }),
     __metadata("design:type", Date)
@@ -173,11 +173,11 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ example: "+2348012345678" }),
     __metadata("design:type", String)
-], DonorProfile.prototype, "phone", void 0);
+], DonorProfile.prototype, "phoneNumber", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: "A+" }),
     __metadata("design:type", String)
-], DonorProfile.prototype, "bloodType", void 0);
+], DonorProfile.prototype, "bloodGroup", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ example: "AA" }),
     __metadata("design:type", String)
@@ -195,9 +195,33 @@ __decorate([
     __metadata("design:type", Number)
 ], DonorProfile.prototype, "longitude", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: "AVAILABLE" }),
+    (0, swagger_1.ApiPropertyOptional)({ example: "Lagos, Nigeria" }),
     __metadata("design:type", String)
-], DonorProfile.prototype, "availability", void 0);
+], DonorProfile.prototype, "location", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "123 Street Name" }),
+    __metadata("design:type", String)
+], DonorProfile.prototype, "address", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Lagos" }),
+    __metadata("design:type", String)
+], DonorProfile.prototype, "city", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Lagos State" }),
+    __metadata("design:type", String)
+], DonorProfile.prototype, "state", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "Nigeria" }),
+    __metadata("design:type", String)
+], DonorProfile.prototype, "country", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: "2023-10-01" }),
+    __metadata("design:type", Date)
+], DonorProfile.prototype, "lastDonationDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: true }),
+    __metadata("design:type", Boolean)
+], DonorProfile.prototype, "isAvailable", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ example: "Jane Doe" }),
     __metadata("design:type", String)

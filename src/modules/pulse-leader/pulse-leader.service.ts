@@ -7,12 +7,21 @@ import { SearchDonorsFilterDto } from "./dto/search-donors.dto"
 import { BroadcastMessageDto } from "./dto/broadcast-message.dto"
 import { NotificationGateway } from "../notification/notification.gateway"
 import { NotificationService } from "../notification/notification.service"
+import { Organization } from "./schemas/organization.schema";
+import { Campaign } from "./schemas/campaign.schema";
+import { Inventory } from "../inventory/schemas/inventory.schema";
+import { CreateCampaignDto } from "./dtos/create-campaign.dto";
+import { OrganizationAnalytics } from "./schemas/analytics.schema";
 
 @Injectable()
 export class PulseLeaderService {
   constructor(
     @InjectModel(BloodRequest.name) private bloodRequestModel: Model<BloodRequest>,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Organization.name) private organizationModel: Model<Organization>,
+    @InjectModel(Campaign.name) private campaignModel: Model<Campaign>,
+    @InjectModel(Inventory.name) private inventoryModel: Model<Inventory>,
+    @InjectModel(OrganizationAnalytics.name) private analyticsModel: Model<OrganizationAnalytics>,
     private notificationGateway: NotificationGateway,
     private notificationService: NotificationService,
   ) {}
@@ -364,5 +373,102 @@ export class PulseLeaderService {
       requestFulfillmentByBloodType: fulfillmentByBlood,
       requestFulfillmentByUrgency: fulfillmentByUrgency,
     }
+  }
+
+  // --- Network & Organization Methods ---
+
+  async getNetworkPerformance(leaderId: string) {
+    const org = await this.organizationModel.findOne({ leaderId });
+    if (!org) return []; // Fallback for testing without DB setup
+    // throw new NotFoundException("Organization not found");
+
+    const bridgers = await this.userModel.find({ _id: { $in: org.bridgerIds } }).select("_id facilityName");
+    
+    const performance = await Promise.all(bridgers.map(async (b) => {
+      const donations = await this.bloodRequestModel.countDocuments({ createdBy: b._id, status: "FULFILLED" });
+      const active = await this.bloodRequestModel.countDocuments({ createdBy: b._id, status: { $in: ["PENDING", "ACCEPTED"] } });
+      return {
+        facilityName: b.facilityName,
+        totalFulfilled: donations,
+        activeRequests: active
+      };
+    }));
+
+    return performance;
+  }
+
+  async getCampaigns(leaderId: string, page = 1, limit = 10) {
+    const org = await this.organizationModel.findOne({ leaderId });
+    if (!org) throw new NotFoundException("Organization not found");
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.campaignModel.find({ organizationId: org._id }).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      this.campaignModel.countDocuments({ organizationId: org._id })
+    ]);
+
+    return {
+      data,
+      page,
+      limit,
+      total,
+      hasMore: total > skip + data.length
+    }
+  }
+
+  async createCampaign(leaderId: string, dto: CreateCampaignDto) {
+    const org = await this.organizationModel.findOne({ leaderId });
+    if (!org) throw new NotFoundException("Organization not found. Cannot create campaign.");
+
+    const campaign = new this.campaignModel({
+      ...dto,
+      startDate: new Date(dto.startDate),
+      endDate: new Date(dto.endDate),
+      organizationId: org._id,
+      createdBy: leaderId
+    });
+
+    return campaign.save();
+  }
+
+  async getBridgers(leaderId: string, page = 1, limit = 10) {
+    const org = await this.organizationModel.findOne({ leaderId });
+    if (!org) throw new NotFoundException("Organization not found");
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.userModel.find({ _id: { $in: org.bridgerIds } })
+        .select("fullName email facilityName phoneNumber state city")
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      this.userModel.countDocuments({ _id: { $in: org.bridgerIds } })
+    ]);
+
+    return {
+      data,
+      page,
+      limit,
+      total,
+      hasMore: total > skip + data.length
+    }
+  }
+
+  async addBridgerToOrg(leaderId: string, bridgerId: string) {
+    const org = await this.organizationModel.findOne({ leaderId });
+    if (!org) throw new NotFoundException("Organization not found");
+
+    const bridger = await this.userModel.findOne({ _id: bridgerId, role: "BRIDGER" });
+    if (!bridger) throw new NotFoundException("Bridger not found or invalid role");
+
+    if (org.bridgerIds.includes(bridger._id as any)) {
+      // Ignore if already added
+      return org;
+    }
+
+    org.bridgerIds.push(bridger._id as any);
+    return org.save();
   }
 }

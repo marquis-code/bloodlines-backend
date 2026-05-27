@@ -25,6 +25,9 @@ const role_upgrade_module_1 = require("./modules/role-upgrade/role-upgrade.modul
 const donor_module_1 = require("./modules/donor/donor.module");
 const pulse_leader_module_1 = require("./modules/pulse-leader/pulse-leader.module");
 const notification_module_1 = require("./modules/notification/notification.module");
+const inventory_module_1 = require("./modules/inventory/inventory.module");
+const appointment_module_1 = require("./modules/appointment/appointment.module");
+const bridger_module_1 = require("./modules/bridger/bridger.module");
 const jwt_config_1 = __importDefault(require("./config/jwt.config"));
 let AppModule = class AppModule {
 };
@@ -64,6 +67,9 @@ exports.AppModule = AppModule = __decorate([
             donor_module_1.DonorModule,
             pulse_leader_module_1.PulseLeaderModule,
             notification_module_1.NotificationModule,
+            inventory_module_1.InventoryModule,
+            appointment_module_1.AppointmentModule,
+            bridger_module_1.BridgerModule,
         ],
     })
 ], AppModule);

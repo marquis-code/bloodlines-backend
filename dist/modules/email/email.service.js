@@ -18,13 +18,12 @@ let EmailService = EmailService_1 = class EmailService {
     constructor(configService) {
         this.configService = configService;
         this.logger = new common_1.Logger(EmailService_1.name);
-        const apiKey = this.configService.get("RESEND_API_KEY");
+        const apiKey = this.configService.get("email.apiKey");
         if (!apiKey) {
-            this.logger.warn("RESEND_API_KEY is not defined. Email sending will be disabled.");
+            this.logger.warn("RESEND_API_KEY is not defined in configuration. Email sending will be disabled.");
         }
         this.resend = new resend_1.Resend(apiKey);
-        this.defaultFrom =
-            this.configService.get("EMAIL_FROM") || "Bloodlines <noreply@bloodlinesfoundation.org>";
+        this.defaultFrom = this.configService.get("email.from");
     }
     async sendEmail(to, subject, html) {
         try {

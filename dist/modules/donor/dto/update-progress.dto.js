@@ -10,9 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateProgressInput = void 0;
+const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const donation_request_type_1 = require("../types/donation-request.type");
 class UpdateProgressInput {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { requestId: { required: true, type: () => String }, status: { required: true, enum: require("../types/donation-request.type").DonationProgressStatusEnum }, location: { required: false, type: () => String }, estimatedArrivalTime: { required: false, type: () => String } };
+    }
 }
 exports.UpdateProgressInput = UpdateProgressInput;
 __decorate([

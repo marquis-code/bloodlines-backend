@@ -2,6 +2,7 @@ import { Controller, Get, UseGuards } from "@nestjs/common"
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger"
 import { AnalyticsService } from "./analytics.service"
 import { JwtAuthGuard } from "../auth/guards/jwt.guard"
+import { CurrentUser } from "../auth/decorators/current-user.decorator"
 
 @ApiTags("Analytics")
 @ApiBearerAuth()
@@ -10,6 +11,11 @@ import { JwtAuthGuard } from "../auth/guards/jwt.guard"
 export class AnalyticsController {
 
     constructor(private analyticsService: AnalyticsService) { }
+
+    @Get("bridger")
+    async getBridgerAnalytics(@CurrentUser() user: any) {
+        return this.analyticsService.getBridgerSpecificAnalytics(user.userId);
+    }
 
     @Get()
     async getAnalytics() {

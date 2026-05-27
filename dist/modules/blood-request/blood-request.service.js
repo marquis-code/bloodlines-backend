@@ -38,7 +38,12 @@ let BloodRequestService = class BloodRequestService {
         if (!user.geoLocation || !user.geoLocation.coordinates) {
             throw new common_1.BadRequestException("Please update your location before creating a blood request");
         }
-        const bloodRequest = new this.bloodRequestModel(Object.assign(Object.assign({}, createDto), { createdBy: userId, status: request_status_enum_1.RequestStatus.PENDING }));
+        const bloodRequest = new this.bloodRequestModel(Object.assign(Object.assign({}, createDto), { createdBy: userId, status: request_status_enum_1.RequestStatus.PENDING, statusHistory: [{
+                    status: request_status_enum_1.RequestStatus.PENDING,
+                    timestamp: new Date(),
+                    updatedBy: userId,
+                    note: "Request created"
+                }] }));
         const savedRequest = await bloodRequest.save();
         const populatedRequest = await this.bloodRequestModel
             .findById(savedRequest._id)
@@ -161,6 +166,14 @@ let BloodRequestService = class BloodRequestService {
         if (request.unitsConfirmed >= request.unitsNeeded) {
             request.status = request_status_enum_1.RequestStatus.FULFILLED;
             request.fulfillmentDate = new Date();
+            if (!request.statusHistory)
+                request.statusHistory = [];
+            request.statusHistory.push({
+                status: request_status_enum_1.RequestStatus.FULFILLED,
+                timestamp: new Date(),
+                updatedBy: donorId,
+                note: "Units confirmed by donor"
+            });
             await request.save();
             await this.bloodRequestGateway.notifyRequestFulfilled(requestId);
             try {
@@ -241,6 +254,16 @@ let BloodRequestService = class BloodRequestService {
         if (request.status === request_status_enum_1.RequestStatus.FULFILLED) {
             throw new common_1.BadRequestException("Cannot update fulfilled requests");
         }
+        if (updateDto.status && updateDto.status !== request.status) {
+            if (!request.statusHistory)
+                request.statusHistory = [];
+            request.statusHistory.push({
+                status: updateDto.status,
+                timestamp: new Date(),
+                updatedBy: userId,
+                note: "Status updated manually"
+            });
+        }
         Object.assign(request, updateDto);
         await request.save();
         await this.bloodRequestGateway.broadcastRequestUpdate(requestId);
@@ -255,6 +278,14 @@ let BloodRequestService = class BloodRequestService {
             throw new common_1.ForbiddenException("You can only cancel your own requests");
         }
         request.status = request_status_enum_1.RequestStatus.CANCELLED;
+        if (!request.statusHistory)
+            request.statusHistory = [];
+        request.statusHistory.push({
+            status: request_status_enum_1.RequestStatus.CANCELLED,
+            timestamp: new Date(),
+            updatedBy: userId,
+            note: "Request cancelled by user"
+        });
         await request.save();
         await this.bloodRequestGateway.broadcastRequestUpdate(requestId);
         return request;

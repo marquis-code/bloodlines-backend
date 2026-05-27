@@ -10,8 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateAvailabilityInput = void 0;
+const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 class UpdateAvailabilityInput {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { status: { required: true, type: () => String } };
+    }
 }
 exports.UpdateAvailabilityInput = UpdateAvailabilityInput;
 __decorate([

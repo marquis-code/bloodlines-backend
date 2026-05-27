@@ -10,8 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ResetPasswordDto = void 0;
+const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class ResetPasswordDto {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { token: { required: true, type: () => String }, newPassword: { required: true, type: () => String, minLength: 8, pattern: "/[A-Z]/" }, confirmPassword: { required: true, type: () => String } };
+    }
 }
 exports.ResetPasswordDto = ResetPasswordDto;
 __decorate([

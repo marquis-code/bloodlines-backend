@@ -10,8 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BroadcastMessageDto = void 0;
+const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 class BroadcastMessageDto {
+    static _OPENAPI_METADATA_FACTORY() {
+        return { requestId: { required: true, type: () => String }, messageContent: { required: true, type: () => String }, recipientDonorIds: { required: false, type: () => [String] }, bloodType: { required: false, type: () => String }, coordinates: { required: false }, radiusKm: { required: false, type: () => Number }, broadcastMethod: { required: false, type: () => String } };
+    }
 }
 exports.BroadcastMessageDto = BroadcastMessageDto;
 __decorate([

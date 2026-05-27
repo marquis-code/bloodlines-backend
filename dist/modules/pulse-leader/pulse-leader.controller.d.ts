@@ -1,6 +1,8 @@
 import { PulseLeaderService } from "./pulse-leader.service";
 import { SearchDonorsFilterDto } from "./dto/search-donors.dto";
 import { BroadcastMessageDto } from "./dto/broadcast-message.dto";
+import { CreateCampaignDto } from "./dtos/create-campaign.dto";
+import { PaginationDto } from "../../common/dto/pagination.dto";
 export declare class PulseLeaderController {
     private pulseLeaderService;
     constructor(pulseLeaderService: PulseLeaderService);
@@ -79,4 +81,41 @@ export declare class PulseLeaderController {
         bloodType: any;
         units: any;
     }[]>;
+    getNetworkPerformance(user: any): Promise<{
+        facilityName: string;
+        totalFulfilled: number;
+        activeRequests: number;
+    }[]>;
+    getCampaigns(user: any, paginationDto: PaginationDto): Promise<{
+        data: (import("./schemas/campaign.schema").Campaign & {
+            _id: import("mongoose").Types.ObjectId;
+        } & {
+            __v: number;
+        })[];
+        page: number;
+        limit: number;
+        total: number;
+        hasMore: boolean;
+    }>;
+    createCampaign(user: any, dto: CreateCampaignDto): Promise<import("mongoose").Document<unknown, {}, import("./schemas/campaign.schema").Campaign, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/campaign.schema").Campaign & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }>;
+    getBridgers(user: any, paginationDto: PaginationDto): Promise<{
+        data: (import("../user/schemas/user.schema").User & {
+            _id: import("mongoose").Types.ObjectId;
+        } & {
+            __v: number;
+        })[];
+        page: number;
+        limit: number;
+        total: number;
+        hasMore: boolean;
+    }>;
+    addBridgerToOrg(user: any, bridgerId: string): Promise<import("mongoose").Document<unknown, {}, import("./schemas/organization.schema").Organization, {}, import("mongoose").DefaultSchemaOptions> & import("./schemas/organization.schema").Organization & {
+        _id: import("mongoose").Types.ObjectId;
+    } & {
+        __v: number;
+    }>;
 }

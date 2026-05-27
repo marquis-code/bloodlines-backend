@@ -13,6 +13,8 @@ const donor_service_1 = require("./donor.service");
 const donor_controller_1 = require("./donor.controller");
 const user_schema_1 = require("../user/schemas/user.schema");
 const blood_request_schema_1 = require("../blood-request/schema/blood-request.schema");
+const donor_goal_schema_1 = require("./schemas/donor-goal.schema");
+const health_screening_schema_1 = require("./schemas/health-screening.schema");
 const notification_module_1 = require("../notification/notification.module");
 let DonorModule = class DonorModule {
 };
@@ -23,6 +25,8 @@ exports.DonorModule = DonorModule = __decorate([
             mongoose_1.MongooseModule.forFeature([
                 { name: user_schema_1.User.name, schema: user_schema_1.UserSchema },
                 { name: blood_request_schema_1.BloodRequest.name, schema: blood_request_schema_1.BloodRequestSchema },
+                { name: donor_goal_schema_1.DonorGoal.name, schema: donor_goal_schema_1.DonorGoalSchema },
+                { name: health_screening_schema_1.HealthScreening.name, schema: health_screening_schema_1.HealthScreeningSchema },
             ]),
             notification_module_1.NotificationModule,
         ],
